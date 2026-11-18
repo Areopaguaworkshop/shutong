@@ -1,0 +1,26 @@
+{
+  "$schema": "https://shutong.ai/config.json",
+  "model": "ollama/glm-5.3-flash:cloud",
+  "provider": {
+    "ollama": {
+      "options": {
+        "apiKey": "ollama",
+        "baseURL": "http://localhost:11434/v1",
+        "timeout": 600000
+      }
+    }
+  },
+  "enabled_providers": ["ollama"],
+  "mcp": {
+    "shutong": {
+      "type": "stdio",
+      "command": "python3",
+      "args": ["-m", "shutong_backend.mcp_server"],
+      "env": {
+        "SHUTONG_CORPUS_ROOT": "./corpus",
+        "SHUTONG_LIBRARY_ROOT": "./library",
+        "SHUTONG_GLOSSARY_DIR": "./.shutong/glossary"
+      }
+    }
+  }
+}

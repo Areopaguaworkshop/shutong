@@ -1,0 +1,14 @@
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs"
+import path from "path"
+
+export type SourceRole = "primary" | "secondary" | "unknown"
+type Paper = { id: string; title: string; question: string; sources: { source_id: string; role: SourceRole }[]; policy: { minimum_primary: number; minimum_secondary: number } }
+const validId = (id: string) => /^[a-z0-9][a-z0-9-]{0,62}$/.test(id)
+const paperPath = (root: string, id: string) => path.join(root, "papers", id, "paper.json")
+function load(root: string, id: string): Paper { const file = paperPath(root, id); if (!existsSync(file)) throw new Error(`Paper not found: ${id}`); return JSON.parse(readFileSync(file, "utf8")) }
+function save(root: string, paper: Paper) { const file = paperPath(root, paper.id); mkdirSync(path.dirname(file), { recursive: true }); writeFileSync(file, `${JSON.stringify(paper, null, 2)}\n`) }
+export function createPaper(root: string, id: string, title: string, question = ""): Paper { if (!validId(id)) throw new Error("Paper IDs use lowercase letters, numbers, and hyphens."); if (existsSync(paperPath(root, id))) throw new Error(`Paper already exists: ${id}`); const paper: Paper = { id, title, question, sources: [], policy: { minimum_primary: 1, minimum_secondary: 1 } }; save(root, paper); mkdirSync(path.join(root, "papers", id, "drafts"), { recursive: true }); mkdirSync(path.join(root, "papers", id, "notes"), { recursive: true }); return paper }
+export function addPaperSource(root: string, id: string, sourceId: string, role: SourceRole = "unknown") { const paper = load(root, id); paper.sources = paper.sources.filter((source) => source.source_id !== sourceId); paper.sources.push({ source_id: sourceId, role }); save(root, paper); return paper }
+export function usePaper(root: string, id: string) { load(root, id); const file = path.join(root, ".shutong", "active-paper"); mkdirSync(path.dirname(file), { recursive: true }); writeFileSync(file, `${id}\n`) }
+export function paperStatus(root: string, id?: string) { const active = path.join(root, ".shutong", "active-paper"); const paperId = id ?? (existsSync(active) ? readFileSync(active, "utf8").trim() : ""); if (!paperId) return undefined; return load(root, paperId) }
+export function auditPaper(root: string, id?: string) { const paper = paperStatus(root, id); if (!paper) return { status: "no_active_paper" }; const count = (role: SourceRole) => paper.sources.filter((source) => source.role === role).length; const missing = (["primary", "secondary"] as const).flatMap((role) => count(role) < paper.policy[`minimum_${role}`] ? [{ role, required: paper.policy[`minimum_${role}`], actual: count(role) }] : []); return { status: missing.length ? "incomplete" : "ok", paper_id: paper.id, source_counts: { primary: count("primary"), secondary: count("secondary"), unknown: count("unknown") }, missing } }

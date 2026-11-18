@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Security pre-commit: gitleaks scan + private key detection
+set -euo pipefail
+
+echo "🔒 Running gitleaks secret scan..."
+gitleaks git --pre-commit --config .gitleaks.toml
+
+echo "✅ No secrets detected."

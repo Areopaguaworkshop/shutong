@@ -1,0 +1,40 @@
+{
+  "name": "shutong",
+  "version": "0.4.0",
+  "type": "module",
+  "files": [
+    "bin/shutong",
+    "src/**/*.ts",
+    "python-backend/pyproject.toml",
+    "python-backend/shutong_backend/**/*.py",
+    "python-backend/shutong_backend/templates/**/*.md",
+    "python-backend/shutong_backend/templates/**/*.json",
+    "python-backend/shutong_backend/templates/**/*.j2"
+  ],
+  "bin": {
+    "shutong": "./bin/shutong"
+  },
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "prepack": "bun scripts/bundle-backend.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test --timeout 30000",
+    "build": "bun build ./src/index.ts --compile --outfile dist/shutong"
+  },
+  "dependencies": {
+    "drizzle-orm": "catalog:",
+    "yargs": "18.0.0",
+    "smol-toml": "1.3.1",
+    "zod": "catalog:",
+    "remeda": "catalog:"
+  },
+  "devDependencies": {
+    "@tsconfig/bun": "catalog:",
+    "@types/bun": "catalog:",
+    "@types/yargs": "17.0.33",
+    "typescript": "6.0.3",
+    "drizzle-kit": "catalog:"
+  }
+}

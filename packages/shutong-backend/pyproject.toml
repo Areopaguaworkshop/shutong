@@ -1,0 +1,42 @@
+[project]
+name = "shutong-backend"
+version = "0.0.2"
+description = "Citation-verified scholarly research over a local corpus (MCP server)"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+dependencies = [
+    "citeindex==0.13.2",
+    "dspy<3",
+    "dspy-ai<3",
+    "mcp>=1.27,<2",
+    "click>=8.0",
+    "jinja2>=3.1",
+    "requests>=2.31.0",
+    "python-dateutil>=2.8.0",
+    "lxml>=4.9.0",
+    "pymupdf>=1.26.3",
+    "pyyaml>=6.0.0",
+    "jsonschema>=4.20.0",
+    "python-dotenv>=1.1.0",
+    "PyPDF2>=3.0.1",
+    "citeproc-py>=0.7.0",
+]
+
+[project.scripts]
+"shutong-backend" = "shutong_backend.cli:main"
+"shutong-backend-mcp" = "shutong_backend.mcp_server:cli"
+"shutong-backend-server" = "shutong_backend.server:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["shutong_backend"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+]

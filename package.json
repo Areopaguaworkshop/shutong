@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "shutong-workspace",
+  "private": true,
+  "type": "module",
+  "packageManager": "bun@1.3.13",
+  "scripts": {
+    "shutong": "bun run ./shutong/src/index.ts",
+    "init:opencode": "bun run ./shutong/src/index.ts init --host opencode",
+    "ingest:all": "python3 scripts/ingest_all.py --corpus-root ./corpus",
+    "export:vault": "python3 scripts/export_vault.py --corpus-root ./corpus --wiki-root ./library/wiki/aca-writer",
+    "typecheck": "bun run --cwd shutong typecheck",
+    "test": "echo 'do not run tests from root' && exit 1"
+  },
+  "workspaces": {
+    "packages": [
+      "shutong"
+    ],
+    "catalog": {
+      "@tsconfig/bun": "1.0.9",
+      "@types/bun": "1.3.12",
+      "drizzle-orm": "1.0.0-beta.19-d95b7a4",
+      "drizzle-kit": "1.0.0-beta.19-d95b7a4",
+      "effect": "4.0.0-beta.48",
+      "remeda": "2.26.0",
+      "typescript": "5.8.2",
+      "zod": "4.1.8"
+    }
+  }
+}

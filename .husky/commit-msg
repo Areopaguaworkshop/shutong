@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Block commits whose messages contain API keys or tokens
+set -euo pipefail
+
+msg_file="$1"
+msg=$(cat "$msg_file")
+
+# Patterns that should never appear in a commit message
+if echo "$msg" | grep -qiE '(sk-[a-zA-Z0-9]{20,}|ghp_[a-zA-Z0-9]{36}|gho_[a-zA-Z0-9]{36}|AKIA[0-9A-Z]{16}|AIza[a-zA-Z0-9_-]{35}|xox[bpsa]-[a-zA-Z0-9-]+)'; then
+  echo "❌ COMMIT BLOCKED: Commit message contains what looks like an API key or token."
+  echo "   Remove the credential and try again."
+  exit 1
+fi

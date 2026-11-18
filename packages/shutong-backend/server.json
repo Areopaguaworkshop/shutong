@@ -1,0 +1,36 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.Areopaguaworkshop/shutong",
+  "title": "Shutong",
+  "description": "Citation-verified scholarly research over a local corpus",
+  "repository": {
+    "url": "https://github.com/Areopaguaworkshop/shutong",
+    "source": "github"
+  },
+  "version": "0.0.2",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "shutong-backend",
+      "version": "0.0.2",
+      "runtimeHint": "uvx",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "SHUTONG_CORPUS_ROOT",
+          "description": "Absolute path to the corpus root",
+          "format": "string",
+          "isRequired": false
+        },
+        {
+          "name": "SHUTONG_LIBRARY_ROOT",
+          "description": "Absolute path to the library root",
+          "format": "string",
+          "isRequired": false
+        }
+      ]
+    }
+  ]
+}

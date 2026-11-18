@@ -1,0 +1,23 @@
+title = "Shutong Gitleaks Config"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "ollama-api-key"
+description = "Ollama API key (should not be in source)"
+regex = '''ollama[_-]?api[_-]?key\s*=\s*["\'][^"\']+["\']'''
+tags = ["key", "ollama"]
+
+[[rules]]
+id = "shutong-secret"
+description = "Shutong environment secret"
+regex = '''(?:SCRAPER_API_KEY|SHUTONG_SECRET|OPENAI_API_KEY|ANTHROPIC_API_KEY)\s*=\s*["\'][^"\']+["\']'''
+tags = ["key", "secret"]
+
+[allowlist]
+paths = [
+  '''.env\.example$''',
+  '''\.pre-commit-config\.yaml$''',
+  '''\.gitleaks\.toml$''',
+]

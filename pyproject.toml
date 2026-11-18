@@ -1,0 +1,26 @@
+[project]
+name = "shutong-workspace"
+version = "0.4.0"
+description = "Shutong workspace"
+requires-python = ">=3.12"
+dependencies = [
+    "shutong-backend",
+]
+readme = "README.md"
+license = "MIT"
+
+[build-system]
+requires = ["hatchling==1.26.3", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+]
+
+[tool.uv.sources]
+"shutong-backend" = { path = "packages/shutong-backend" }
+
+[tool.hatch.build.targets.wheel]
+packages = ["packages/shutong-backend/shutong_backend"]

@@ -1,0 +1,63 @@
+# Shutong 書童 — Project Instructions
+
+<!-- SHUTONG:BEGIN — do not remove this marker -->
+
+## Scholar Principle
+
+Never state a fact without a citation.
+
+- Every factual claim must trace to a corpus source or a file + line number.
+- If no citation is available, say exactly: "No citation available for this claim in the current corpus."
+- Distinguish clearly: known (corpus-cited) / probable (evidence noted but indirect) / speculative (clearly labelled as such).
+- Citation format: Chicago author-date — (Author Year, page).
+
+## Research Protocol
+
+The main agent coordinates the existing specialists and writes requested reports or short cited syntheses from verified findings. Use analysis-plan for scope and method. Bibliographer proposes the source set; Ingestor ingests approved material; Noter uses text-analysis and evidence-synthesis; Verifier uses citation-check. Full-paper composition is not the default deliverable. Save analysis provenance with `shutong_analysis` and link analytical notes with analysis_id.
+
+Before answering any research question:
+1. Call `shutong_search` with the query to check the local corpus.
+2. Call `shutong_verify` on the top results before quoting them.
+3. If `shutong_verify` returns FAIL for a node, mark it [UNVERIFIED] and exclude it from your answer.
+4. Do not answer factual scholarly questions from parametric memory alone.
+5. If the corpus is empty, say: "No documents ingested yet. Run: `@ingestor ingest <source>`".
+
+## Translation Protocol
+
+Translation is a host-agent task, not a Shutong backend workflow; the output is a
+private note, not prose. Use the translate-academic skill.
+
+1. Confirm the source is approved and ingested. Ask the scholar for the target
+   language; default to Traditional Chinese (zh-Hant).
+2. Read `.shutong/glossary/*.json` first; glossary matches are mandatory.
+   Untranslatable proper nouns: `[未译: OriginalTerm]`.
+3. Preserve citation keys and footnote markers exactly as they appear.
+4. Direct quotations: keep the original-language quotation verbatim and follow it
+   with a parenthetical translation `（譯：……）`. Never replace the original.
+5. Bind every quotation to its `source_id`, exact corpus locator, and a Chicago
+   author-date reference rendered with `shutong_citation`. A translated quotation
+   is evidence only when the verbatim original and locator are recorded.
+6. Record the note with `shutong_note` action `add`, with confidence (`known`,
+   `probable`, or `speculative`) and tags including `translation` and the target
+   language.
+
+## Coding Discipline
+
+1. Think before coding. State assumptions. Ask if unclear.
+2. Simplicity first. Minimum code. No speculative features.
+3. Surgical edits. Touch only what the task requires.
+4. Goal-driven. Define success criteria. Verify each step.
+
+## Corpus
+
+- Corpus root: `./corpus/`
+- Library: `./library/`
+- Glossaries: `./.shutong/glossary/`
+
+## Corpus Snapshot
+
+<!-- SHUTONG:CORPUS:BEGIN -->
+{{ snapshot }}
+<!-- SHUTONG:CORPUS:END -->
+
+<!-- SHUTONG:END -->
