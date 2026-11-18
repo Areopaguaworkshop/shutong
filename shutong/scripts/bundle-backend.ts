@@ -11,7 +11,7 @@ cpSync(source, target, {
     const relative = path.relative(source, entry).split(path.sep).join("/")
     const stat = lstatSync(entry)
     if (stat.isSymbolicLink() || relative.split("/").some((part) => part.startsWith(".") || part === "__pycache__")) return false
-    if (!relative || relative === "pyproject.toml") return true
+    if (!relative || relative === "pyproject.toml" || relative === "README.md") return true
     if (!relative.startsWith("shutong_backend/") && relative !== "shutong_backend") return false
     if (stat.isDirectory()) return true
     return relative.endsWith(".py") || /^shutong_backend\/templates\/.*\.(md|json|j2)$/.test(relative)

@@ -1,9 +1,15 @@
 import { spawnSync } from "bun"
+import { randomBytes } from "node:crypto"
 import { existsSync } from "fs"
 import net from "node:net"
 import path from "path"
 import type { BackendMethod, RpcResponse } from "./backend-types"
 import type { LlmConfig } from "../shared/types"
+
+/** Create a per-daemon bearer token. In-memory only; never log or persist it. */
+export function createDaemonToken(): string {
+  return randomBytes(32).toString("hex")
+}
 
 export interface BackendStreamEvent {
   id?: string
@@ -36,6 +42,7 @@ export class BackendError extends Error {
 export class BackendClient {
   private _llmConfig: LlmConfig
   private daemonUrl?: string
+  private daemonToken?: string
   private daemonProc?: ReturnType<typeof Bun.spawn>
 
   constructor(
@@ -84,6 +91,10 @@ export class BackendClient {
     const pythonPath = this.backendPythonPath()
     if (pythonPath) env.PYTHONPATH = pythonPath
     return env
+  }
+
+  private daemonAuthHeaders(): Record<string, string> {
+    return this.daemonToken ? { authorization: `Bearer ${this.daemonToken}` } : {}
   }
 
   private request(method: BackendMethod, params: Record<string, unknown> = {}): any {
@@ -142,16 +153,17 @@ export class BackendClient {
     if (this.daemonUrl) return this.daemonUrl
     const port = await this.freePort()
     const url = `http://127.0.0.1:${port}`
+    this.daemonToken = createDaemonToken()
     this.daemonProc = Bun.spawn({
       cmd: [this.pythonBin, "-u", "-m", "shutong_backend.server", "--host", "127.0.0.1", "--port", String(port)],
-      env: this.requestEnv(),
+      env: { ...this.requestEnv(), SHUTONG_HTTP_TOKEN: this.daemonToken },
       stdout: "pipe",
       stderr: "pipe",
     })
 
     for (let i = 0; i < 80; i += 1) {
       try {
-        const response = await fetch(`${url}/health`)
+        const response = await fetch(`${url}/health`, { headers: this.daemonAuthHeaders() })
         if (response.ok) {
           this.daemonUrl = url
           return url
@@ -168,7 +180,7 @@ export class BackendClient {
     const url = await this.ensureDaemon()
     const response = await fetch(`${url}${pathname}`, {
       ...init,
-      headers: { "content-type": "application/json", ...(init?.headers ?? {}) },
+      headers: { "content-type": "application/json", ...this.daemonAuthHeaders(), ...(init?.headers ?? {}) },
     })
     const text = await response.text()
     const data = text ? JSON.parse(text) : {}
@@ -196,7 +208,7 @@ export class BackendClient {
     const url = await this.ensureDaemon()
     await this.daemonJson("/session", { method: "POST", body: JSON.stringify({ id: sessionId }) })
     const eventResponsePromise = fetch(`${url}/session/${encodeURIComponent(sessionId)}/event?once=1`, {
-      headers: { accept: "text/event-stream", "Last-Event-ID": "0" },
+      headers: { accept: "text/event-stream", "Last-Event-ID": "0", ...this.daemonAuthHeaders() },
     })
     await this.daemonJson(`/session/${encodeURIComponent(sessionId)}/message`, {
       method: "POST",
@@ -518,5 +530,6 @@ export class BackendClient {
     this.daemonProc?.kill()
     this.daemonProc = undefined
     this.daemonUrl = undefined
+    this.daemonToken = undefined
   }
 }

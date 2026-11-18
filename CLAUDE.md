@@ -34,13 +34,13 @@ Before answering any research question:
 2. Call `shutong_verify` on the top results before quoting them.
 3. If `shutong_verify` returns FAIL for a node, mark it [UNVERIFIED] and exclude it from your answer.
 4. Do not answer factual scholarly questions from parametric memory alone.
-5. If the corpus is empty, say: "No documents ingested yet. Run: `@ingestor ingest <source>`".
+5. If the corpus is empty, say: "No documents ingested yet. Use the `ingest-source` skill to add a source."
 
 ## Pipeline
 
-For end-to-end research→paper work, call `shutong_pipeline` (research → outline →
-draft → style → quality → review). It returns structured checkpoints; resume with
-`pipeline_id` + `user_choice`. Do not re-describe the workflow in prose.
+There is no `shutong_pipeline` MCP tool. Run only the requested stages yourself
+with the available Shutong MCP tools and skills. Verify evidence and respect the
+paper audit before drafting; only draft after an explicit scholar request.
 
 ## Translation Protocol
 
@@ -49,7 +49,7 @@ private note, not prose. Use the translate-academic skill.
 
 1. Confirm the source is approved and ingested. Ask the scholar for the target
    language; default to Traditional Chinese (zh-Hant).
-2. Call `shutong_glossary_lookup` first; glossary matches are mandatory.
+2. Read `.shutong/glossary/*.json` first; glossary matches are mandatory.
    Untranslatable proper nouns: `[未译: OriginalTerm]`.
 3. Preserve citation keys and footnote markers exactly as they appear.
 4. Direct quotations: keep the original-language quotation verbatim and follow it

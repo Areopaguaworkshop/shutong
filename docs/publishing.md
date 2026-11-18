@@ -1,157 +1,165 @@
-# Publishing Shutong as an MCP server — first release 0.0.1
+# Publishing Shutong as an MCP server — 0.0.3
 
-Verified against this machine (2026-11-17) and current 2026 docs. Publish in this
-order; each step is a gate for the next.
+This guide covers the 0.0.3 release. Nothing in the 0.0.3 train is published or
+tested yet; treat every status below as a plan until a command proves otherwise.
 
-## What gets published
+## Two PyPI distributions, one server
 
-| Artifact | Registry | Identifier | Status |
-| --- | --- | --- | --- |
-| Python backend + MCP server | PyPI | `shutong-backend` | name free (404) |
-| Registry metadata | MCP Registry | `io.github.<user>/shutong` | needs GitHub auth |
-| Optional TS CLI wrapper | npm | `shutong-backend-mcp` | name free, not required |
+The MCP Registry identifies a server by the package whose **binary** it launches.
+`server.json` has no field for choosing a script, and `runtimeArguments` are
+unproven and non-portable across registry clients. The registry therefore cannot
+point at `shutong-backend` and ask for its `shutong-backend-mcp` script.
 
-The MCP server is Python, so PyPI plus `uvx` is the primary route. npm is optional.
+The supported layout is two distributions:
 
-## Blockers to clear first
+| Artifact | Registry | Identifier | Version | Status |
+| --- | --- | --- | --- | --- |
+| Backend + MCP implementation | PyPI | `shutong-backend` | 0.0.3 | not published |
+| Thin launcher | PyPI | `shutong-backend-mcp` | 0.0.3 | not published |
+| Registry metadata | MCP Registry | `io.github.Areopaguaworkshop/shutong` | 0.0.3 | not published |
 
-1. **No LICENSE file.** PyPI and the registry both expect one. The ecosystem is MIT
-   (citeindex, the MCP SDK). Add `LICENSE` at the repo root and `license = "MIT"`.
-2. **Package README.** PyPI greps the long description for the ownership marker
-   `mcp-name: io.github.<user>/shutong`. Without it the registry publish is rejected.
-   Add `packages/shutong-backend/README.md` with that line and `readme = "README.md"`.
-3. **Heavy prerequisite.** Shutong depends on `citeindex==0.13.2`, a separate upstream
-   project on PyPI. It pulls paddlepaddle, mineru, whisperx, pyannote and playwright,
-   so the first install is ~13 GB. This is a documented prerequisite, not something
-   Shutong vendors or forks. Users install it transitively through `uvx` or directly
-   in their own environment.
-4. **Version conflict.** Local is `0.4.0`. PyPI numbers are immutable, so publishing
-   `0.0.1` burns that number for the workspace build forever. If 0.4.0 is only
-   internal, reset everything to `0.0.1` now.
-5. **Credentials.** None exist here: no `~/.pypirc`, `npm whoami` is unauthenticated,
-   `gh` is logged out.
+`packages/shutong-backend-mcp/` declares the exact dependency
+`shutong-backend==0.0.3` and exposes the same console script
+`shutong-backend-mcp = shutong_backend.mcp_server:cli`. It ships no server code;
+the entry-point module comes from the backend dependency. `server.json` names
+`shutong-backend-mcp` because that is the package whose console script the
+registry launches.
 
-## Step 0 — metadata and version
+Both package READMEs must contain the ownership marker:
 
-```bash
-cd /path/to/shutong
-# 1. LICENSE (MIT), 2. packages/shutong-backend/README.md with:
-#    mcp-name: io.github.<gh-user>/shutong
+```text
+<!-- mcp-name: io.github.Areopaguaworkshop/shutong -->
 ```
 
-`packages/shutong-backend/pyproject.toml`:
+## Release order
 
-```toml
-[project]
-name = "shutong-backend"
-version = "0.0.1"
-description = "Citation-verified scholarly research over a local corpus (MCP server)"
-readme = "README.md"
-license = "MIT"
-requires-python = ">=3.12"
-```
+Each step gates the next. Do not publish registry metadata before both PyPI
+packages are live.
 
-Keep the three scripts as they are, especially:
+### 1. Backend 0.0.3
 
-```toml
-[project.scripts]
-shutong-backend-mcp = "shutong_backend.mcp_server:main"
-```
-
-## Step 1 — declare citeindex as a prerequisite
-
-`citeindex` is a separate project with its own release cycle. Shutong consumes it
-and must not vendor, fork, or copy its modules. Keep it in `dependencies`:
-
-```toml
-dependencies = [
-  "citeindex==0.13.2",
-  "mcp>=1.27,<2",
-  "click>=8.0", "pyyaml>=6.0", "jsonschema>=4.20",
-  "requests>=2.31", "python-dateutil>=2.8", "lxml>=4.9",
-]
-```
-
-What the user needs to know, and what the package README and `doctor` must state:
-
-- First install is large: citeindex brings paddlepaddle, mineru, whisperx, pyannote
-  and playwright, roughly 13 GB of wheels.
-- A network connection is required during the first `uvx` run.
-- Ingestion needs the full set; searching, verifying, notes and audits still import
-  citeindex, so there is no reduced subset in this release.
-
-Do not pin `mcp>=2.3` yet: this code imports `mcp.server.Server` and runs on
-1.27.0. Pin what you tested, then test 2.x deliberately.
-
-## Step 2 — build and test the artifact locally
+The parent release bumps `packages/shutong-backend/pyproject.toml` to `0.0.3`
+before this step. Build, smoke-test, then publish:
 
 ```bash
 cd packages/shutong-backend
 rm -rf dist
-uv build --no-sources          # --no-sources is required: the repo root declares a path source
-ls dist/                        # wheel + sdist
-uvx --from ./dist/shutong_backend-0.0.1-py3-none-any.whl shutong-backend-mcp < /dev/null
-```
+uv build --no-sources          # required: repo root declares a path source
+ls dist/                       # wheel + sdist
 
-The wheel already carries the skill templates: verified 17 template files and 9
-skills, zero agent templates. Stdout must stay clean — any banner corrupts JSON-RPC.
-
-## Step 3 — publish to PyPI
-
-```bash
-cd packages/shutong-backend
 UV_PUBLISH_TOKEN=pypi-... uv publish
 ```
 
-Then prove the public install works before touching the registry:
+Confirm the distribution exists in the public index before continuing:
+
+```bash
+uvx --from 'shutong-backend==0.0.3' shutong-backend-mcp < /dev/null
+```
+
+### 2. Launcher 0.0.3
+
+```bash
+cd packages/shutong-backend-mcp
+rm -rf dist
+uv build --no-sources
+ls dist/                       # wheel + sdist
+
+UV_PUBLISH_TOKEN=pypi-... uv publish
+```
+
+`uv build` does not resolve runtime dependencies, so building the launcher before
+backend 0.0.3 is on PyPI is fine. Installing it is not: the exact pin only
+resolves after step 1.
+
+### 3. Prove the public install
 
 ```bash
 uvx shutong-backend-mcp < /dev/null
-uvx --from 'shutong-backend==0.0.1' shutong-backend-mcp < /dev/null
+uvx --from 'shutong-backend-mcp==0.0.3' shutong-backend-mcp < /dev/null
 ```
 
-## Step 4 — registry entry
+Stdout must stay clean — any banner corrupts JSON-RPC. The first run downloads
+roughly 13 GB through `citeindex`; use a fresh `UV_TOOL_DIR` to test the cold path.
+
+### 4. Publish registry metadata
 
 ```bash
-# install the publisher (v1.8.9)
+# publisher v1.8.9
 curl -L https://github.com/modelcontextprotocol/registry/releases/download/v1.8.9/mcp-publisher_linux_amd64.tar.gz \
   | tar xz -C /tmp/opencode mcp-publisher && install -Dm755 /tmp/opencode/mcp-publisher ~/.local/bin/mcp-publisher
 
 cd packages/shutong-backend
-mcp-publisher init
-mcp-publisher validate
 mcp-publisher login github --token "$GH_PAT"   # org namespaces need a PAT, not the device flow
+mcp-publisher validate
 mcp-publisher publish
 ```
 
-`server.json` for 0.0.1:
+Do **not** run `mcp-publisher init` in `packages/shutong-backend`: it would
+overwrite the maintained `server.json`. Run it only in a scratch directory if you
+need a reference file.
+
+`server.json` for 0.0.3:
 
 ```json
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.<gh-user>/shutong",
+  "name": "io.github.Areopaguaworkshop/shutong",
   "title": "Shutong",
   "description": "Citation-verified scholarly research over a local corpus",
-  "repository": { "url": "https://github.com/<gh-user>/shutong", "source": "github" },
-  "version": "0.0.1",
+  "repository": {
+    "url": "https://github.com/Areopaguaworkshop/shutong",
+    "source": "github"
+  },
+  "version": "0.0.3",
   "packages": [{
     "registryType": "pypi",
-    "identifier": "shutong-backend",
-    "version": "0.0.1",
+    "identifier": "shutong-backend-mcp",
+    "version": "0.0.3",
     "runtimeHint": "uvx",
     "transport": { "type": "stdio" },
     "environmentVariables": [
-      { "name": "SHUTONG_CORPUS_ROOT", "description": "Absolute corpus path", "isRequired": false }
+      { "name": "SHUTONG_CORPUS_ROOT", "description": "Absolute path to the corpus root", "format": "string", "isRequired": false },
+      { "name": "SHUTONG_LIBRARY_ROOT", "description": "Absolute path to the library root", "format": "string", "isRequired": false }
     ]
   }]
 }
 ```
 
+### Expected validation failure before publish
+
+`shutong-backend-mcp==0.0.3` and `shutong-backend==0.0.3` do not exist yet.
+`mcp-publisher validate` checks the live registry and package state, so it is
+expected to fail until both PyPI uploads in steps 1–2 succeed. A failure that
+names the missing 0.0.3 package or version is not a schema defect; a schema,
+marker, or identifier error is. Re-run validation after publishing and only then
+run `mcp-publisher publish`.
+
 Rules that reject a publish: description over 100 characters, a range as version,
 `"version": "latest"`, package not yet public, missing `mcp-name:` marker, or a
 registry host other than `pypi.org` / `registry.npmjs.org`.
 
-## Step 5 — what users paste
+## PyPI authentication
+
+Neither package is published yet. Create one project-scoped token per
+distribution (Account settings → API tokens), or a first-upload token scoped to
+the new project name:
+
+```bash
+export UV_PUBLISH_TOKEN=pypi-...
+```
+
+PyPI refuses a second upload of the same version permanently, so burn a new
+version number for every metadata fix.
+
+## Prerequisite: citeindex
+
+`shutong-backend` depends on `citeindex==0.13.2`, a separate upstream project on
+PyPI. It pulls paddlepaddle, mineru, whisperx, pyannote and playwright, so the
+first install is about 13 GB. Shutong does not vendor, fork, or copy it. The
+launcher inherits the dependency transitively and does not restate it. A network
+connection is required on the first `uvx` run.
+
+## Host configuration
 
 Claude Desktop, `claude_desktop_config.json`:
 
@@ -204,87 +212,49 @@ OMP (oh-my-pi), `~/.omp/agent/mcp.json` (project: `.omp/mcp.json`):
   "env": { "SHUTONG_CORPUS_ROOT": "${SHUTONG_CORPUS_ROOT:-/abs/path/to/corpus}" } } } }
 ```
 
-OMP has no `omp mcp` subcommand; use the in-TUI `/mcp add`, then `/mcp reload`, `/mcp list`,
-`/mcp test shutong`. Both hosts run stdio servers launched through `uvx`.
+OMP has no `omp mcp` subcommand; use the in-TUI `/mcp add`, then `/mcp reload`,
+`/mcp list`, `/mcp test shutong`. Both hosts run stdio servers launched through
+`uvx`.
 
-## Step 6 — npm wrapper (optional)
+## Local build validation
 
-Only needed if you want `npx -y shutong-backend-mcp` to work. The wrapper shells out
-to `uvx`; it does not reimplement the server.
+Run in each package tree; no network publish:
 
-```json
-{ "name": "shutong-backend-mcp", "version": "0.0.1", "type": "module",
-  "mcpName": "io.github.<gh-user>/shutong",
-  "bin": { "shutong-backend-mcp": "dist/cli.js" }, "files": ["dist"], "engines": { "node": ">=20" } }
+```bash
+cd packages/shutong-backend && uv build --no-sources
+cd packages/shutong-backend-mcp && uv build --no-sources
 ```
 
-`npm publish --access public`, then confirm `npx -y shutong-backend-mcp@0.0.1`.
+Inspect the launcher wheel:
+
+```bash
+unzip -p dist/shutong_backend_mcp-0.0.3-py3-none-any.whl \
+  '*/entry_points.txt'            # shutong-backend-mcp = shutong_backend.mcp_server:cli
+unzip -p dist/shutong_backend_mcp-0.0.3-py3-none-any.whl \
+  '*/METADATA' | grep -E '^(Name|Version|Requires-Python|Requires-Dist)'
+# Requires-Dist: shutong-backend==0.0.3
+```
+
+Parse the registry file:
+
+```bash
+python -m json.tool packages/shutong-backend/server.json > /dev/null
+```
 
 ## Version discipline
 
-Keep `server.json.version` == `packages[].version` == `pyproject.toml.version` == git
-tag `v0.0.1`. PyPI and npm files are immutable per version, and registry entries are
-immutable per version string, so every metadata fix costs a new number.
+Keep `server.json.version` == `packages[].version` == launcher
+`pyproject.toml.version` == backend `pyproject.toml.version` == git tag `v0.0.3`.
+PyPI files are immutable per version, and registry entries are immutable per
+version string, so every metadata fix costs a new number.
 
-## Published state — 2026-11-18
+## Checklist (human steps)
 
-| Item | State | Evidence |
-| --- | --- | --- |
-| PyPI `shutong-backend==0.0.2` | published | `uv tool install shutong-backend==0.0.2` → `shutong 0.0.2`, 26 tools |
-| PyPI `0.0.1` | published, broken console script | `shutong-backend-mcp` exited with `coroutine never awaited`; fixed in 0.0.2 |
-| Repository | `Areopaguaworkshop/shutong` master + `2026-11-18-0.0.1-publish`, tag `v0.0.2` | remote tree = local HEAD, 181 files, 17 skills, no corpus or binaries |
-| `server.json` | valid, version 0.0.2 | `mcp-publisher validate` → valid |
-| Registry entry | blocked | no valid GitHub token; all `pass github/*` return HTTP 401 |
-
-Known metadata defect fixed in 0.0.2: `pymupdf[mupdf-third]` asked for an extra
-pymupdf does not define. The dependency is now plain `pymupdf>=1.26.3`.
-
-Registry is the only remaining step:
-
-```bash
-pass insert github/shutong-publish      # classic PAT with read:org for the org namespace
-cd packages/shutong-backend
-mcp-publisher login github --token "$(pass show github/shutong-publish | head -1)"
-mcp-publisher publish
-```
-
-Known metadata defect for 0.0.2: `pymupdf[mupdf-third]>=1.26.3` asks for an extra that
-pymupdf does not define. `uv pip install --dry-run shutong-backend==0.0.1` warns:
-`pymupdf==1.27.2.3 does not have an extra named mupdf-third`. Drop the extra.
-
-## Your checklist (only these need a human)
-
-Everything else is prepared: `LICENSE`, `packages/shutong-backend/README.md` with the
-`mcp-name:` marker, `pyproject.toml` at 0.0.1 with `readme`, `license`, and
-`mcp>=1.27,<2`, plus `packages/shutong-backend/server.json`. `mcp-publisher 1.8.9`
-is installed at `~/.local/bin/mcp-publisher`.
-
-1. **Pick the namespace.** Replace `YOURNAME` in two files with your GitHub user or
-   org: `packages/shutong-backend/README.md` and `packages/shutong-backend/server.json`.
-2. **Create accounts and tokens.**
-   - PyPI account + API token (Account settings → API tokens), scope it to the
-     `shutong-backend` name or use a project-scoped token after the first upload.
-   - GitHub PAT with `read:org` if the namespace is an org; a personal namespace
-     works with `mcp-publisher login github` device flow too.
-3. **Log in.** `export UV_PUBLISH_TOKEN=pypi-...` and `gh auth login` (or keep the PAT
-   in `$GH_PAT`).
-4. **Publish PyPI.** From `packages/shutong-backend`: `uv build --no-sources` then
-   `uv publish`.
-5. **Prove the install.** `uvx shutong-backend-mcp < /dev/null` on a clean machine or
-   a fresh `UV_TOOL_DIR`. First run downloads ~13 GB through citeindex.
-6. **Publish the registry entry.** `mcp-publisher init` overwrites nothing existing;
-   then `mcp-publisher validate`, `mcp-publisher login github --token "$GH_PAT"`,
-   `mcp-publisher publish`.
-7. **Tag the release.** `git tag v0.0.1 && git push --tags` once the repo has a remote.
-
-Do not re-run `uv publish` with the same version: PyPI rejects a second upload of
-0.0.1 permanently.
-
-## Order recap
-
-1. LICENSE, package README with `mcp-name:`, version 0.0.1.
-2. Keep `citeindex==0.13.2` declared; document the prerequisite size.
-3. `uv build --no-sources`, install the wheel with `uvx`, confirm stdio is clean.
-4. `uv publish`, then `uvx shutong-backend-mcp` from the public index.
-5. `mcp-publisher validate` then `publish`.
-6. Optional npm wrapper, same version number.
+1. Bump `packages/shutong-backend/pyproject.toml` to `0.0.3` and release it as
+   `shutong-backend` 0.0.3.
+2. Confirm `shutong-backend==0.0.3` installs from PyPI.
+3. Build and publish `packages/shutong-backend-mcp` as `shutong-backend-mcp`
+   0.0.3.
+4. Prove `uvx shutong-backend-mcp` and `uvx --from shutong-backend-mcp==0.0.3`.
+5. Only then `mcp-publisher validate` and `mcp-publisher publish`.
+6. Tag `v0.0.3` after the registry entry is live.

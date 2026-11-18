@@ -55,24 +55,48 @@ def render_global_agents_md() -> str:
     return (_TEMPLATE_DIR / "global-agents.md").read_text(encoding="utf-8")
 
 
-def render_project_config() -> dict:
-    return json.loads((_TEMPLATE_DIR / "shutong.json").read_text(encoding="utf-8"))
-
-
 def render_global_config() -> dict:
     return json.loads((_TEMPLATE_DIR / "global-shutong.json").read_text(encoding="utf-8"))
 
 
-# Static file mapping: relative path within project → template file path
-# Agent definitions are no longer written: skills carry the role prompts.
+# Canonical role skills. The host agent loads one of these instead of delegating
+# to an agent definition; there is no per-role agent layer.
+ROLE_SKILLS = (
+    "explore-bibliography",
+    "ingest-source",
+    "noter",
+    "verify-bibliography",
+    "workspace-planner",
+    "paper-workspace",
+)
+
+# Supporting skills kept from the previous package surface, plus the routing
+# skills (copyright-access) and the pipeline guide that replaces the removed
+# ``shutong_pipeline`` tool contract.
+_SUPPORT_SKILLS = (
+    "academic-pipeline",
+    "analysis-plan",
+    "citation-check",
+    "cite-research",
+    "copyright-access",
+    "corpus-status",
+    "evidence-synthesis",
+    "shutong-research",
+    "text-analysis",
+    "translate-academic",
+    "verify-corpus",
+)
+PROJECT_SKILLS = (*ROLE_SKILLS, *_SUPPORT_SKILLS)
+
+# Static file mapping: relative path within project → template file path.
+#
+# The wheel ships only ``shutong_backend/**``, so these role skills are copied
+# from the repository's ``.agents/skills`` tree into package templates. Keep the
+# two copies in sync; a single generated source is a follow-up.
 _SKILL_FILES = {
-    Path(".shutong/skills/cite-research/SKILL.md"): "skills/cite-research/SKILL.md",
-    Path(".shutong/skills/ingest-source/SKILL.md"): "skills/ingest-source/SKILL.md",
-    Path(".shutong/skills/verify-corpus/SKILL.md"): "skills/verify-corpus/SKILL.md",
-    Path(".shutong/skills/workspace-planner/SKILL.md"): "skills/workspace-planner/SKILL.md",
+    Path(f".agents/skills/{skill}/SKILL.md"): f"skills/{skill}/SKILL.md"
+    for skill in PROJECT_SKILLS
 }
-for _skill in ("analysis-plan", "text-analysis", "evidence-synthesis", "citation-check", "translate-academic"):
-    _SKILL_FILES[Path(f".shutong/skills/{_skill}/SKILL.md")] = f"skills/{_skill}/SKILL.md"
 
 _COMMAND_FILES = {
     Path(".shutong/commands/research.md"): "commands/research.md",
@@ -82,9 +106,13 @@ _COMMAND_FILES = {
 
 
 def project_files(snapshot: str) -> dict[Path, str]:
+    """Return the project-layer files for ``shutong-backend init``.
+
+    Deliberately no ``shutong.json``: Shutong does not own the host's config.
+    Skills live in the universal ``.agents/skills`` root.
+    """
     files: dict[Path, str] = {
         Path("AGENTS.md"): render_project_agents_md(snapshot),
-        Path("shutong.json"): json.dumps(render_project_config(), indent=2, ensure_ascii=False) + "\n",
     }
 
     for dest_path, src_name in {**_SKILL_FILES, **_COMMAND_FILES}.items():

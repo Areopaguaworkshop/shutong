@@ -7,12 +7,12 @@
     "url": "https://github.com/Areopaguaworkshop/shutong",
     "source": "github"
   },
-  "version": "0.0.2",
+  "version": "0.0.3",
   "packages": [
     {
       "registryType": "pypi",
-      "identifier": "shutong-backend",
-      "version": "0.0.2",
+      "identifier": "shutong-backend-mcp",
+      "version": "0.0.3",
       "runtimeHint": "uvx",
       "transport": {
         "type": "stdio"

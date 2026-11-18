@@ -8,10 +8,28 @@ style preferences, and glossary additions across sessions.
 import hashlib
 import json
 import os
+import re
 import time
 from typing import Any, Dict, List, Optional
 
 from .agents.models import SCHEMA_VERSION
+
+# Passport IDs are generated as ``pp-<8 hex>``; anything else is rejected before
+# it is joined into a filesystem path.
+_PASSPORT_ID_PATTERN = r"pp-[0-9a-f]{8}"
+_PASSPORT_ID_RE = re.compile(_PASSPORT_ID_PATTERN)
+
+
+class InvalidPassportId(ValueError):
+    """Raised when a caller-supplied passport ID is not a safe passport ID."""
+
+
+def _validate_passport_id(passport_id: Any) -> str:
+    if not isinstance(passport_id, str) or not _PASSPORT_ID_RE.fullmatch(passport_id):
+        raise InvalidPassportId(
+            f"Invalid passport id {passport_id!r}: expected '{_PASSPORT_ID_PATTERN}'."
+        )
+    return passport_id
 
 
 class MaterialPassport:
@@ -45,7 +63,7 @@ class MaterialPassport:
 
     def load(self, passport_id: str) -> Optional[Dict[str, Any]]:
         """Load a passport by ID."""
-        path = os.path.join(self.passport_dir, f"{passport_id}.json")
+        path = self._passport_path(passport_id)
         if not os.path.exists(path):
             return None
         with open(path) as f:
@@ -118,6 +136,15 @@ class MaterialPassport:
 
     def _save(self, passport: Dict[str, Any]) -> None:
         os.makedirs(self.passport_dir, exist_ok=True)
-        path = os.path.join(self.passport_dir, f"{passport['passport_id']}.json")
+        path = self._passport_path(passport.get("passport_id"))
         with open(path, "w") as f:
             json.dump(passport, f, indent=2, default=str)
+
+    def _passport_path(self, passport_id: Any) -> str:
+        """Validate a passport ID and resolve its path inside ``passport_dir``."""
+        _validate_passport_id(passport_id)
+        base = os.path.realpath(self.passport_dir)
+        path = os.path.realpath(os.path.join(base, f"{passport_id}.json"))
+        if os.path.dirname(path) != base:
+            raise InvalidPassportId(f"Passport id escapes the passport directory: {passport_id!r}.")
+        return path

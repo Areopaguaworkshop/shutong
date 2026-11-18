@@ -106,24 +106,33 @@ def run_checks(project_root: Path | None = None) -> int:
 
 # --- Surface checks: MCP plus skills, no agent layer -------------------------
 
-_ROLE_SKILLS = (
-    "explore-bibliography",
-    "ingest-source",
-    "noter",
-    "verify-bibliography",
-    "workspace-planner",
-    "paper-workspace",
-)
-
-_SKILL_ROOTS = (".agents/skills", ".claude/skills", ".codex/skills", ".pi/skills", ".shutong/skills")
+# Host-readable skill roots. ``.shutong/skills`` is deliberately absent: it is a
+# legacy private directory, not a path the host loads, so counting it would hide
+# a missing universal pack. The package bundle is checked separately below.
+_HOST_SKILL_ROOTS = (".agents/skills", ".claude/skills", ".codex/skills", ".pi/skills")
 
 _AGENT_DIRS = (".opencode/agents", ".claude/agents", ".codex/agents", ".shutong/agents")
+
+
+def _packaged_skills_root() -> Path:
+    """Return the skill templates shipped inside the installed backend package."""
+    from . import templates
+
+    return Path(templates.__file__).resolve().parent / "templates" / "skills"
+
+
+def _missing_skills(skills_root: Path, skills: tuple[str, ...]) -> list[str]:
+    return sorted(skill for skill in skills if not (skills_root / skill / "SKILL.md").is_file())
 
 
 def collect_surface_checks(project_root: Path | None = None) -> list[dict[str, str | bool]]:
     """Check the shipped surface: MCP tools, skill pack, no agent layer."""
     root = project_root or Path.cwd()
     checks: list[dict[str, str | bool]] = []
+    from . import templates
+
+    project_skills = templates.PROJECT_SKILLS
+    role_skills = templates.ROLE_SKILLS
 
     try:
         from shutong_backend import mcp_server
@@ -137,17 +146,36 @@ def collect_surface_checks(project_root: Path | None = None) -> list[dict[str, s
     except Exception as exc:  # pragma: no cover - import-dependent
         checks.append({"name": "MCP surface", "ok": False, "detail": str(exc)})
 
-    present = {
-        skill
-        for skill_root in _SKILL_ROOTS
-        for skill in _ROLE_SKILLS
-        if (root / skill_root / skill / "SKILL.md").is_file()
-    }
-    missing = sorted(set(_ROLE_SKILLS) - present)
+    packaged_root = _packaged_skills_root()
+    packaged_missing = _missing_skills(packaged_root, project_skills)
     checks.append({
-        "name": "Skill pack",
-        "ok": not missing,
-        "detail": "role skills present" if not missing else f"missing {', '.join(missing)}",
+        "name": "Packaged skill pack",
+        "ok": not packaged_missing,
+        "detail": (
+            f"{len(project_skills)} project skills ({len(role_skills)} role skills) in {packaged_root}"
+            if not packaged_missing
+            else f"missing {', '.join(packaged_missing)} in package templates"
+        ),
+    })
+
+    host_roots = [root / name for name in _HOST_SKILL_ROOTS if (root / name).is_dir()]
+    complete_roots = [path for path in host_roots if not _missing_skills(path, project_skills)]
+    if complete_roots:
+        project_ok = True
+        project_detail = "complete in " + ", ".join(str(path.relative_to(root)) for path in complete_roots)
+    elif host_roots:
+        project_ok = False
+        project_detail = "; ".join(
+            f"{path.relative_to(root)} missing {', '.join(_missing_skills(path, project_skills))}"
+            for path in host_roots
+        )
+    else:
+        project_ok = False
+        project_detail = "no host skill root; run `shutong-backend init`"
+    checks.append({
+        "name": "Project skill pack",
+        "ok": project_ok,
+        "detail": project_detail,
     })
 
     agent_dirs = [name for name in _AGENT_DIRS if (root / name).exists()]
@@ -158,13 +186,16 @@ def collect_surface_checks(project_root: Path | None = None) -> list[dict[str, s
     })
 
     agents_md = root / "AGENTS.md"
-    routes_by_skill = False
-    if agents_md.is_file():
-        routes_by_skill = "Route by skill" in agents_md.read_text(encoding="utf-8", errors="replace")
+    agents_text = agents_md.read_text(encoding="utf-8", errors="replace") if agents_md.is_file() else ""
+    missing_routes = [token for token in ("Route by skill", *role_skills) if token not in agents_text]
     checks.append({
         "name": "AGENTS.md skill routing",
-        "ok": routes_by_skill,
-        "detail": str(agents_md) if routes_by_skill else "missing routing section",
+        "ok": not missing_routes,
+        "detail": (
+            str(agents_md)
+            if not missing_routes
+            else f"missing {', '.join(missing_routes)} in {agents_md}"
+        ),
     })
 
     return checks

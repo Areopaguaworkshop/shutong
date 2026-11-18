@@ -9,7 +9,7 @@ in the skills, and routing lives in `AGENTS.md`.
 ## Architecture
 
 ```
-Host (OpenCode / Claude Code / Codex / DeepSeek Harness)
+Host primary agent (OpenCode / Claude Code / Codex / Pi / DeepSeek Harness)
         │  MCP (or NDJSON RPC for DeepSeek Harness)
         ▼
 Python backend = THE AGENT
@@ -21,11 +21,12 @@ Python backend = THE AGENT
 
 ## Adapters
 
-| Host | MCP registration | Agents | Skills | Session-start injection |
+| Host | MCP registration | Agent definitions | Skills | Session instructions |
 |------|------------------|--------|--------|-------------------------|
-| **OpenCode** | `opencode.json` `mcp.shutong` | none | `.agents/skills/*/SKILL.md` | `AGENTS.md` (auto-load) |
-| **Claude Code** | `.mcp.json` | none | `.agents/skills`, `.claude/commands` | `CLAUDE.md` (auto-load) |
+| **OpenCode** | `opencode.json` `mcp.servers.shutong` | none | `.agents/skills/*/SKILL.md` | `AGENTS.md` |
+| **Claude Code** | `.mcp.json` | none | `.claude/skills/*/SKILL.md` | `CLAUDE.md` |
 | **Codex** | `.codex/config.toml` `[mcp_servers.shutong]` | none | `.codex/skills/*/SKILL.md` | `AGENTS.md` (auto-load) |
+| **Pi** | `.pi/mcp.json` `mcpServers.shutong` | none | `.pi/skills/*/SKILL.md` | host instructions |
 | **DeepSeek Harness** | `adapters/deepseek-harness/shutong.ts` (NDJSON RPC bridge) | none | plugin `ctx.systemPrompt` | plugin `agent.inject()` |
 
 ## Session-start wake-up
@@ -36,12 +37,11 @@ Every host injects cross-session context at session start via `shutong_state_wak
 - **Claude Code**: `CLAUDE.md` does the same.
 - **DeepSeek Harness**: the plugin calls `state_wake_up` and injects it via `agent.inject()` automatically.
 
-## Not yet adapted
+## Manual MCP configurations
 
-- **Hermes** — no verifiable coding-agent CLI named "Hermes" exists in the 2026
-  ecosystem. If you mean a specific product, provide a repo/URL and I'll add its adapter.
-- **Pi** — ambiguous; Inflection's Pi is a chatbot, not an agent CLI with MCP config.
-  Same: provide a repo/URL to confirm the target.
+- **OMP (oh-my-pi)** uses its own `mcpServers` config; see `docs/publishing.md`.
+- **Hermes** receives a generated setup note. Add the MCP entry to Hermes' own
+  configuration; Shutong does not edit global user config.
 
 ## DeepSeek Harness caveat
 

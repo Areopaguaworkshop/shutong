@@ -50,8 +50,39 @@ def _verify_document(loader: "CorpusLoader", source: dict[str, Any], node_hash: 
     merkle_root = merkle.get("root", "")
     mismatches: list[dict[str, str]] = []
 
+    # Fail closed: a document with no content is unverifiable, not healthy.
+    if not nodes:
+        mismatches.append({
+            "node_id": source_id,
+            "reason": "no_nodes",
+            "expected": "at least one document node",
+            "actual": "0",
+        })
+    elif not any(str(node.get("text", "")).strip() for node in nodes):
+        mismatches.append({
+            "node_id": source_id,
+            "reason": "missing_document_content",
+            "expected": "at least one non-empty text node",
+            "actual": "all nodes empty",
+        })
+    if not leaves or not merkle_root:
+        mismatches.append({
+            "node_id": source_id,
+            "reason": "missing_merkle_evidence",
+            "expected": "merkle leaves and root",
+            "actual": f"leaves={len(leaves)} root={merkle_root!r}",
+        })
+
     for node in nodes:
-        recomputed = hash_payload(node.get("text", ""))
+        text = str(node.get("text", ""))
+        recomputed = hash_payload(text)
+        if not text.strip():
+            mismatches.append({
+                "node_id": node.get("node_id", ""),
+                "reason": "missing_document_content",
+                "expected": "non-empty node text",
+                "actual": "empty",
+            })
         if recomputed != node.get("sha256"):
             mismatches.append({
                 "node_id": node.get("node_id", ""),
@@ -84,9 +115,8 @@ def _verify_document(loader: "CorpusLoader", source: dict[str, Any], node_hash: 
         "document_merkle_root": merkle_root,
         "mismatches": mismatches,
     }
-
     if node_hash is None:
-        return result
+        return _with_reason(result)
 
     match = next((node for node in nodes if node.get("sha256") == node_hash), None)
     if match is None:
@@ -97,7 +127,7 @@ def _verify_document(loader: "CorpusLoader", source: dict[str, Any], node_hash: 
             "expected": node_hash,
             "actual": "",
         })
-        return result
+        return _with_reason(result)
 
     index = leaves.index(node_hash) if node_hash in leaves else -1
     if index >= 0:
@@ -121,6 +151,14 @@ def _verify_document(loader: "CorpusLoader", source: dict[str, Any], node_hash: 
             "expected": merkle_root,
             "actual": "",
         })
+    return _with_reason(result)
+
+
+def _with_reason(result: dict[str, Any]) -> dict[str, Any]:
+    """Attach the first mismatch reason so a fail is legible without parsing."""
+    mismatches = result.get("mismatches") or []
+    if mismatches:
+        result["reason"] = mismatches[0]["reason"]
     return result
 
 
@@ -156,17 +194,31 @@ async def verify_all(_args: dict[str, Any], corpus_root: str) -> dict[str, Any]:
     loader = await asyncio.to_thread(_load_corpus_loader, corpus_root)
     documents = [_verify_document(loader, source) for source in loader.sources]
     failures = [document for document in documents if document.get("status") != "pass"]
-    return {
-        "status": "ok",
+    result: dict[str, Any] = {
+        "status": "ok" if documents and not failures else "fail",
         "timestamp": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
         "documents": documents,
         "failures": len(failures),
     }
+    if not documents:
+        # An empty corpus has no integrity evidence at all; do not report health.
+        result["mismatches"] = [{
+            "node_id": "",
+            "reason": "no_documents",
+            "expected": "at least one ingested document",
+            "actual": "0",
+        }]
+        result["reason"] = "no_documents"
+    elif failures:
+        result["reason"] = failures[0].get("reason", "integrity_mismatch")
+    return result
 
 
 async def resolve_citation(args: dict[str, Any], corpus_root: str) -> dict[str, Any]:
     loader = await asyncio.to_thread(_load_corpus_loader, corpus_root)
     key = args["citation_key"].strip().lower()
+    matches: list[dict[str, Any]] = []
+    seen: set[str] = set()
     for source in loader.sources:
         csl = source.get("csl", {})
         candidates = {
@@ -174,12 +226,26 @@ async def resolve_citation(args: dict[str, Any], corpus_root: str) -> dict[str, 
             str(csl.get("id", "")).lower(),
             _citation_key(csl).lower(),
         }
-        if key in candidates:
-            return {
-                "status": "ok",
-                "source_id": source.get("source_id", ""),
-                "title": csl.get("title", ""),
-                "document_path": source.get("doc_dir", ""),
-                "citation_key": _citation_key(csl),
-            }
+        if key not in candidates:
+            continue
+        source_id = str(source.get("source_id", ""))
+        if source_id in seen:
+            continue
+        seen.add(source_id)
+        matches.append({
+            "source_id": source_id,
+            "title": csl.get("title", ""),
+            "document_path": source.get("doc_dir", ""),
+            "citation_key": _citation_key(csl),
+        })
+    if len(matches) == 1:
+        return {"status": "ok", **matches[0]}
+    if len(matches) > 1:
+        # Author-year keys are not unique, so never pick one silently.
+        return {
+            "status": "ambiguous",
+            "error_code": "ambiguous_citation",
+            "message": f"{len(matches)} documents match {args['citation_key']}; resolve by source id instead.",
+            "candidates": matches,
+        }
     return {"status": "error", "error_code": "not_found", "message": f"No citation matches {args['citation_key']}"}

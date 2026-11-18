@@ -5,6 +5,8 @@
   "files": [
     "bin/shutong",
     "src/**/*.ts",
+    "skills/**/*.md",
+    "python-backend/README.md",
     "python-backend/pyproject.toml",
     "python-backend/shutong_backend/**/*.py",
     "python-backend/shutong_backend/templates/**/*.md",

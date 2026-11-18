@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test"
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "fs"
+import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from "fs"
 import os from "os"
 import path from "path"
 
@@ -21,7 +21,9 @@ test("package ships runtime files without project data, stale files or symlinks"
     write("shutong/scripts/bundle-backend.ts", readFileSync(path.join(import.meta.dir, "../scripts/bundle-backend.ts"), "utf8"))
     write("shutong/bin/shutong", "#!/usr/bin/env bun\n")
     write("shutong/src/index.ts", "export {}\n")
-    write(backend + "pyproject.toml", "[project]\nname = 'shutong-backend'\n")
+    write("shutong/skills/noter/SKILL.md", "---\nname: noter\n---\n")
+    write(backend + "pyproject.toml", "[project]\nname = 'shutong-backend'\nversion = '0.0.0'\nreadme = 'README.md'\nrequires-python = '>=3.12'\n\n[build-system]\nrequires = ['hatchling']\nbuild-backend = 'hatchling.build'\n\n[tool.hatch.build.targets.wheel]\npackages = ['shutong_backend']\n")
+    write(backend + "README.md", "# Shutong backend\n")
     write(backend + "shutong_backend/__init__.py", "")
     write(backend + "shutong_backend/agents/run.py", "")
     write(backend + "shutong_backend/templates/AGENTS.md.j2", "{{ snapshot }}")
@@ -36,6 +38,7 @@ test("package ships runtime files without project data, stale files or symlinks"
     symlinkSync(path.join(root, backend, "papers/draft.md"), path.join(root, backend, "shutong_backend/leak.py"))
     const bundled = Bun.spawnSync([process.execPath, "scripts/bundle-backend.ts"], { cwd: launcher })
     expect(bundled.exitCode).toBe(0)
+    expect(readFileSync(path.join(launcher, "python-backend", "README.md"), "utf8")).toBe("# Shutong backend\n")
     const archive = path.join(root, "release.tgz")
     const packed = Bun.spawnSync([process.execPath, "pm", "pack", "--ignore-scripts", "--filename", archive], { cwd: launcher, stdout: "pipe", stderr: "pipe" })
     expect(packed.exitCode).toBe(0)
@@ -43,7 +46,8 @@ test("package ships runtime files without project data, stale files or symlinks"
     expect(listing.exitCode).toBe(0)
     const files = listing.stdout.toString().trim().split("\n").map((file) => file.replace(/^package\//, "")).sort()
     expect(files).toEqual([
-      "bin/shutong", "package.json", "src/index.ts",
+      "bin/shutong", "package.json", "skills/noter/SKILL.md", "src/index.ts",
+      "python-backend/README.md",
       "python-backend/pyproject.toml",
       "python-backend/shutong_backend/__init__.py",
       "python-backend/shutong_backend/agents/run.py",
@@ -51,6 +55,20 @@ test("package ships runtime files without project data, stale files or symlinks"
       "python-backend/shutong_backend/templates/agents/noter.md",
       "python-backend/shutong_backend/templates/glossary/theology-en-zh.json",
     ].sort())
+
+    const uv = Bun.which("uv")
+    if (uv) {
+      // Build the actual bundle in a clean copy, the way a consumer install would.
+      const buildRoot = path.join(root, "build-backend")
+      mkdirSync(buildRoot, { recursive: true })
+      const copy = Bun.spawnSync(["cp", "-r", `${path.join(launcher, "python-backend")}/.`, buildRoot])
+      expect(copy.exitCode).toBe(0)
+      const dist = path.join(root, "dist")
+      const built = Bun.spawnSync([uv, "build", "--no-sources", "--out-dir", dist], { cwd: buildRoot, stdout: "pipe", stderr: "pipe" })
+      expect(built.exitCode).toBe(0)
+      const artifacts = readdirSync(dist)
+      expect(artifacts.some((file) => file.endsWith(".whl"))).toBe(true)
+    }
   } finally {
     rmSync(root, { recursive: true, force: true })
   }

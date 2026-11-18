@@ -1,11 +1,6 @@
 ---
-name: cite-research
-description: Use when answering research questions from the local corpus. Provides BM25 search plus Merkle verification.
-license: MIT
-compatibility: shutong
+description: Answer research questions from the local corpus with Merkle-verified Chicago citations. Use when a claim needs a source.
 ---
-
-# Cite-Research Skill
 
 1. `shutong_search(query, top_k=20)`
 2. `shutong_verify(csl_id, node_hash)` for quoted evidence

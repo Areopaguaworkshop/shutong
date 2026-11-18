@@ -30,7 +30,20 @@ def corpus(tmp_path):
     papers.set_bibliography({"paper_id": "study", "entries": [{"id": s} for s in ("a", "b", "zh")]}, str(root))
     papers.approve_bibliography({"paper_id": "study"}, str(root))
     for s in ("a", "b", "zh"):
-        papers.add_source({"paper_id": "study", "source_id": s, "role": "primary", "ingested": True}, str(root))
+        papers.add_source({"paper_id": "study", "source_id": s, "role": "primary"}, str(root))
+        papers.set_source_access({"paper_id": "study", "source_id": s, "category": "open"}, str(root))
+    papers.authorize_ingestion({"paper_id": "study", "mode": "automatic", "rule": "test fixture"}, str(root))
+    registry_path = tmp_path / ".shutong" / "source-registry.json"
+    registry_path.parent.mkdir(parents=True, exist_ok=True)
+    registry_path.write_text(json.dumps({
+        source_id: {
+            "document_path": str(root / source_id),
+            "merkle_root": json.loads((root / source_id / "merkle.json").read_text())["root"],
+        }
+        for source_id in ("a", "b", "zh")
+    }), encoding="utf-8")
+    for source_id in ("a", "b", "zh"):
+        papers.mark_source_ingested({"paper_id": "study", "source_id": source_id}, str(root))
     return root
 
 
@@ -126,12 +139,20 @@ def test_analysis_note_claim_and_draft_gate(corpus):
     note = {"paper_id": "study", "source_id": "a", "locator": "a:p1:n1", "analysis_id": response["analysis"]["analysis_id"],
             "claim": "Hope occurs twice in source A.", "evidence": "Run target_occurrences=2; inspected source spans.", "confidence": "known", "tags": ["analysis"]}
     papers.add_note(note, str(corpus))
+    papers.record_verifier_report({
+        "paper_id": "study", "report_id": "note-review-1", "scope": "note:note-1",
+        "outcome": "pass", "evidence": "Checked the source span and reviewed analysis record.",
+    }, str(corpus))
     with pytest.raises(ShutongError, match="passing analysis review"):
-        papers.verify_note({"paper_id": "study", "note_id": "note-1", "evidence": "Source checked."}, str(corpus))
+        papers.verify_note({"paper_id": "study", "note_id": "note-1", "evidence": "note-review-1"}, str(corpus))
     response = review(corpus, response)
-    papers.verify_note({"paper_id": "study", "note_id": "note-1", "evidence": "Source and result checked."}, str(corpus))
+    papers.verify_note({"paper_id": "study", "note_id": "note-1", "evidence": "note-review-1"}, str(corpus))
     papers.add_claim({"paper_id": "study", "text": note["claim"], "note_ids": ["note-1"]}, str(corpus))
-    papers.verify_claim({"paper_id": "study", "claim_id": "claim-1", "evidence": "Note supports claim."}, str(corpus))
+    papers.record_verifier_report({
+        "paper_id": "study", "report_id": "claim-review-1", "scope": "claim:claim-1",
+        "outcome": "pass", "evidence": "Checked claim against note note-1.",
+    }, str(corpus))
+    papers.verify_claim({"paper_id": "study", "claim_id": "claim-1", "evidence": "claim-review-1"}, str(corpus))
     assert papers.draft_context({"paper_id": "study", "draft_requested": True}, str(corpus))["status"] == "ready"
     review(corpus, response, "fail")
     assert papers.draft_context({"paper_id": "study", "draft_requested": True}, str(corpus))["status"] == "needs_evidence"

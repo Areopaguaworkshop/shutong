@@ -1,6 +1,6 @@
 [project]
 name = "shutong-backend"
-version = "0.0.2"
+version = "0.0.3"
 description = "Citation-verified scholarly research over a local corpus (MCP server)"
 readme = "README.md"
 license = "MIT"

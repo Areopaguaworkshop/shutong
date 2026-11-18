@@ -13,7 +13,7 @@
 
 Large Language Models write fluently but **cannot cite their sources**. When an LLM tells you about a study, a historical event, or a legal precedent, there is no way to verify the claim, trace it back to a page, or reproduce the evidence chain. For scholars, this makes LLM output fundamentally unusable in serious work.
 
-**Shutong is a host-agnostic academic-research application.** Its Python backend is the agent — it owns the research pipeline, cross-session state, and Merkle-verified integrity. Any coding agent (OpenCode, Claude Code, Codex, DeepSeek Harness) connects to it over MCP and becomes a citation-safe research assistant.
+**Shutong is a host-agnostic academic-research application.** Its Python backend owns the research workflow, cross-session state, and Merkle-verified integrity. A host's own primary agent uses Shutong's MCP tools and skill pack to become a citation-safe research assistant.
 
 ### What Shutong does for researchers
 
@@ -28,33 +28,35 @@ Large Language Models write fluently but **cannot cite their sources**. When an 
 
 ## Architecture
 
-Shutong is **backend-as-agent**. The Python backend owns the workflow, state, and enforcement; the host is just transport + UI. The universal contract is MCP, so the same backend serves every host.
+Shutong ships one MCP server and a portable skill pack. The backend owns durable state and evidence gates; the host keeps its own agent runtime. A host skill routes the primary agent through the scholarly workflow.
 
 ```
-Host (OpenCode / Claude Code / Codex / DeepSeek Harness)
+Host primary agent (OpenCode / Claude Code / Codex / Pi / DeepSeek Harness)
         │  MCP (or NDJSON RPC for DeepSeek Harness)
         ▼
-Python backend = THE AGENT
-  ├── workspace planner  — proposes project/work changes; scholar confirms
-  ├── Shutong conductor  — confirmed work, specialist routing, and evidence gates
+Python backend = MCP tools + evidence gates
+  ├── host skills        — role prompts and skill routing, no agent definitions
   ├── shutong_state_*    — cross-session state (wake_up / snapshot / record_session)
   ├── shutong_status     — corpus + integrity + state visibility
-  └── domain tools       — search / verify / ingest / translate / paper / memory
+  └── domain tools       — search / verify / ingest / paper / notes / memory
 ```
 
 ### Host adapters
 
-| Host | MCP registration | Agents | Skills | Session-start injection |
+| Host | MCP registration | Agent definitions | Skills | Session instructions |
 |------|------------------|--------|--------|-------------------------|
-| **OpenCode** | `opencode.json` `mcp.shutong` | none | `.agents/skills/*/SKILL.md` | `AGENTS.md` (auto-load) |
-| **Claude Code** | `.mcp.json` | none | `.claude/commands/*.md`, `.agents/skills` | `CLAUDE.md` (auto-load) |
-| **Codex** | `.codex/config.toml` `[mcp_servers.shutong]` | none | `.codex/skills/*/SKILL.md` | `AGENTS.md` (auto-load) |
+| **OpenCode** | `opencode.json` `mcp.servers.shutong` | none | `.agents/skills/*/SKILL.md` | `AGENTS.md` |
+| **Claude Code** | `.mcp.json` | none | `.claude/skills/*/SKILL.md` | `CLAUDE.md` |
+| **Codex** | `.codex/config.toml` `[mcp_servers.shutong]` | none | `.codex/skills/*/SKILL.md` | `AGENTS.md` |
+| **Pi** | `.pi/mcp.json` `mcpServers.shutong` | none | `.pi/skills/*/SKILL.md` | host instructions |
 | **DeepSeek Harness** | `adapters/deepseek-harness/shutong.ts` | none | plugin `ctx.systemPrompt` | plugin `agent.inject()` |
 
 Shutong ships no agent definitions. A host keeps its own agent runtime; Shutong
 supplies the MCP server, the skill pack, and the routing rules in `AGENTS.md`.
 
-See `adapters/README.md` for details. **Hermes and Pi** are not identifiable as coding-agent CLIs in the 2026 ecosystem — provide a repo/URL to add their adapters.
+See `adapters/README.md` for details. OMP (oh-my-pi) can connect through its
+documented `mcpServers` config; use the host's own config rather than a Shutong
+agent definition. Hermes receives a manual MCP configuration note.
 
 ---
 
@@ -177,7 +179,7 @@ bun run shutong -- status       # show engine status
 
 ---
 
-## 25 MCP Tools
+## 26 MCP Tools
 
 | Category | Tool | Description |
 |----------|------|-------------|
@@ -208,20 +210,20 @@ bun run shutong -- status       # show engine status
 shutong/
 ├── AGENTS.md                    # Scholar Principle + research protocols (OpenCode/Codex)
 ├── CLAUDE.md                    # same, for Claude Code
-├── opencode.json                # OpenCode MCP + agent config
+├── opencode.json                # OpenCode MCP config
 ├── .mcp.json                    # Claude Code MCP config
-├── .claude/                     # Claude Code agents + skills
-├── .codex/                      # Codex config + agents + skills
-├── .opencode/                   # OpenCode specialist agents
+├── .claude/                     # Claude Code commands + skills
+├── .codex/                      # Codex config + skills
+├── .opencode/                   # OpenCode commands
 ├── .shutong/                    # local paper data, glossary, and compatibility artifacts
 ├── adapters/                    # DeepSeek Harness plugin + adapter README
 ├── packages/shutong-backend/    # Python backend (the agent)
 │   ├── shutong_backend/
-│   │   ├── mcp_server.py        # MCP tool surface (40 tools)
+│   │   ├── mcp_server.py        # MCP tool surface (26 tools)
 │   │   ├── rpc_server.py        # NDJSON RPC surface
 │   │   ├── agents/              # pipeline, chat, writing, review, memory
 │   │   ├── state.py             # unified research state facade
-│   │   └── tools/               # research, ingest, verify, translate, corpus, code
+│   │   └── tools/               # research, ingest, verify, corpus, bibliography
 │   └── tests/
 ├── shutong/                     # Bun launcher (scaffolding CLI)
 ├── scripts/                     # standalone ingest/export/search helpers

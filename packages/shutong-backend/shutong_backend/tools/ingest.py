@@ -25,16 +25,54 @@ def _archive_raw(source: str, library_root: str | None) -> str | None:
     return str(destination)
 
 
+def _registry_path(corpus_root: str) -> Path:
+    """Path of the source registry shared with ``papers.mark_source_ingested``."""
+    from shutong_backend.papers import project_root
+
+    return project_root(corpus_root) / ".shutong" / "source-registry.json"
+
+
 def _record_source(corpus_root: str, source_id: str, raw_path: str | None, document_path: str | None, merkle_root: str | None, is_primary: bool) -> None:
-    path = Path(corpus_root).resolve().parent / ".shutong" / "source-registry.json"
+    path = _registry_path(corpus_root)
     path.parent.mkdir(parents=True, exist_ok=True)
     records = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
     records[source_id] = {"raw_path": raw_path, "document_path": document_path, "merkle_root": merkle_root, "role": "primary" if is_primary else "unknown"}
     path.write_text(json.dumps(records, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
+def _forget_source(corpus_root: str, identifiers: set[str], doc_dir: Path) -> list[str]:
+    """Drop registry entries for a deleted document; return the removed keys."""
+    path = _registry_path(corpus_root)
+    if not path.exists():
+        return []
+    try:
+        records = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return []
+    if not isinstance(records, dict):
+        return []
+    removed: list[str] = []
+    for key in list(records):
+        record = records.get(key) if isinstance(records.get(key), dict) else {}
+        document_path = record.get("document_path")
+        same_document = False
+        if isinstance(document_path, str) and document_path.strip():
+            try:
+                same_document = Path(document_path).resolve() == doc_dir
+            except OSError:
+                same_document = False
+        if key in identifiers or same_document:
+            records.pop(key, None)
+            removed.append(key)
+    if removed:
+        path.write_text(json.dumps(records, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return removed
+
+
 def _status_path(corpus_root: str) -> Path:
-    return Path(corpus_root).resolve().parent / ".shutong" / "ingestion-status.json"
+    from shutong_backend.papers import project_root
+
+    return project_root(corpus_root) / ".shutong" / "ingestion-status.json"
 
 
 def _llm_model() -> str:
@@ -140,11 +178,20 @@ async def delete_document(args: dict[str, Any], corpus_root: str) -> dict[str, A
     source = _match_source(loader, csl_id)
     if source is None:
         return {"status": "error", "error_code": "not_found", "message": f"Unknown document: {csl_id}"}
-    doc_dir = Path(source.get("doc_dir", ""))
+    corpus_dir = Path(corpus_root).resolve()
+    raw_doc_dir = source.get("doc_dir")
+    if not isinstance(raw_doc_dir, str) or not raw_doc_dir.strip():
+        return {"status": "error", "error_code": "invalid_document_path", "message": f"No document directory for: {csl_id}"}
+    doc_dir = Path(raw_doc_dir).resolve()
+    if doc_dir == corpus_dir or corpus_dir not in doc_dir.parents:
+        return {"status": "error", "error_code": "outside_corpus", "message": f"Refusing to delete outside the corpus root: {doc_dir}"}
     if not doc_dir.exists():
         return {"status": "error", "error_code": "missing_directory", "message": str(doc_dir)}
     shutil.rmtree(doc_dir)
-    return {"status": "ok", "deleted_path": str(doc_dir), "csl_id": source.get("source_id", "")}
+    identifiers = {csl_id, str(source.get("source_id") or ""), str(source.get("doc_hash") or ""), str(source.get("csl", {}).get("id") or "")}
+    identifiers.discard("")
+    registry_removed = _forget_source(corpus_root, identifiers, doc_dir)
+    return {"status": "ok", "deleted_path": str(doc_dir), "csl_id": source.get("source_id", ""), "registry_removed": registry_removed}
 
 
 def _match_source(loader, csl_id: str) -> dict[str, Any] | None:

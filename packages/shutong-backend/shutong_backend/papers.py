@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import zipfile
 from html import escape
 from pathlib import Path
 from typing import Any
+
+import yaml
 
 from shutong_backend.tools.errors import ShutongError
 
@@ -18,7 +21,13 @@ _NOTE_CONFIDENCE = {"known", "probable", "speculative"}
 
 
 def project_root(corpus_root: str) -> Path:
-    return Path(corpus_root).resolve().parent
+    resolved = Path(corpus_root).resolve()
+    # Installed projects use ``<project>/corpus``. When the configured root is
+    # the current directory (commonly ``.``), it denotes the project itself;
+    # taking its parent would write private state outside the project.
+    if resolved == Path.cwd().resolve():
+        return resolved
+    return resolved.parent
 
 
 def _paper_path(corpus_root: str, paper_id: str) -> Path:
@@ -62,6 +71,200 @@ def _required_note_text(args: dict[str, Any], field: str, message: str) -> str:
     if not isinstance(value, str) or not value.strip():
         raise ShutongError("invalid_note", message)
     return value.strip()
+
+
+def _next_id(directory: Path, prefix: str, suffix: str) -> str:
+    """Return an unused ID, continuing after the highest existing number so that holes cannot collide."""
+    pattern = re.compile(rf"^{re.escape(prefix)}(\d+){re.escape(suffix)}$")
+    highest = 0
+    if directory.exists():
+        for child in directory.iterdir():
+            match = pattern.fullmatch(child.name)
+            if match:
+                highest = max(highest, int(match.group(1)))
+    return f"{prefix}{highest + 1}"
+
+
+def _parse_note(text: str) -> tuple[dict[str, Any], str]:
+    """Parse YAML frontmatter without trusting body text as metadata."""
+    lines = text.splitlines(keepends=True)
+    if not lines or lines[0].rstrip("\r\n") != "---":
+        raise ShutongError("invalid_note_metadata", "Notes require a YAML frontmatter block.")
+    end = None
+    for index in range(1, len(lines)):
+        if lines[index].rstrip("\r\n") == "---":
+            end = index
+            break
+    if end is None:
+        raise ShutongError("invalid_note_metadata", "Note frontmatter is not terminated.")
+    try:
+        metadata = yaml.safe_load("".join(lines[1:end]))
+    except yaml.YAMLError as exc:
+        raise ShutongError("invalid_note_metadata", f"Note frontmatter is not valid YAML: {exc}") from exc
+    if metadata is None:
+        metadata = {}
+    if not isinstance(metadata, dict):
+        raise ShutongError("invalid_note_metadata", "Note frontmatter must be a YAML mapping.")
+    return metadata, "".join(lines[end + 1:])
+
+
+def _serialize_note(metadata: dict[str, Any], body: str) -> str:
+    """Serialize frontmatter with YAML quoting so user text cannot inject metadata keys."""
+    header = yaml.safe_dump(metadata, allow_unicode=True, sort_keys=False, default_flow_style=False)
+    return f"---\n{header}---\n{body}"
+
+
+def _note_digest(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _read_note(path: Path, note_id: str) -> tuple[dict[str, Any], str]:
+    if not path.is_file():
+        raise ShutongError("note_not_found", f"Note not found: {note_id}")
+    return _parse_note(path.read_text(encoding="utf-8"))
+
+
+def _ingestion_registry(corpus_root: str) -> dict[str, Any]:
+    registry_path = project_root(corpus_root) / ".shutong" / "source-registry.json"
+    if not registry_path.is_file():
+        raise ShutongError("ingestion_not_found", "No source registry exists for this project.")
+    try:
+        records = json.loads(registry_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ShutongError("ingestion_registry_invalid", "The source registry cannot be read.") from exc
+    if not isinstance(records, dict):
+        raise ShutongError("ingestion_registry_invalid", "The source registry must be a JSON object.")
+    return records
+
+
+def _validated_ingestion(corpus_root: str, source_id: str) -> Path:
+    """Return the surviving corpus document directory for a registered ingestion."""
+    record = _ingestion_registry(corpus_root).get(source_id)
+    if not isinstance(record, dict):
+        raise ShutongError("ingestion_not_found", f"No local ingestion record found for source: {source_id}")
+    raw_path = record.get("document_path")
+    if not isinstance(raw_path, str) or not raw_path.strip():
+        raise ShutongError("ingestion_not_found", f"No local ingestion record found for source: {source_id}")
+    root = Path(corpus_root).resolve()
+    candidate = Path(raw_path).expanduser()
+    if not candidate.is_absolute():
+        project_candidate = project_root(corpus_root) / candidate
+        candidate = project_candidate if project_candidate.exists() else root / candidate
+    try:
+        candidate = candidate.resolve()
+    except OSError as exc:
+        raise ShutongError("ingestion_stale", f"The ingestion record for {source_id} cannot be resolved.") from exc
+    if candidate == root or root not in candidate.parents:
+        raise ShutongError("ingestion_outside_corpus", f"The ingestion record for {source_id} points outside the corpus root.")
+    if not candidate.is_dir():
+        raise ShutongError("ingestion_stale", f"The ingested document for {source_id} no longer exists.")
+    for name in ("document.json", "merkle.json"):
+        if not (candidate / name).is_file():
+            raise ShutongError("ingestion_stale", f"The ingested document for {source_id} is missing {name}.")
+    try:
+        document = json.loads((candidate / "document.json").read_text(encoding="utf-8"))
+        merkle = json.loads((candidate / "merkle.json").read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ShutongError("ingestion_stale", f"The ingested document for {source_id} is unreadable.") from exc
+    if not isinstance(document, dict) or not isinstance(merkle, dict) or not merkle.get("root"):
+        raise ShutongError("ingestion_stale", f"The ingested document for {source_id} has no Merkle root.")
+    return candidate
+
+
+def _verify_claim_evidence(claim: dict[str, Any], notes_dir: Path, paper_id: str, corpus_root: str) -> None:
+    """Require every cited note to still match the digest recorded when the claim was created."""
+    note_ids = claim.get("note_ids")
+    digests = claim.get("note_digests")
+    if not isinstance(note_ids, list) or not note_ids or not isinstance(digests, dict):
+        raise ShutongError("missing_claim_evidence", "Claims require digest-bound verified note IDs.")
+    for note_id in note_ids:
+        if not isinstance(note_id, str) or not _ID.fullmatch(note_id):
+            raise ShutongError("invalid_note_id", "Invalid claim note ID.")
+        expected = digests.get(note_id)
+        if not isinstance(expected, str) or not expected:
+            raise ShutongError("missing_claim_evidence", f"Claim note lacks a recorded digest: {note_id}")
+        note_path = notes_dir / f"{note_id}.md"
+        if not note_path.is_file():
+            raise ShutongError("note_not_found", f"Claim note is missing: {note_id}")
+        if _note_digest(note_path) != expected:
+            raise ShutongError("stale_claim_evidence", f"Note changed after the claim was created: {note_id}")
+        metadata, _ = _read_note(note_path, note_id)
+        if metadata.get("verified") is not True:
+            raise ShutongError("note_not_verified", f"Claim evidence is not a verified note: {note_id}")
+        report_id = metadata.get("verifier_report_id")
+        if not report_id:
+            raise ShutongError("missing_verification_report", f"Claim note has no linked verifier report: {note_id}")
+        report = _load_verifier_report(notes_dir.parent / "paper.json", report_id)
+        if report.get("outcome") != "pass":
+            raise ShutongError("verifier_report_not_passing", f"Claim note has no passing verifier report: {note_id}")
+        if report.get("scope", "paper") not in {"paper", f"note:{note_id}"}:
+            raise ShutongError("report_scope_mismatch", f"Verifier report {report_id} does not cover note {note_id}.")
+        _check_note_analysis(metadata, paper_id, corpus_root)
+
+
+def _load_verifier_report(paper_path: Path, report_id: str) -> dict[str, Any]:
+    if not isinstance(report_id, str) or not _ID.fullmatch(report_id):
+        raise ShutongError("invalid_report_id", "Report IDs use lowercase letters, numbers, and hyphens.")
+    report_path = paper_path.parent / "audits" / f"{report_id}.json"
+    if not report_path.is_file():
+        raise ShutongError("report_not_found", f"Verifier report not found: {report_id}")
+    try:
+        report = json.loads(report_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ShutongError("invalid_verifier_report", f"Verifier report cannot be read: {report_id}") from exc
+    if not isinstance(report, dict):
+        raise ShutongError("invalid_verifier_report", f"Verifier report must be a JSON object: {report_id}")
+    return report
+
+
+def _passing_report_for(paper_path: Path, args: dict[str, Any], subject_type: str, subject_id: str) -> str | None:
+    """Return a linked passing report ID; the MCP schema keeps this argument optional.
+
+    MCP exposes only ``evidence`` for note/claim verification, so a single evidence value
+    that names an existing report is treated as an explicit report link.
+    """
+    report_id = args.get("verifier_report_id") or args.get("report_id")
+    if report_id is None:
+        evidence = args.get("evidence")
+        if isinstance(evidence, str) and _ID.fullmatch(evidence.strip()):
+            if (paper_path.parent / "audits" / f"{evidence.strip()}.json").is_file():
+                report_id = evidence.strip()
+    if report_id is None:
+        raise ShutongError("missing_verification_report", "Record a passing verifier report and pass its ID as evidence before verifying.")
+    report = _load_verifier_report(paper_path, report_id)
+    if report.get("outcome") != "pass":
+        raise ShutongError("verifier_report_not_passing", f"Verification requires a passing verifier report: {report_id}")
+    scope = report.get("scope", "paper")
+    if scope not in {"paper", f"{subject_type}:{subject_id}"}:
+        raise ShutongError("report_scope_mismatch", f"Verifier report {report_id} is scoped to {scope!r}, not {subject_type}:{subject_id}.")
+    return report_id
+
+
+def _blocking_reports(paper_path: Path) -> list[dict[str, Any]]:
+    """Surface unoverridden fail/uncertain reports so the evidence gate fails closed."""
+    audits = paper_path.parent / "audits"
+    overridden: set[str] = set()
+    overrides_path = audits / "overrides.jsonl"
+    if overrides_path.is_file():
+        for line in overrides_path.read_text(encoding="utf-8").splitlines():
+            try:
+                record = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if isinstance(record, dict) and isinstance(record.get("report_id"), str):
+                overridden.add(record["report_id"])
+    blocking = []
+    for report_path in sorted(audits.glob("*.json")):
+        try:
+            report = json.loads(report_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            blocking.append({"report_id": report_path.stem, "outcome": "unreadable"})
+            continue
+        if not isinstance(report, dict):
+            continue
+        if report.get("outcome") in {"fail", "uncertain"} and report_path.stem not in overridden:
+            blocking.append({"report_id": report_path.stem, "outcome": report.get("outcome")})
+    return blocking
 
 
 def _write_bibliography_artifacts(path: Path, entries: list[dict[str, Any]]) -> None:
@@ -113,10 +316,12 @@ def add_source(args: dict[str, Any], corpus_root: str) -> dict[str, Any]:
     bibliography_ids = {entry["id"] for entry in source_paper["bibliography"]["entries"]}
     if source_id not in bibliography_ids:
         raise ShutongError("source_not_in_bibliography", "Add the source to the approved bibliography before assigning it to this paper.")
-    source_paper["sources"] = [item for item in source_paper["sources"] if item["source_id"] != source_id]
-    source_paper["sources"].append({"source_id": source_id, "role": role, "ingested": bool(args.get("ingested", False))})
+    existing = next((item for item in source_paper["sources"] if item.get("source_id") == source_id), None)
+    ingested = existing.get("ingested") is True if isinstance(existing, dict) else False
+    source_paper["sources"] = [item for item in source_paper["sources"] if item.get("source_id") != source_id]
+    source_paper["sources"].append({"source_id": source_id, "role": role, "ingested": ingested})
     _write(source_path, source_paper)
-    return {"status": "ok", "paper_id": paper["id"], "source_workspace_id": source_paper["id"], "source_id": source_id, "role": role}
+    return {"status": "ok", "paper_id": paper["id"], "source_workspace_id": source_paper["id"], "source_id": source_id, "role": role, "ingested": ingested}
 
 
 def mark_source_ingested(args: dict[str, Any], corpus_root: str) -> dict[str, Any]:
@@ -125,10 +330,13 @@ def mark_source_ingested(args: dict[str, Any], corpus_root: str) -> dict[str, An
     paper = _read(path)
     source_path, source_paper = _source_paper(path, paper, corpus_root)
     source_id = args["source_id"]
-    source = next((item for item in source_paper["sources"] if item["source_id"] == source_id), None)
+    source = next((item for item in source_paper["sources"] if item.get("source_id") == source_id), None)
     if source is None:
         raise ShutongError("source_not_in_paper", "Add the approved bibliography source to the paper before marking it ingested.")
-    entry = next(item for item in source_paper["bibliography"]["entries"] if item["id"] == source_id)
+    entries = source_paper.get("bibliography", {}).get("entries", [])
+    entry = next((item for item in entries if isinstance(item, dict) and item.get("id") == source_id), None)
+    if entry is None:
+        raise ShutongError("source_not_in_bibliography", "Mark ingestion only for a source in the current approved bibliography.")
     access = entry.get("access", {}).get("category")
     if access not in {"open", "licensed", "user-provided"}:
         raise ShutongError("source_not_authorized", "Ingestion requires an open, licensed, or user-provided access record.")
@@ -137,11 +345,7 @@ def mark_source_ingested(args: dict[str, Any], corpus_root: str) -> dict[str, An
         raise ShutongError("source_not_authorized", "The scholar has not authorized ingestion for this source.")
     if authorization.get("mode") not in {"individual", "batch", "automatic"}:
         raise ShutongError("ingestion_not_authorized", "Choose an individual, batch, or automatic ingestion authorization first.")
-    registry_path = project_root(corpus_root) / ".shutong" / "source-registry.json"
-    records = json.loads(registry_path.read_text(encoding="utf-8")) if registry_path.exists() else {}
-    record = records.get(source_id, {})
-    if not record.get("document_path"):
-        raise ShutongError("ingestion_not_found", f"No local ingestion record found for source: {source_id}")
+    _validated_ingestion(corpus_root, source_id)
     source["ingested"] = True
     _write(source_path, source_paper)
     return {"status": "ok", "paper_id": paper["id"], "source_workspace_id": source_paper["id"], "source_id": source_id}
@@ -239,8 +443,8 @@ def record_public_contact(args: dict[str, Any], corpus_root: str) -> dict[str, A
     provenance = args.get("provenance", "").strip()
     if not name or not provenance:
         raise ShutongError("missing_contact_provenance", "Public contacts require a name and the public page where the contact was published.")
-    contact_id = args.get("contact_id") or f"contact-{len(list(path.parent.joinpath('contacts').glob('*.json'))) + 1}"
-    if not _ID.fullmatch(contact_id):
+    contact_id = args.get("contact_id") or _next_id(path.parent / "contacts", "contact-", ".json")
+    if not isinstance(contact_id, str) or not _ID.fullmatch(contact_id):
         raise ShutongError("invalid_contact_id", "Contact IDs use lowercase letters, numbers, and hyphens.")
     contact = {"id": contact_id, "name": name, "email": args.get("email", ""), "affiliation": args.get("affiliation", ""), "related_work": args.get("related_work", ""), "provenance": provenance}
     (path.parent / "contacts" / f"{contact_id}.json").write_text(json.dumps(contact, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -252,13 +456,20 @@ def draft_outreach(args: dict[str, Any], corpus_root: str) -> dict[str, Any]:
     path = _paper_path(corpus_root, args["paper_id"])
     _read(path)
     contact_id = args["contact_id"]
-    contact_path = path.parent / "contacts" / f"{contact_id}.json"
-    if not contact_path.exists():
+    if not isinstance(contact_id, str) or not _ID.fullmatch(contact_id):
+        raise ShutongError("invalid_contact_id", "Contact IDs use lowercase letters, numbers, and hyphens.")
+    contacts_dir = (path.parent / "contacts").resolve()
+    contact_path = (contacts_dir / f"{contact_id}.json").resolve()
+    try:
+        contact_path.relative_to(contacts_dir)
+    except ValueError as exc:
+        raise ShutongError("invalid_contact_id", "Contact paths must stay inside the paper contacts directory.") from exc
+    if not contact_path.is_file():
         raise ShutongError("contact_not_found", f"Contact not found: {contact_id}")
     body = args.get("body", "").strip()
     if not body:
         raise ShutongError("empty_outreach_draft", "Outreach drafts require a message body for scholar review.")
-    draft_path = path.parent / "contacts" / f"{contact_id}-outreach.md"
+    draft_path = contacts_dir / f"{contact_id}-outreach.md"
     draft_path.write_text(f"# Unsent outreach draft\n\nContact: {contact_id}\n\n{body}\n", encoding="utf-8")
     return {"status": "drafted_not_sent", "paper_id": args["paper_id"], "path": str(draft_path)}
 
@@ -294,19 +505,22 @@ def add_note(args: dict[str, Any], corpus_root: str) -> dict[str, Any]:
     paper = _read(path)
     source_id = args["source_id"]
     _, source_paper = _source_paper(path, paper, corpus_root)
-    source = next((item for item in source_paper["sources"] if item["source_id"] == source_id), None)
-    if source is None or not source.get("ingested"):
+    source = next((item for item in source_paper["sources"] if item.get("source_id") == source_id), None)
+    if source is None or source.get("ingested") is not True:
         raise ShutongError("source_not_ingested", "Notes require an approved, properly ingested paper source.")
-    note_id = args.get("note_id") or f"note-{len(list(path.parent.joinpath('notes').glob('*.md'))) + 1}"
+    note_id = args.get("note_id") or _next_id(path.parent / "notes", "note-", ".md")
     if not isinstance(note_id, str) or not _ID.fullmatch(note_id):
         raise ShutongError("invalid_note_id", "Note IDs use lowercase letters, numbers, and hyphens.")
-    analysis_header = ""
+    note_path = path.parent / "notes" / f"{note_id}.md"
+    if note_path.exists():
+        raise ShutongError("note_exists", f"Note already exists: {note_id}")
+    analysis_id = None
     if args.get("analysis_id"):
         from shutong_backend import analysis
         record = analysis.get(args, corpus_root)["analysis"]
         if source_id not in {s["source_id"] for s in record["sources"]}:
             raise ShutongError("analysis_source_mismatch", "The note source is outside the analysis source set.")
-        analysis_header = f"analysis_id: {record['analysis_id']}\n"
+        analysis_id = record["analysis_id"]
     locator = _required_note_text(args, "locator", "Notes require a corpus locator.")
     claim = _required_note_text(args, "claim", "Notes require one atomic claim.")
     evidence = _required_note_text(args, "evidence", "Notes require source evidence or a tight paraphrase.")
@@ -316,12 +530,17 @@ def add_note(args: dict[str, Any], corpus_root: str) -> dict[str, Any]:
     tags = args.get("tags")
     if not isinstance(tags, list) or not tags or any(not isinstance(tag, str) or not tag.strip() for tag in tags):
         raise ShutongError("invalid_note_tags", "Notes require one or more non-empty tags.")
-    note_path = path.parent / "notes" / f"{note_id}.md"
-    note_path.write_text(
-        f"---\nsource_id: {source_id}\nlocator: {locator}\nnote_schema: evidence-v1\nconfidence: {confidence}\ntags: {json.dumps(tags, ensure_ascii=False)}\n{analysis_header}verified: false\n---\n\n"
-        f"## Claim\n\n{claim}\n\n## Evidence\n\n{evidence}\n",
-        encoding="utf-8",
-    )
+    metadata: dict[str, Any] = {
+        "source_id": source_id,
+        "locator": locator,
+        "note_schema": "evidence-v1",
+        "confidence": confidence,
+        "tags": tags,
+    }
+    if analysis_id:
+        metadata["analysis_id"] = analysis_id
+    metadata["verified"] = False
+    note_path.write_text(_serialize_note(metadata, f"\n## Claim\n\n{claim}\n\n## Evidence\n\n{evidence}\n"), encoding="utf-8")
     return {"status": "ok", "paper_id": paper["id"], "note_id": note_id}
 
 
@@ -340,8 +559,12 @@ def search_notes(args: dict[str, Any], corpus_root: str) -> dict[str, Any]:
         start = lowered.find(query.casefold())
         if start < 0:
             continue
-        header = dict(re.findall(r"^(source_id|locator|confidence|tags): (.+)$", text, re.MULTILINE))
-        matches.append({"note_id": note_path.stem, "source_id": header.get("source_id", ""), "locator": header.get("locator", ""), "confidence": header.get("confidence", ""), "tags": header.get("tags", ""), "snippet": text[max(0, start - radius):start + len(query) + radius]})
+        try:
+            metadata, _ = _parse_note(text)
+        except ShutongError:
+            metadata = {}
+        tags = metadata.get("tags", "")
+        matches.append({"note_id": note_path.stem, "source_id": metadata.get("source_id", ""), "locator": metadata.get("locator", ""), "confidence": metadata.get("confidence", ""), "tags": json.dumps(tags, ensure_ascii=False) if isinstance(tags, list) else tags, "snippet": text[max(0, start - radius):start + len(query) + radius]})
     return {"status": "ok", "paper_id": args["paper_id"], "query": query, "matches": matches}
 
 
@@ -359,19 +582,21 @@ def analyze_text_reuse(args: dict[str, Any], corpus_root: str) -> dict[str, Any]
     return {"status": "ok", "paper_id": args["paper_id"], "minimum_words": width, "matches": matches, "disclaimer": "Matching text is a review signal, not a plagiarism finding."}
 
 
-def _check_note_analysis(text: str, paper_id: str, corpus_root: str) -> str | None:
-    match = re.search(r"^analysis_id: (.+)$", text.split("---", 2)[1] if text.startswith("---") else "", re.MULTILINE)
-    if match:
-        from shutong_backend import analysis
-        record = analysis.get({"paper_id": paper_id, "analysis_id": match[1]}, corpus_root)["analysis"]
-        if record["review"]["outcome"] != "pass":
-            raise ShutongError("analysis_not_verified", "Analysis-backed notes require a passing analysis review.")
-        digest = analysis._digest(record)
-        previous = re.search(r"^analysis_review_sha256: (.+)$", text.split("---", 2)[1], re.MULTILINE)
-        if previous and previous[1] != digest:
-            raise ShutongError("stale_analysis_note", "Analysis changed after this note was verified; create and verify a fresh note.")
-        return digest
-    return None
+def _check_note_analysis(metadata: dict[str, Any], paper_id: str, corpus_root: str) -> str | None:
+    analysis_id = metadata.get("analysis_id")
+    if analysis_id is None:
+        return None
+    if not isinstance(analysis_id, str) or not analysis_id:
+        raise ShutongError("invalid_note_metadata", "A note analysis_id must be a non-empty string.")
+    from shutong_backend import analysis
+    record = analysis.get({"paper_id": paper_id, "analysis_id": analysis_id}, corpus_root)["analysis"]
+    if record["review"]["outcome"] != "pass":
+        raise ShutongError("analysis_not_verified", "Analysis-backed notes require a passing analysis review.")
+    digest = analysis._digest(record)
+    previous = metadata.get("analysis_review_sha256")
+    if previous is not None and previous != digest:
+        raise ShutongError("stale_analysis_note", "Analysis changed after this note was verified; create and verify a fresh note.")
+    return digest
 
 
 def verify_note(args: dict[str, Any], corpus_root: str) -> dict[str, Any]:
@@ -382,17 +607,21 @@ def verify_note(args: dict[str, Any], corpus_root: str) -> dict[str, Any]:
     if not _ID.fullmatch(note_id):
         raise ShutongError("invalid_note_id", "Note IDs use lowercase letters, numbers, and hyphens.")
     note_path = path.parent / "notes" / f"{note_id}.md"
-    if not note_path.exists():
-        raise ShutongError("note_not_found", f"Note not found: {note_id}")
+    metadata, body = _read_note(note_path, note_id)
     evidence = args.get("evidence", "").strip()
+    report_id = _passing_report_for(path, args, "note", note_id)
     if not evidence:
-        raise ShutongError("missing_verification_evidence", "Verified notes require a verifier report or source check reference.")
-    text = note_path.read_text(encoding="utf-8")
-    analysis_digest = _check_note_analysis(text, paper["id"], corpus_root)
-    if "verified: false" not in text:
+        raise ShutongError("missing_verification_evidence", "Verified notes require a passing verifier report; pass its ID as evidence.")
+    if metadata.get("verified") is not False:
         raise ShutongError("invalid_note", f"Note {note_id} has no verifiable note metadata.")
-    analysis_header = f"analysis_review_sha256: {analysis_digest}\n" if analysis_digest else ""
-    note_path.write_text(text.replace("verified: false", f"{analysis_header}verified: true\nverification: {evidence}", 1), encoding="utf-8")
+    analysis_digest = _check_note_analysis(metadata, paper["id"], corpus_root)
+    metadata["verified"] = True
+    metadata["verification"] = evidence
+    if analysis_digest:
+        metadata["analysis_review_sha256"] = analysis_digest
+    if report_id:
+        metadata["verifier_report_id"] = report_id
+    note_path.write_text(_serialize_note(metadata, body), encoding="utf-8")
     return {"status": "ok", "paper_id": paper["id"], "note_id": note_id}
 
 
@@ -400,21 +629,35 @@ def add_claim(args: dict[str, Any], corpus_root: str) -> dict[str, Any]:
     """Create a draftable assertion only from already verified paper notes."""
     path = _paper_path(corpus_root, args["paper_id"])
     paper = _read(path)
-    claim_id = args.get("claim_id") or f"claim-{len(list(path.parent.joinpath('claims').glob('*.json'))) + 1}"
-    if not _ID.fullmatch(claim_id):
+    claim_id = args.get("claim_id") or _next_id(path.parent / "claims", "claim-", ".json")
+    if not isinstance(claim_id, str) or not _ID.fullmatch(claim_id):
         raise ShutongError("invalid_claim_id", "Claim IDs use lowercase letters, numbers, and hyphens.")
+    claim_path = path.parent / "claims" / f"{claim_id}.json"
+    if claim_path.exists():
+        raise ShutongError("claim_exists", f"Claim already exists: {claim_id}")
     note_ids = args.get("note_ids", [])
     if not isinstance(note_ids, list) or not note_ids:
         raise ShutongError("missing_claim_evidence", "Claims require one or more verified note IDs.")
+    note_digests: dict[str, str] = {}
     for note_id in note_ids:
         if not isinstance(note_id, str) or not _ID.fullmatch(note_id):
             raise ShutongError("invalid_note_id", "Invalid claim note ID.")
         note_path = path.parent / "notes" / f"{note_id}.md"
-        if not note_path.exists() or "verified: true" not in note_path.read_text(encoding="utf-8"):
+        metadata, _ = _read_note(note_path, note_id)
+        if metadata.get("verified") is not True:
             raise ShutongError("note_not_verified", f"Claim evidence is not a verified note: {note_id}")
-        _check_note_analysis(note_path.read_text(encoding="utf-8"), paper["id"], corpus_root)
-    claim = {"id": claim_id, "text": args.get("text", ""), "note_ids": note_ids, "verified": False}
-    (path.parent / "claims" / f"{claim_id}.json").write_text(json.dumps(claim, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        _check_note_analysis(metadata, paper["id"], corpus_root)
+        report_id = metadata.get("verifier_report_id")
+        if not report_id:
+            raise ShutongError("missing_verification_report", f"Claim note has no linked verifier report: {note_id}")
+        report = _load_verifier_report(path, report_id)
+        if report.get("outcome") != "pass":
+            raise ShutongError("verifier_report_not_passing", f"Claim note has no passing verifier report: {note_id}")
+        if report.get("scope", "paper") not in {"paper", f"note:{note_id}"}:
+            raise ShutongError("report_scope_mismatch", f"Verifier report {report_id} does not cover note {note_id}.")
+        note_digests[note_id] = _note_digest(note_path)
+    claim = {"id": claim_id, "text": args.get("text", ""), "note_ids": note_ids, "note_digests": note_digests, "verified": False}
+    claim_path.write_text(json.dumps(claim, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return {"status": "ok", "paper_id": paper["id"], "claim_id": claim_id}
 
 
@@ -426,14 +669,18 @@ def verify_claim(args: dict[str, Any], corpus_root: str) -> dict[str, Any]:
     if not _ID.fullmatch(claim_id):
         raise ShutongError("invalid_claim_id", "Claim IDs use lowercase letters, numbers, and hyphens.")
     claim_path = path.parent / "claims" / f"{claim_id}.json"
-    if not claim_path.exists():
+    if not claim_path.is_file():
         raise ShutongError("claim_not_found", f"Claim not found: {claim_id}")
     evidence = args.get("evidence", "").strip()
+    report_id = _passing_report_for(path, args, "claim", claim_id)
     if not evidence:
-        raise ShutongError("missing_verification_evidence", "Verified claims require a verifier report or evidence reference.")
+        raise ShutongError("missing_verification_evidence", "Verified claims require a passing verifier report; pass its ID as evidence.")
     claim = json.loads(claim_path.read_text(encoding="utf-8"))
+    _verify_claim_evidence(claim, path.parent / "notes", paper["id"], corpus_root)
     claim["verified"] = True
     claim["verification"] = evidence
+    if report_id:
+        claim["verifier_report_id"] = report_id
     claim_path.write_text(json.dumps(claim, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return {"status": "ok", "paper_id": paper["id"], "claim_id": claim_id}
 
@@ -448,9 +695,19 @@ def draft_context(args: dict[str, Any], corpus_root: str) -> dict[str, Any]:
     path = _paper_path(corpus_root, report["paper_id"])
     claims = []
     for claim_path in sorted((path.parent / "claims").glob("*.json")):
-        claim = json.loads(claim_path.read_text(encoding="utf-8"))
-        if claim.get("verified"):
-            claims.append(claim)
+        try:
+            claim = json.loads(claim_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if not isinstance(claim, dict) or claim.get("verified") is not True:
+            continue
+        try:
+            _verify_claim_evidence(claim, path.parent / "notes", report["paper_id"], corpus_root)
+        except ShutongError:
+            continue
+        claims.append(claim)
+    if not claims:
+        return {"status": "needs_evidence", "paper_id": report["paper_id"], "missing": [{"stage": "claims", "required": "at least one verified claim", "actual": 0}]}
     return {"status": "ready", "paper_id": report["paper_id"], "title": _read(path)["title"], "claims": claims}
 
 
@@ -482,11 +739,13 @@ def record_verifier_report(args: dict[str, Any], corpus_root: str) -> dict[str, 
     outcome = args.get("outcome")
     if outcome not in {"pass", "fail", "uncertain"}:
         raise ShutongError("invalid_verifier_outcome", "Verifier outcome must be pass, fail, or uncertain.")
-    report_id = args.get("report_id") or f"verifier-{len(list(path.parent.joinpath('audits').glob('verifier-*.json'))) + 1}"
-    if not _ID.fullmatch(report_id):
+    report_id = args.get("report_id") or _next_id(path.parent / "audits", "verifier-", ".json")
+    if not isinstance(report_id, str) or not _ID.fullmatch(report_id):
         raise ShutongError("invalid_report_id", "Report IDs use lowercase letters, numbers, and hyphens.")
-    report = {"id": report_id, "outcome": outcome, "scope": args.get("scope", "paper"), "evidence": args.get("evidence", ""), "defect": args.get("defect", ""), "residual_risk": args.get("residual_risk", "")}
     report_path = path.parent / "audits" / f"{report_id}.json"
+    if report_path.exists():
+        raise ShutongError("report_exists", f"Verifier report already exists: {report_id}")
+    report = {"id": report_id, "outcome": outcome, "scope": args.get("scope", "paper"), "evidence": args.get("evidence", ""), "defect": args.get("defect", ""), "residual_risk": args.get("residual_risk", "")}
     report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return {"status": "ok", "paper_id": paper["id"], "report_id": report_id, "outcome": outcome}
 
@@ -496,10 +755,9 @@ def override_verifier_report(args: dict[str, Any], corpus_root: str) -> dict[str
     path = _paper_path(corpus_root, args["paper_id"])
     _read(path)
     report_id = args["report_id"]
-    report_path = path.parent / "audits" / f"{report_id}.json"
-    if not report_path.exists():
-        raise ShutongError("report_not_found", f"Verifier report not found: {report_id}")
-    report = json.loads(report_path.read_text(encoding="utf-8"))
+    if not isinstance(report_id, str) or not _ID.fullmatch(report_id):
+        raise ShutongError("invalid_report_id", "Report IDs use lowercase letters, numbers, and hyphens.")
+    report = _load_verifier_report(path, report_id)
     if report.get("outcome") == "pass":
         raise ShutongError("override_not_needed", "Only fail or uncertain verifier reports can be overridden.")
     reason = args.get("reason", "").strip()
@@ -539,28 +797,96 @@ def audit(args: dict[str, Any], corpus_root: str) -> dict[str, Any]:
     if paper["status"] != "ok":
         return paper
     manifest = paper["paper"]
-    _, source_manifest = _source_paper(_paper_path(corpus_root, manifest["id"]), manifest, corpus_root)
-    counts = {role: sum(1 for item in source_manifest["sources"] if item["role"] == role and item.get("ingested")) for role in _ROLES}
-    policy = manifest["policy"]
+    paper_path = _paper_path(corpus_root, manifest["id"])
+    _, source_manifest = _source_paper(paper_path, manifest, corpus_root)
     missing = []
+    valid_ingested: set[str] = set()
+    for item in source_manifest.get("sources", []):
+        if item.get("ingested") is not True:
+            continue
+        try:
+            _validated_ingestion(corpus_root, item["source_id"])
+        except ShutongError as exc:
+            missing.append({"stage": "ingestion", "source_id": item.get("source_id", ""), "required": "surviving registry document with Merkle files", "actual": exc.error_code})
+            continue
+        valid_ingested.add(item["source_id"])
+    counts = {role: sum(1 for item in source_manifest.get("sources", []) if item.get("role") == role and item.get("source_id") in valid_ingested) for role in _ROLES}
+    policy = manifest["policy"]
     for role, key in (("primary", "minimum_primary"), ("secondary", "minimum_secondary")):
         if counts[role] < policy[key]:
             missing.append({"role": role, "required": policy[key], "actual": counts[role]})
     if source_manifest.get("bibliography", {}).get("status") != "approved":
         missing.append({"stage": "bibliography", "required": "approved", "actual": source_manifest.get("bibliography", {}).get("status", "missing")})
-    if not any(item.get("ingested") for item in source_manifest["sources"]):
-        missing.append({"stage": "ingestion", "required": "at least one ingested source", "actual": 0})
-    notes = list(_paper_path(corpus_root, manifest["id"]).parent.joinpath("notes").glob("*.md"))
-    for note in notes:
+    if not valid_ingested:
+        missing.append({"stage": "ingestion", "required": "at least one valid ingested source", "actual": 0})
+    notes_dir = paper_path.parent / "notes"
+    valid_notes: set[str] = set()
+    for note in sorted(notes_dir.glob("*.md")):
         try:
-            _check_note_analysis(note.read_text(encoding="utf-8"), manifest["id"], corpus_root)
+            metadata, _ = _read_note(note, note.stem)
+        except ShutongError as exc:
+            missing.append({"stage": "note_metadata", "note_id": note.stem, "required": "valid frontmatter", "actual": exc.error_code})
+            continue
+        try:
+            _check_note_analysis(metadata, manifest["id"], corpus_root)
         except ShutongError as exc:
             missing.append({"stage": "analysis", "note_id": note.stem, "required": "current passing analysis review", "actual": exc.error_code})
-    verified_notes = sum("verified: true" in note.read_text(encoding="utf-8") for note in notes)
-    if not verified_notes:
-        missing.append({"stage": "notes", "required": "at least one verified note", "actual": 0})
-    claims = list(_paper_path(corpus_root, manifest["id"]).parent.joinpath("claims").glob("*.json"))
-    verified_claims = sum(json.loads(claim.read_text(encoding="utf-8")).get("verified") is True for claim in claims)
-    if not verified_claims:
-        missing.append({"stage": "claims", "required": "at least one verified claim", "actual": 0})
-    return {"status": "ok" if not missing else "incomplete", "paper_id": manifest["id"], "source_counts": counts, "missing": missing}
+            continue
+        if metadata.get("verified") is not True:
+            continue
+        report_id = metadata.get("verifier_report_id")
+        if not report_id:
+            missing.append({"stage": "verifier_report", "note_id": note.stem, "required": "linked passing verifier report", "actual": "missing"})
+            continue
+        try:
+            report = _load_verifier_report(paper_path, report_id)
+        except ShutongError as exc:
+            missing.append({"stage": "verifier_report", "note_id": note.stem, "required": "linked passing verifier report", "actual": exc.error_code})
+            continue
+        if report.get("outcome") != "pass":
+            missing.append({"stage": "verifier_report", "note_id": note.stem, "required": "linked passing verifier report", "actual": report.get("outcome")})
+            continue
+        if report.get("scope", "paper") not in {"paper", f"note:{note.stem}"}:
+            missing.append({"stage": "verifier_report", "note_id": note.stem, "required": f"scope paper or note:{note.stem}", "actual": report.get("scope")})
+            continue
+        valid_notes.add(note.stem)
+    if not valid_notes:
+        missing.append({"stage": "notes", "required": "at least one verified note with current note metadata", "actual": 0})
+    valid_claims: set[str] = set()
+    for claim_path in sorted((paper_path.parent / "claims").glob("*.json")):
+        try:
+            claim = json.loads(claim_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            missing.append({"stage": "claim_metadata", "claim_id": claim_path.stem, "required": "readable claim JSON", "actual": "unreadable"})
+            continue
+        if not isinstance(claim, dict):
+            missing.append({"stage": "claim_metadata", "claim_id": claim_path.stem, "required": "claim JSON object", "actual": "invalid"})
+            continue
+        if claim.get("verified") is not True:
+            continue
+        try:
+            _verify_claim_evidence(claim, notes_dir, manifest["id"], corpus_root)
+        except ShutongError as exc:
+            missing.append({"stage": "claim_evidence", "claim_id": claim_path.stem, "required": "note references and digests still match", "actual": exc.error_code})
+            continue
+        report_id = claim.get("verifier_report_id")
+        if not report_id:
+            missing.append({"stage": "verifier_report", "claim_id": claim_path.stem, "required": "linked passing verifier report", "actual": "missing"})
+            continue
+        try:
+            report = _load_verifier_report(paper_path, report_id)
+        except ShutongError as exc:
+            missing.append({"stage": "verifier_report", "claim_id": claim_path.stem, "required": "linked passing verifier report", "actual": exc.error_code})
+            continue
+        if report.get("outcome") != "pass":
+            missing.append({"stage": "verifier_report", "claim_id": claim_path.stem, "required": "linked passing verifier report", "actual": report.get("outcome")})
+            continue
+        if report.get("scope", "paper") not in {"paper", f"claim:{claim_path.stem}"}:
+            missing.append({"stage": "verifier_report", "claim_id": claim_path.stem, "required": f"scope paper or claim:{claim_path.stem}", "actual": report.get("scope")})
+            continue
+        valid_claims.add(claim_path.stem)
+    if not valid_claims:
+        missing.append({"stage": "claims", "required": "at least one verified claim whose evidence still matches", "actual": 0})
+    for report in _blocking_reports(paper_path):
+        missing.append({"stage": "verifier_report", "report_id": report["report_id"], "required": "no unoverridden fail or uncertain report", "actual": report["outcome"]})
+    return {"status": "ok" if not missing else "incomplete", "paper_id": manifest["id"], "source_counts": counts, "valid_ingested_sources": sorted(valid_ingested), "missing": missing}

@@ -1,6 +1,5 @@
 ---
 description: Ingest a PDF, URL, or media file into the corpus. Usage: /ingest <path|url>
-agent: ingestor
 ---
 
 Ingest into the corpus: $ARGUMENTS

@@ -1,5 +1,5 @@
 import { test, expect } from "bun:test"
-import { BackendClient } from "../src/engine/backend-client"
+import { BackendClient, createDaemonToken } from "../src/engine/backend-client"
 import { resolveToolCall, getTool, allTools } from "../src/engine/tool-registry"
 
 test("tool registry resolves known tools", () => {
@@ -83,4 +83,34 @@ test("BackendClient passes configured research paths to the backend", () => {
   expect(env.SHUTONG_CORPUS_ROOT).toBe("/tmp/daoism/corpus")
   expect(env.SHUTONG_GLOSSARY_DIR).toBe("/tmp/daoism/.shutong/glossary")
   expect(env.SHUTONG_LIBRARY_ROOT).toBe("/tmp/daoism/library")
+  expect(env.SHUTONG_HTTP_TOKEN).toBeUndefined()
+})
+
+test("daemon tokens are random, private, and never part of the RPC environment", () => {
+  const first = createDaemonToken()
+  const second = createDaemonToken()
+  expect(first).toMatch(/^[0-9a-f]{64}$/)
+  expect(first).not.toBe(second)
+  const client = new BackendClient("python3", "shutong_backend.rpc_server", "/tmp/test", "test-model")
+  expect((client as any).requestEnv().SHUTONG_HTTP_TOKEN).toBeUndefined()
+})
+
+test("daemon requests send the bearer token", async () => {
+  const seen: { authorization?: string | null } = {}
+  const server = Bun.serve({
+    port: 0,
+    fetch(request) {
+      seen.authorization = request.headers.get("authorization")
+      return Response.json({ providers: [] })
+    },
+  })
+  const client = new BackendClient("python3", "shutong_backend.rpc_server", "/tmp/test", "test-model")
+  try {
+    ;(client as any).daemonUrl = server.url.origin
+    ;(client as any).daemonToken = "test-token"
+    await client.providers()
+    expect(seen.authorization).toBe("Bearer test-token")
+  } finally {
+    server.stop(true)
+  }
 })

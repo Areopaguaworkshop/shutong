@@ -1,6 +1,5 @@
 ---
 description: Search the local corpus and return cited, Merkle-verified answers. Usage: /research <query>
-agent: researcher
 ---
 
 Search the local corpus for: $ARGUMENTS

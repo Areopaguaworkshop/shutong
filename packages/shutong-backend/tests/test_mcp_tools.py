@@ -473,6 +473,19 @@ class TestToolDefinitions:
         assert add["required"] == ["action", "paper_id", "source_id", "locator", "claim", "evidence", "confidence", "tags"]
         assert add["properties"]["confidence"]["enum"] == ["known", "probable", "speculative"]
 
+    @pytest.mark.parametrize("name", ["shutong_note", "shutong_claim"])
+    def test_verify_actions_accept_a_verifier_report_link(self, name):
+        """Verifier decisions can cite an append-only report id alongside evidence."""
+        tool = next(tool for tool in TOOL_DEFINITIONS if tool["name"] == name)
+        verify_branch = next(
+            branch for branch in tool["inputSchema"]["oneOf"]
+            if branch["properties"]["action"]["const"] == "verify"
+        )
+        assert verify_branch["properties"]["report_id"]["type"] == "string"
+        assert verify_branch["properties"]["verifier_report_id"]["type"] == "string"
+        # The existing free-text evidence contract is preserved.
+        assert "evidence" in verify_branch["required"]
+
 
 class TestPublicDispatch:
     @pytest.mark.asyncio

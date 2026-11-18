@@ -1,9 +1,6 @@
 import { existsSync, mkdirSync } from "fs"
 import path from "path"
-
-function dataRoot() {
-  return path.join(process.env.XDG_DATA_HOME ?? path.join(process.env.HOME ?? "/tmp", ".local", "share"), "shutong")
-}
+import { setupDataRoot, setupVenvPython, writeUserConfig } from "../engine/config"
 
 function run(command: string[]) {
   const result = Bun.spawnSync(command, { stdout: "pipe", stderr: "pipe" })
@@ -22,15 +19,17 @@ export function setupBackend() {
     path.resolve(import.meta.dir, "../../../packages/shutong-backend"),
   ].find((candidate) => existsSync(path.join(candidate, "pyproject.toml")))
   if (!backend) return { ok: false, detail: "Bundled Shutong backend is unavailable; reinstall the npm package before initializing a host." }
-  const venv = path.join(dataRoot(), "venv")
-  const venvPython = path.join(venv, "bin", "python")
+  const venvPython = setupVenvPython()
   if (!existsSync(venvPython)) {
-    mkdirSync(dataRoot(), { recursive: true })
-    const created = run([python, "-m", "venv", venv])
+    mkdirSync(setupDataRoot(), { recursive: true })
+    const created = run([python, "-m", "venv", path.join(setupDataRoot(), "venv")])
     if (!created.ok) return { ok: false, detail: created.detail }
   }
   const installed = run([venvPython, "-m", "pip", "install", "--disable-pip-version-check", backend])
   if (!installed.ok) return { ok: false, detail: installed.detail }
   const checked = run([venvPython, "-c", "import shutong_backend"])
-  return checked.ok ? { ok: true, python: venvPython, detail: "Backend ready." } : { ok: false, detail: checked.detail }
+  if (!checked.ok) return { ok: false, detail: checked.detail }
+  // Persist the interpreter so `shutong init` and the engine reuse the same environment.
+  writeUserConfig({ python_bin: venvPython })
+  return { ok: true, python: venvPython, detail: "Backend ready." }
 }

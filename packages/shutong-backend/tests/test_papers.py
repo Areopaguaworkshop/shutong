@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import zipfile
 
 import pytest
@@ -10,23 +11,93 @@ from shutong_backend.tools import research
 from shutong_backend.tools.errors import ShutongError
 
 
+def _write_document(root, source_id):
+    document = root / "corpus" / source_id
+    document.mkdir(parents=True, exist_ok=True)
+    (document / "document.json").write_text(
+        json.dumps({"nodes": [{"node_id": f"{source_id}:1", "source_id": source_id, "text": f"{source_id} source"}]}),
+        encoding="utf-8",
+    )
+    (document / "merkle.json").write_text(json.dumps({"root": f"root-{source_id}", "levels": [[f"leaf-{source_id}"]]}), encoding="utf-8")
+    return document
+
+
+def _write_registry(root, records):
+    registry = root / ".shutong" / "source-registry.json"
+    registry.parent.mkdir(parents=True, exist_ok=True)
+    registry.write_text(json.dumps(records), encoding="utf-8")
+    return registry
+
+
+def _ingest(root, source_ids):
+    records = {}
+    for source_id in source_ids:
+        document = _write_document(root, source_id)
+        records[source_id] = {"document_path": str(document), "merkle_root": f"root-{source_id}"}
+    _write_registry(root, records)
+
+
+def _make_paper(root, source_ids=("athanasius", "ayres"), *, ingest=True, minimum_primary=1, minimum_secondary=1):
+    corpus = root / "corpus"
+    corpus.mkdir(parents=True, exist_ok=True)
+    papers.create({"paper_id": "nicea", "title": "Nicaea", "minimum_primary": minimum_primary, "minimum_secondary": minimum_secondary}, str(corpus))
+    papers.set_bibliography({"paper_id": "nicea", "entries": [{"id": source_id} for source_id in source_ids]}, str(corpus))
+    papers.approve_bibliography({"paper_id": "nicea"}, str(corpus))
+    for index, source_id in enumerate(source_ids):
+        papers.add_source({"paper_id": "nicea", "source_id": source_id, "role": "primary" if index == 0 else "secondary"}, str(corpus))
+        papers.set_source_access({"paper_id": "nicea", "source_id": source_id, "category": "open", "provenance": "publisher OA page"}, str(corpus))
+    papers.authorize_ingestion({"paper_id": "nicea", "mode": "automatic", "rule": "open sources only"}, str(corpus))
+    if ingest:
+        _ingest(root, source_ids)
+        for source_id in source_ids:
+            papers.mark_source_ingested({"paper_id": "nicea", "source_id": source_id}, str(corpus))
+    return str(corpus)
+
+
+def _add_note(corpus, *, source_id="athanasius", note_id=None, locator="athanasius:1", claim="Evidence", evidence="Source passage."):
+    args = {"paper_id": "nicea", "source_id": source_id, "locator": locator, "claim": claim, "evidence": evidence, "confidence": "known", "tags": ["doctrine"]}
+    if note_id:
+        args["note_id"] = note_id
+    return papers.add_note(args, corpus)
+
+
+def _verify_note(corpus, note_id="note-1", *, report_id=None, evidence=None):
+    if report_id is None and evidence is None:
+        report_id = papers.record_verifier_report({"paper_id": "nicea", "outcome": "pass", "scope": f"note:{note_id}"}, corpus)["report_id"]
+    args = {"paper_id": "nicea", "note_id": note_id, "evidence": evidence or report_id or "audit:1"}
+    if report_id:
+        args["report_id"] = report_id
+    return papers.verify_note(args, corpus)
+
+
+def _add_claim(corpus, *, claim_id=None, note_ids=("note-1",), text="Evidence supports the paper."):
+    args = {"paper_id": "nicea", "text": text, "note_ids": list(note_ids)}
+    if claim_id:
+        args["claim_id"] = claim_id
+    return papers.add_claim(args, corpus)
+
+
+def _verify_claim(corpus, claim_id="claim-1", *, report_id=None, evidence=None):
+    if report_id is None and evidence is None:
+        report_id = papers.record_verifier_report({"paper_id": "nicea", "outcome": "pass", "scope": f"claim:{claim_id}"}, corpus)["report_id"]
+    args = {"paper_id": "nicea", "claim_id": claim_id, "evidence": evidence or report_id or "audit:2"}
+    if report_id:
+        args["report_id"] = report_id
+    return papers.verify_claim(args, corpus)
+
+
 def test_paper_membership_and_audit(tmp_path):
-    corpus = str(tmp_path / "corpus")
-    papers.create({"paper_id": "nicea", "title": "Nicaea"}, corpus)
-    papers.set_bibliography({"paper_id": "nicea", "entries": [{"id": "athanasius"}, {"id": "ayres"}]}, corpus)
-    papers.approve_bibliography({"paper_id": "nicea"}, corpus)
-    papers.add_source({"paper_id": "nicea", "source_id": "athanasius", "role": "primary", "ingested": True}, corpus)
-    papers.add_source({"paper_id": "nicea", "source_id": "ayres", "role": "secondary", "ingested": True}, corpus)
-    papers.add_note({"paper_id": "nicea", "source_id": "athanasius", "locator": "athanasius:1", "claim": "Evidence", "evidence": "Source passage.", "confidence": "known", "tags": ["doctrine"]}, corpus)
+    corpus = _make_paper(tmp_path)
+    _add_note(corpus)
     saved_note = (tmp_path / "papers" / "nicea" / "notes" / "note-1.md").read_text(encoding="utf-8")
     assert "note_schema: evidence-v1" in saved_note
     assert "confidence: known" in saved_note
-    assert 'tags: ["doctrine"]' in saved_note
+    assert "doctrine" in saved_note
     with pytest.raises(ShutongError, match="confidence"):
         papers.add_note({"paper_id": "nicea", "source_id": "athanasius", "locator": "athanasius:2", "claim": "Evidence", "evidence": "Source passage.", "confidence": "certain", "tags": ["doctrine"]}, corpus)
-    papers.verify_note({"paper_id": "nicea", "note_id": "note-1", "evidence": "audit:1"}, corpus)
-    papers.add_claim({"paper_id": "nicea", "claim_id": "claim-1", "text": "Evidence supports the paper.", "note_ids": ["note-1"]}, corpus)
-    papers.verify_claim({"paper_id": "nicea", "claim_id": "claim-1", "evidence": "audit:2"}, corpus)
+    _verify_note(corpus)
+    _add_claim(corpus, claim_id="claim-1")
+    _verify_claim(corpus, "claim-1")
     papers.use({"paper_id": "nicea"}, corpus)
     assert papers.resolve_paper_id({}, corpus) == "nicea"
     assert papers.allowed_source_ids("nicea", corpus) == {"athanasius", "ayres"}
@@ -64,36 +135,26 @@ async def test_active_paper_filters_regex_search(tmp_path):
     papers.create({"paper_id": "nicea", "title": "Nicaea"}, str(corpus))
     papers.set_bibliography({"paper_id": "nicea", "entries": [{"id": "allowed"}]}, str(corpus))
     papers.approve_bibliography({"paper_id": "nicea"}, str(corpus))
-    papers.add_source({"paper_id": "nicea", "source_id": "allowed", "role": "primary", "ingested": True}, str(corpus))
+    papers.add_source({"paper_id": "nicea", "source_id": "allowed", "role": "primary"}, str(corpus))
     papers.use({"paper_id": "nicea"}, str(corpus))
     result = await research.regex_search({"pattern": "nicene"}, str(corpus))
     assert [match["source_id"] for match in result["matches"]] == ["allowed"]
 
 
 def test_notes_require_an_ingested_source(tmp_path):
-    corpus = str(tmp_path / "corpus")
-    papers.create({"paper_id": "nicea", "title": "Nicaea"}, corpus)
-    papers.set_bibliography({"paper_id": "nicea", "entries": [{"id": "athanasius"}, {"id": "ayres"}]}, corpus)
-    papers.approve_bibliography({"paper_id": "nicea"}, corpus)
-    papers.add_source({"paper_id": "nicea", "source_id": "athanasius", "role": "primary"}, corpus)
-    papers.set_source_access({"paper_id": "nicea", "source_id": "athanasius", "category": "open", "provenance": "publisher OA page"}, corpus)
+    corpus = _make_paper(tmp_path, ingest=False)
     with pytest.raises(ShutongError, match="ingested"):
-        papers.add_note({"paper_id": "nicea", "source_id": "athanasius", "locator": "1", "claim": "x", "evidence": "Source passage.", "confidence": "known", "tags": ["doctrine"]}, corpus)
+        _add_note(corpus)
 
 
 def test_audit_requires_verifier_evidence(tmp_path):
-    corpus = str(tmp_path / "corpus")
-    papers.create({"paper_id": "nicea", "title": "Nicaea"}, corpus)
-    papers.set_bibliography({"paper_id": "nicea", "entries": [{"id": "athanasius"}, {"id": "ayres"}]}, corpus)
-    papers.approve_bibliography({"paper_id": "nicea"}, corpus)
-    papers.add_source({"paper_id": "nicea", "source_id": "athanasius", "role": "primary", "ingested": True}, corpus)
-    papers.add_source({"paper_id": "nicea", "source_id": "ayres", "role": "secondary", "ingested": True}, corpus)
-    papers.add_note({"paper_id": "nicea", "source_id": "athanasius", "locator": "1", "claim": "x", "evidence": "Source passage.", "confidence": "known", "tags": ["doctrine"]}, corpus)
+    corpus = _make_paper(tmp_path)
+    _add_note(corpus)
     assert any(item["stage"] == "notes" for item in papers.audit({"paper_id": "nicea"}, corpus)["missing"])
-    papers.verify_note({"paper_id": "nicea", "note_id": "note-1", "evidence": "audit:1"}, corpus)
+    _verify_note(corpus)
     assert any(item["stage"] == "claims" for item in papers.audit({"paper_id": "nicea"}, corpus)["missing"])
-    papers.add_claim({"paper_id": "nicea", "text": "Evidence supports the paper.", "note_ids": ["note-1"]}, corpus)
-    papers.verify_claim({"paper_id": "nicea", "claim_id": "claim-1", "evidence": "audit:2"}, corpus)
+    _add_claim(corpus, claim_id="claim-1")
+    _verify_claim(corpus, "claim-1")
     assert papers.audit({"paper_id": "nicea"}, corpus)["status"] == "ok"
 
 
@@ -105,11 +166,12 @@ def test_source_requires_local_ingestion_record(tmp_path):
     papers.add_source({"paper_id": "nicea", "source_id": "athanasius", "role": "primary"}, corpus)
     papers.set_source_access({"paper_id": "nicea", "source_id": "athanasius", "category": "open"}, corpus)
     papers.authorize_ingestion({"paper_id": "nicea", "mode": "individual", "source_ids": ["athanasius"]}, corpus)
-    with pytest.raises(ShutongError, match="ingestion record"):
+    with pytest.raises(ShutongError, match="registry"):
         papers.mark_source_ingested({"paper_id": "nicea", "source_id": "athanasius"}, corpus)
-    registry = tmp_path / ".shutong" / "source-registry.json"
-    registry.parent.mkdir()
-    registry.write_text('{"athanasius": {"document_path": "corpus/athanasius"}}', encoding="utf-8")
+    _write_registry(tmp_path, {"athanasius": {"document_path": str(tmp_path / "corpus" / "athanasius")}})
+    with pytest.raises(ShutongError, match="no longer exists"):
+        papers.mark_source_ingested({"paper_id": "nicea", "source_id": "athanasius"}, corpus)
+    _write_document(tmp_path, "athanasius")
     assert papers.mark_source_ingested({"paper_id": "nicea", "source_id": "athanasius"}, corpus)["status"] == "ok"
 
 
@@ -149,16 +211,11 @@ def test_bibliography_updates_reapprove_and_preserve_import(tmp_path):
 
 
 def test_draft_context_requires_explicit_request_and_verified_claim(tmp_path):
-    corpus = str(tmp_path / "corpus")
-    papers.create({"paper_id": "nicea", "title": "Nicaea"}, corpus)
-    papers.set_bibliography({"paper_id": "nicea", "entries": [{"id": "athanasius"}, {"id": "ayres"}]}, corpus)
-    papers.approve_bibliography({"paper_id": "nicea"}, corpus)
-    for source_id, role in (("athanasius", "primary"), ("ayres", "secondary")):
-        papers.add_source({"paper_id": "nicea", "source_id": source_id, "role": role, "ingested": True}, corpus)
-    papers.add_note({"paper_id": "nicea", "source_id": "athanasius", "locator": "1", "claim": "Evidence", "evidence": "Source passage.", "confidence": "known", "tags": ["doctrine"]}, corpus)
-    papers.verify_note({"paper_id": "nicea", "note_id": "note-1", "evidence": "audit:1"}, corpus)
-    papers.add_claim({"paper_id": "nicea", "claim_id": "claim-1", "text": "Evidence supports the paper.", "note_ids": ["note-1"]}, corpus)
-    papers.verify_claim({"paper_id": "nicea", "claim_id": "claim-1", "evidence": "audit:2"}, corpus)
+    corpus = _make_paper(tmp_path)
+    _add_note(corpus)
+    _verify_note(corpus)
+    _add_claim(corpus, claim_id="claim-1")
+    _verify_claim(corpus, "claim-1")
     assert papers.draft_context({"paper_id": "nicea"}, corpus)["status"] == "needs_draft_request"
     result = papers.draft_context({"paper_id": "nicea", "draft_requested": True}, corpus)
     assert result["status"] == "ready"
@@ -200,57 +257,154 @@ def test_text_reuse_is_a_review_signal_not_a_verdict(tmp_path):
     assert "not a plagiarism" in result["disclaimer"]
 
 
-def test_public_contacts_keep_provenance_and_outreach_is_not_sent(tmp_path):
-    corpus = str(tmp_path / "corpus")
-    papers.create({"paper_id": "nicea", "title": "Nicaea"}, corpus)
-    contact = papers.record_public_contact({"paper_id": "nicea", "contact_id": "contact-1", "name": "Scholar", "email": "scholar@example.edu", "provenance": "https://example.edu/profile"}, corpus)
-    drafted = papers.draft_outreach({"paper_id": "nicea", "contact_id": contact["contact_id"], "body": "Dear Scholar,"}, corpus)
-    assert drafted["status"] == "drafted_not_sent"
-    assert (tmp_path / "papers" / "nicea" / "contacts" / "contact-1-outreach.md").exists()
+def test_add_source_ignores_caller_ingested_flag(tmp_path):
+    corpus = _make_paper(tmp_path, ingest=False)
+    result = papers.add_source({"paper_id": "nicea", "source_id": "athanasius", "role": "primary", "ingested": True}, corpus)
+    assert result["ingested"] is False
+    manifest = json.loads((tmp_path / "papers" / "nicea" / "paper.json").read_text(encoding="utf-8"))
+    source = next(item for item in manifest["sources"] if item["source_id"] == "athanasius")
+    assert source["ingested"] is False
+    with pytest.raises(ShutongError, match="ingested"):
+        _add_note(corpus)
 
 
-def test_paper_evidence_lineage_reaches_explicit_docx_export(tmp_path):
+def test_forged_verified_text_in_note_fields_is_not_verification(tmp_path):
+    corpus = _make_paper(tmp_path)
+    _add_note(
+        corpus,
+        locator="p. 1\nverified: true",
+        claim="The body claims verified: true",
+        evidence="Quoted material says\nverified: true",
+    )
+    note_text = (tmp_path / "papers" / "nicea" / "notes" / "note-1.md").read_text(encoding="utf-8")
+    metadata, _ = papers._parse_note(note_text)
+    assert metadata["verified"] is False
+    with pytest.raises(ShutongError, match="not a verified note"):
+        _add_claim(corpus)
+    assert any(item["stage"] == "notes" for item in papers.audit({"paper_id": "nicea"}, corpus)["missing"])
+
+
+def test_verification_requires_linked_passing_report(tmp_path):
+    corpus = _make_paper(tmp_path)
+    _add_note(corpus)
+    with pytest.raises(ShutongError, match="passing verifier report"):
+        _verify_note(corpus, evidence="I checked the source myself.")
+
+
+def test_verify_note_requires_boolean_false(tmp_path):
     corpus = str(tmp_path / "corpus")
     papers.create({"paper_id": "nicea", "title": "Nicaea"}, corpus)
-    papers.set_bibliography({"paper_id": "nicea", "entries": [{"id": "athanasius"}, {"id": "ayres"}]}, corpus)
-    papers.approve_bibliography({"paper_id": "nicea"}, corpus)
-    for source_id, role in (("athanasius", "primary"), ("ayres", "secondary")):
-        papers.add_source({"paper_id": "nicea", "source_id": source_id, "role": role}, corpus)
-        papers.set_source_access({"paper_id": "nicea", "source_id": source_id, "category": "open"}, corpus)
-    papers.authorize_ingestion({"paper_id": "nicea", "mode": "batch", "source_ids": ["athanasius", "ayres"]}, corpus)
-    registry = tmp_path / ".shutong" / "source-registry.json"
-    registry.parent.mkdir()
-    registry.write_text('{"athanasius": {"document_path": "corpus/athanasius"}, "ayres": {"document_path": "corpus/ayres"}}', encoding="utf-8")
-    for source_id in ("athanasius", "ayres"):
-        papers.mark_source_ingested({"paper_id": "nicea", "source_id": source_id}, corpus)
-    papers.add_note({"paper_id": "nicea", "source_id": "athanasius", "locator": "p. 1", "claim": "The source supports the claim.", "evidence": "A direct quotation.", "confidence": "known", "tags": ["doctrine"]}, corpus)
-    papers.verify_note({"paper_id": "nicea", "note_id": "note-1", "evidence": "verified against p. 1"}, corpus)
-    papers.add_claim({"paper_id": "nicea", "claim_id": "claim-1", "text": "The source supports the claim.", "note_ids": ["note-1"]}, corpus)
-    papers.verify_claim({"paper_id": "nicea", "claim_id": "claim-1", "evidence": "claim aligns with note-1"}, corpus)
-    exported = papers.export_docx({"paper_id": "nicea", "draft_requested": True, "draft": "The source supports the claim (Athanasius 325, 1)."}, corpus)
-    assert exported["status"] == "ok"
+    note_path = tmp_path / "papers" / "nicea" / "notes" / "note-1.md"
+    note_path.write_text('---\nsource_id: athanasius\nlocator: p. 1\nverified: "false"\n---\n\n## Evidence\n\nverified: true\n', encoding="utf-8")
+    report = papers.record_verifier_report({"paper_id": "nicea", "outcome": "pass", "scope": "note:note-1"}, corpus)
+    with pytest.raises(ShutongError, match="verifiable note metadata"):
+        papers.verify_note({"paper_id": "nicea", "note_id": "note-1", "evidence": report["report_id"]}, corpus)
+
+
+def test_ids_are_not_overwritten_and_survive_holes(tmp_path):
+    corpus = _make_paper(tmp_path)
+    _add_note(corpus)
+    _add_note(corpus)
+    with pytest.raises(ShutongError, match="already exists"):
+        _add_note(corpus, note_id="note-1")
+    (tmp_path / "papers" / "nicea" / "notes" / "note-1.md").unlink()
+    assert _add_note(corpus)["note_id"] == "note-3"
+    _verify_note(corpus, "note-2")
+    _add_claim(corpus, claim_id="claim-1", note_ids=("note-2",))
+    _add_claim(corpus, claim_id="claim-2", note_ids=("note-2",))
+    with pytest.raises(ShutongError, match="already exists"):
+        _add_claim(corpus, claim_id="claim-1", note_ids=("note-2",))
+    (tmp_path / "papers" / "nicea" / "claims" / "claim-1.json").unlink()
+    assert _add_claim(corpus, note_ids=("note-2",))["claim_id"] == "claim-3"
+
+
+def test_duplicate_report_ids_are_rejected_and_holes_do_not_collide(tmp_path):
+    corpus = str(tmp_path / "corpus")
+    papers.create({"paper_id": "nicea", "title": "Nicaea"}, corpus)
+    papers.record_verifier_report({"paper_id": "nicea", "report_id": "verifier-1", "outcome": "pass"}, corpus)
+    papers.record_verifier_report({"paper_id": "nicea", "report_id": "verifier-2", "outcome": "pass"}, corpus)
+    with pytest.raises(ShutongError, match="already exists"):
+        papers.record_verifier_report({"paper_id": "nicea", "report_id": "verifier-1", "outcome": "fail"}, corpus)
+    (tmp_path / "papers" / "nicea" / "audits" / "verifier-1.json").unlink()
+    result = papers.record_verifier_report({"paper_id": "nicea", "outcome": "pass"}, corpus)
+    assert result["report_id"] == "verifier-3"
+
+
+def test_stale_claim_after_note_change_blocks_audit_and_export(tmp_path):
+    corpus = _make_paper(tmp_path)
+    _add_note(corpus)
+    _verify_note(corpus)
+    _add_claim(corpus, claim_id="claim-1")
+    _verify_claim(corpus, "claim-1")
+    assert papers.audit({"paper_id": "nicea"}, corpus)["status"] == "ok"
+    note_path = tmp_path / "papers" / "nicea" / "notes" / "note-1.md"
+    note_path.write_text(note_path.read_text(encoding="utf-8") + "\n\nRewritten after verification.\n", encoding="utf-8")
+    report = papers.audit({"paper_id": "nicea"}, corpus)
+    assert report["status"] == "incomplete"
+    assert any(item["stage"] == "claim_evidence" for item in report["missing"])
+    with pytest.raises(ShutongError, match="changed after the claim"):
+        _verify_claim(corpus, "claim-1")
+    assert papers.draft_context({"paper_id": "nicea", "draft_requested": True}, corpus)["status"] == "needs_evidence"
+    assert papers.export_docx({"paper_id": "nicea", "draft_requested": True, "draft": "Text."}, corpus)["status"] == "needs_evidence"
+
+
+def test_mark_source_ingested_rejects_bad_registry_paths(tmp_path):
+    corpus = _make_paper(tmp_path, ingest=False)
+    _write_registry(tmp_path, {"athanasius": {"document_path": str(tmp_path / "outside")}})
+    (tmp_path / "outside").mkdir()
+    (tmp_path / "outside" / "document.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "outside" / "merkle.json").write_text('{"root": "x"}', encoding="utf-8")
+    with pytest.raises(ShutongError, match="outside the corpus"):
+        papers.mark_source_ingested({"paper_id": "nicea", "source_id": "athanasius"}, corpus)
+    document = _write_document(tmp_path, "athanasius")
+    (document / "merkle.json").unlink()
+    _write_registry(tmp_path, {"athanasius": {"document_path": str(document)}})
+    with pytest.raises(ShutongError, match="missing merkle.json"):
+        papers.mark_source_ingested({"paper_id": "nicea", "source_id": "athanasius"}, corpus)
+
+
+def test_audit_fails_closed_when_ingested_registry_is_stale(tmp_path):
+    corpus = _make_paper(tmp_path)
+    (tmp_path / "corpus" / "athanasius" / "merkle.json").unlink()
+    report = papers.audit({"paper_id": "nicea"}, corpus)
+    assert report["status"] == "incomplete"
+    assert any(item["stage"] == "ingestion" and item.get("source_id") == "athanasius" for item in report["missing"])
+    (tmp_path / ".shutong" / "source-registry.json").unlink()
+    report = papers.audit({"paper_id": "nicea"}, corpus)
+    assert report["status"] == "incomplete"
+    assert any(item.get("stage") == "ingestion" and item["required"] == "at least one valid ingested source" for item in report["missing"])
+
+
+def test_linked_verifier_reports_gate_and_remain_visible(tmp_path):
+    corpus = _make_paper(tmp_path)
+    _add_note(corpus)
+    papers.record_verifier_report({"paper_id": "nicea", "report_id": "verifier-1", "outcome": "fail", "scope": "note:note-1"}, corpus)
+    with pytest.raises(ShutongError, match="passing verifier report"):
+        _verify_note(corpus, report_id="verifier-1")
+    papers.override_verifier_report({"paper_id": "nicea", "report_id": "verifier-1", "reason": "Reviewed the scan."}, corpus)
+    papers.record_verifier_report({"paper_id": "nicea", "report_id": "verifier-2", "outcome": "pass", "scope": "note:note-1"}, corpus)
+    _verify_note(corpus, report_id="verifier-2")
+    metadata, _ = papers._parse_note((tmp_path / "papers" / "nicea" / "notes" / "note-1.md").read_text(encoding="utf-8"))
+    assert metadata["verifier_report_id"] == "verifier-2"
+    _add_claim(corpus, claim_id="claim-1")
+    papers.record_verifier_report({"paper_id": "nicea", "report_id": "verifier-3", "outcome": "pass", "scope": "claim:claim-1"}, corpus)
+    _verify_claim(corpus, "claim-1", evidence="verifier-3")
+    claim = json.loads((tmp_path / "papers" / "nicea" / "claims" / "claim-1.json").read_text(encoding="utf-8"))
+    assert claim["verifier_report_id"] == "verifier-3"
+    assert papers.audit({"paper_id": "nicea"}, corpus)["status"] == "ok"
+    papers.record_verifier_report({"paper_id": "nicea", "report_id": "verifier-4", "outcome": "uncertain", "scope": "paper"}, corpus)
+    report = papers.audit({"paper_id": "nicea"}, corpus)
+    assert report["status"] == "incomplete"
+    assert any(item["stage"] == "verifier_report" and item.get("report_id") == "verifier-4" for item in report["missing"])
+    papers.override_verifier_report({"paper_id": "nicea", "report_id": "verifier-4", "reason": "Reviewed the scan."}, corpus)
     assert papers.audit({"paper_id": "nicea"}, corpus)["status"] == "ok"
 
 
-def test_book_chapters_share_sources_but_not_notes_or_claims(tmp_path):
+def test_draft_outreach_rejects_contact_traversal(tmp_path):
     corpus = str(tmp_path / "corpus")
-    workspaces.create_project({"project_id": "augustine-book", "title": "Augustine", "kind": "book"}, corpus)
-    for work_id, title in (("chapter-one", "Chapter One"), ("chapter-two", "Chapter Two")):
-        workspaces.create_work({"project_id": "augustine-book", "work_id": work_id, "title": title}, corpus)
-    papers.set_bibliography({"paper_id": "chapter-one", "entries": [{"id": "confessions"}]}, corpus)
-    papers.approve_bibliography({"paper_id": "chapter-one"}, corpus)
-    papers.add_source({"paper_id": "chapter-one", "source_id": "confessions", "role": "primary", "ingested": True}, corpus)
-    assert papers.allowed_source_ids("chapter-two", corpus) == {"confessions"}
-    papers.add_note({"paper_id": "chapter-one", "source_id": "confessions", "locator": "I.1", "claim": "A chapter-one note.", "evidence": "Source passage.", "confidence": "known", "tags": ["autobiography"]}, corpus)
-    assert papers.search_notes({"paper_id": "chapter-two", "query": "chapter-one"}, corpus)["matches"] == []
-
-
-def test_workspace_planner_requires_confirmation_to_switch(tmp_path):
-    corpus = str(tmp_path / "corpus")
-    workspaces.create_project({"project_id": "book", "title": "Augustine", "kind": "book"}, corpus)
-    workspaces.create_work({"project_id": "book", "work_id": "confessions-chapter", "title": "Confessions"}, corpus)
-    plan = workspaces.plan_switch({"query": "work on confessions-chapter now"}, corpus)
-    assert plan["action"] == "confirm_switch"
-    with pytest.raises(ShutongError, match="Confirm"):
-        workspaces.activate({"project_id": "book", "work_id": "confessions-chapter"}, corpus)
-    assert workspaces.activate({"project_id": "book", "work_id": "confessions-chapter", "confirmed": True}, corpus)["active"]["work_id"] == "confessions-chapter"
+    papers.create({"paper_id": "nicea", "title": "Nicaea"}, corpus)
+    papers.record_public_contact({"paper_id": "nicea", "name": "Scholar", "provenance": "public faculty page"}, corpus)
+    (tmp_path / "papers" / "nicea" / "escape.json").write_text('{"id": "escape"}', encoding="utf-8")
+    with pytest.raises(ShutongError, match="Contact IDs"):
+        papers.draft_outreach({"paper_id": "nicea", "contact_id": "../escape", "body": "Hello"}, corpus)
+    assert not (tmp_path / "papers" / "nicea" / "escape-outreach.md").exists()

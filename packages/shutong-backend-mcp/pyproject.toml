@@ -1,0 +1,20 @@
+[project]
+name = "shutong-backend-mcp"
+version = "0.0.3"
+description = "MCP registry launcher for the Shutong backend MCP server"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+dependencies = [
+    "shutong-backend==0.0.3",
+]
+
+[project.scripts]
+shutong-backend-mcp = "shutong_backend.mcp_server:cli"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/shutong_backend_mcp"]

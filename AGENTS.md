@@ -49,7 +49,7 @@ Before answering any research question:
 2. Call `shutong_verify` on the top results before quoting them.
 3. If `shutong_verify` returns FAIL for a node, mark it [UNVERIFIED] and exclude it from your answer.
 4. Do not answer factual scholarly questions from parametric memory alone.
-5. If the corpus is empty, say: "No documents ingested yet. Run: `@ingestor ingest <source>`".
+5. If the corpus is empty, say: "No documents ingested yet. Use the `ingest-source` skill to add a source."
 
 ## Translation Protocol
 

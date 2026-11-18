@@ -80,35 +80,65 @@ def env_setup(project_root: Path, monkeypatch):
 
 
 class TestProjectInit:
-    """Test shutong init creates correct project structure."""
+    """Test shutong init creates the no-agent, skill-routed project surface."""
 
-    def test_init_creates_agents_md(self, project_root: Path, env_setup):
-        from shutong_backend.templates import render_project_agents_md, project_files
-        from shutong_backend.mcp_server import get_corpus_root
+    def test_init_creates_agents_md_with_skill_routing(self):
+        from shutong_backend.templates import render_project_agents_md
 
-        snapshot = "Smith_2025_Logos"
-        agents_md = render_project_agents_md(snapshot)
+        agents_md = render_project_agents_md("Smith_2025_Logos")
         assert "Scholar Principle" in agents_md
         assert "Smith_2025_Logos" in agents_md
+        assert "Shutong ships no agent definitions" in agents_md
+        assert "Route by skill, not by subagent" in agents_md
+        assert "`explore-bibliography`" in agents_md
+        assert "`verify-bibliography`" in agents_md
 
-    def test_init_creates_project_files(self, project_root: Path, env_setup):
-        from shutong_backend.templates import project_files
+    def test_init_writes_no_agent_layer_and_no_host_config(self):
+        from shutong_backend.templates import PROJECT_SKILLS, ROLE_SKILLS, project_files
 
         files = project_files("test snapshot")
-        expected_paths = [
-            "AGENTS.md",
-            "shutong.json",
-            ".shutong/agents/bibliographer.md",
-            ".shutong/agents/noter.md",
-            ".shutong/agents/verifier.md",
-            ".shutong/agents/ingestor.md",
-            ".shutong/agents/workspace-planner.md",
-            ".shutong/skills/cite-research/SKILL.md",
-            ".shutong/skills/workspace-planner/SKILL.md",
-            ".shutong/commands/research.md",
-        ]
-        for path_str in expected_paths:
-            assert any(str(p).endswith(path_str.split("/")[-1]) for p in files), f"Missing: {path_str}"
+        paths = {str(path) for path in files}
+
+        assert "AGENTS.md" in paths
+        assert not any(path.startswith(".shutong/agents/") for path in paths)
+        assert not any(path.startswith(".shutong/skills/") for path in paths)
+        assert "shutong.json" not in paths
+        assert not any(path.endswith("/shutong.json") for path in paths)
+        assert "default_agent" not in "\n".join(files.values())
+        assert len(PROJECT_SKILLS) == 17
+        for skill in PROJECT_SKILLS:
+            assert f".agents/skills/{skill}/SKILL.md" in paths
+
+        for skill in ROLE_SKILLS:
+            assert f".agents/skills/{skill}/SKILL.md" in paths
+
+        for command in ("research", "ingest", "verify"):
+            assert f".shutong/commands/{command}.md" in paths
+            assert "agent:" not in files[Path(f".shutong/commands/{command}.md")]
+
+    def test_role_skills_carry_current_tool_contracts(self):
+        from shutong_backend.templates import ROLE_SKILLS, project_files
+
+        files = project_files("test snapshot")
+        expected = {
+            "explore-bibliography": "shutong_bibliography_search",
+            "ingest-source": "mark_ingested",
+            "noter": "shutong_note",
+            "verify-bibliography": "shutong_verifier_report",
+            "workspace-planner": "plan_switch",
+            "paper-workspace": "shutong_workspace",
+        }
+        assert set(expected) == set(ROLE_SKILLS)
+
+        skill_text = "\n".join(
+            files[Path(f".agents/skills/{skill}/SKILL.md")] for skill in ROLE_SKILLS
+        )
+        for skill, token in expected.items():
+            assert token in files[Path(f".agents/skills/{skill}/SKILL.md")], skill
+        assert "shutong_pipeline" not in skill_text
+        assert "shutong_glossary_add" not in skill_text
+        assert "action `all`" not in skill_text
+        assert "mode: all" in files[Path(".agents/skills/verify-corpus/SKILL.md")]
 
 
 class TestIngestionStatus:
@@ -237,6 +267,69 @@ class TestDoctorIntegration:
         assert corpus_check["ok"] is True
 
 
+class TestDoctorSurface:
+    """Test doctor --surface against the init output and host skill paths."""
+
+    @staticmethod
+    def _write_init_files(root: Path) -> None:
+        from shutong_backend.templates import project_files
+
+        for relative_path, content in project_files("Smith_2025_Logos").items():
+            path = root / relative_path
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(content, encoding="utf-8")
+
+    def test_clean_init_passes_surface_checks(self, tmp_path: Path):
+        from shutong_backend.doctor import collect_surface_checks
+
+        self._write_init_files(tmp_path)
+        checks = {check["name"]: check for check in collect_surface_checks(tmp_path)}
+
+        assert checks["Packaged skill pack"]["ok"] is True
+        assert checks["Project skill pack"]["ok"] is True
+        assert checks["No agent layer"]["ok"] is True
+        assert checks["AGENTS.md skill routing"]["ok"] is True
+
+    def test_legacy_shutong_skills_do_not_satisfy_host_pack(self, tmp_path: Path):
+        from shutong_backend.doctor import collect_surface_checks
+        from shutong_backend.templates import ROLE_SKILLS
+
+        for skill in ROLE_SKILLS:
+            path = tmp_path / ".shutong" / "skills" / skill / "SKILL.md"
+            path.parent.mkdir(parents=True)
+            path.write_text(f"# {skill}\n", encoding="utf-8")
+
+        checks = {check["name"]: check for check in collect_surface_checks(tmp_path)}
+        assert checks["Project skill pack"]["ok"] is False
+        assert ".shutong/skills" not in checks["Project skill pack"]["detail"]
+
+    def test_partial_host_pack_is_reported_missing(self, tmp_path: Path):
+        from shutong_backend.doctor import collect_surface_checks
+
+        path = tmp_path / ".agents" / "skills" / "explore-bibliography" / "SKILL.md"
+        path.parent.mkdir(parents=True)
+        path.write_text("# explore-bibliography\n", encoding="utf-8")
+
+        checks = {check["name"]: check for check in collect_surface_checks(tmp_path)}
+        assert checks["Project skill pack"]["ok"] is False
+        assert "ingest-source" in checks["Project skill pack"]["detail"]
+
+    def test_incomplete_host_roots_are_not_combined(self, tmp_path: Path):
+        from shutong_backend.doctor import collect_surface_checks
+
+        for root_name, skill in (
+            (".agents/skills", "explore-bibliography"),
+            (".claude/skills", "ingest-source"),
+        ):
+            path = tmp_path / root_name / skill / "SKILL.md"
+            path.parent.mkdir(parents=True)
+            path.write_text(f"# {skill}\n", encoding="utf-8")
+
+        checks = {check["name"]: check for check in collect_surface_checks(tmp_path)}
+        assert checks["Project skill pack"]["ok"] is False
+        assert ".agents/skills missing" in checks["Project skill pack"]["detail"]
+
+
 class TestMCPServerIntegration:
     """Test MCP server dispatches tool calls correctly."""
 
@@ -250,7 +343,7 @@ class TestMCPServerIntegration:
         assert payload["error_code"] == "unknown_tool"
 
     @pytest.mark.asyncio
-    async def test_call_tool_glossary_add(self, project_root: Path, env_setup):
+    async def test_removed_glossary_tool_is_unknown(self, project_root: Path, env_setup):
         from shutong_backend.mcp_server import call_tool
 
         result = await call_tool("shutong_glossary_add", {
@@ -258,7 +351,17 @@ class TestMCPServerIntegration:
             "term_zh": "神化",
         })
         payload = json.loads(result[0]["text"])
+        assert payload["status"] == "error"
+        assert payload["error_code"] == "unknown_tool"
+
+    @pytest.mark.asyncio
+    async def test_grouped_workspace_tool_dispatches(self, project_root: Path, env_setup):
+        from shutong_backend.mcp_server import call_tool
+
+        result = await call_tool("shutong_workspace", {"action": "list"})
+        payload = json.loads(result[0]["text"])
         assert payload["status"] == "ok"
+        assert "projects" in payload
 
     @pytest.mark.asyncio
     async def test_call_tool_corpus_status(self, project_root: Path, env_setup):
@@ -300,3 +403,23 @@ class TestCLIIntegration:
             result = runner.invoke(cli, ["init", "--dry-run"])
             assert result.exit_code == 0
             assert "DRY-RUN" in result.output
+
+    def test_cli_init_writes_universal_skill_root(self, tmp_path: Path, monkeypatch):
+        from click.testing import CliRunner
+
+        import shutong_backend.cli as cli_module
+        from shutong_backend.cli import cli
+
+        monkeypatch.setattr(cli_module.doctor, "run_checks", lambda *_args, **_kwargs: 0)
+        runner = CliRunner()
+        with runner.isolated_filesystem(temp_dir=str(tmp_path)):
+            result = runner.invoke(cli, ["init"])
+            assert result.exit_code == 0
+
+            assert Path(".agents/skills/explore-bibliography/SKILL.md").is_file()
+            assert Path(".agents/skills/noter/SKILL.md").is_file()
+            assert Path(".agents/skills/verify-bibliography/SKILL.md").is_file()
+            assert not Path("shutong.json").exists()
+            assert not Path(".shutong/agents").exists()
+            assert not Path(".shutong/skills").exists()
+            assert "Route by skill" in Path("AGENTS.md").read_text(encoding="utf-8")

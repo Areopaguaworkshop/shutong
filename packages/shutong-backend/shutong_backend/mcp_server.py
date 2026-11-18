@@ -8,8 +8,12 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import contextlib
+import io
 import json
 import os
+import sys
+from collections.abc import Iterator
 from typing import Any
 
 from mcp.server import Server
@@ -64,9 +68,12 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
                 "paper_id": {"type": "string"},
                 "library_wide": {"type": "boolean", "default": False},
             },
+            # Branches are mutually exclusive: ``mode`` is pinned when present,
+            # and the required field of the other branch is absent. Omitting
+            # ``mode`` therefore means keyword search, never both branches.
             "oneOf": [
-                {"properties": {"mode": {"const": "keyword"}}, "required": ["query"]},
-                {"properties": {"mode": {"const": "regex"}}, "required": ["pattern"]},
+                {"required": ["query"], "properties": {"mode": {"enum": ["keyword"]}}},
+                {"required": ["pattern"], "properties": {"mode": {"enum": ["regex"]}}},
             ],
         },
     },
@@ -171,9 +178,16 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
                 "node_hash": {"type": ["string", "null"], "default": None},
                 "mode": {"type": "string", "enum": ["node", "all"], "default": "node"},
             },
+            # ``mode`` defaults to "node": omitting it requires csl_id and must
+            # not also satisfy the "all" branch. "all" is explicit and takes no
+            # document selector.
             "oneOf": [
-                {"properties": {"mode": {"const": "node"}}, "required": ["csl_id"]},
-                {"properties": {"mode": {"const": "all"}}},
+                {"required": ["csl_id"], "properties": {"mode": {"enum": ["node"]}}},
+                {
+                    "required": ["mode"],
+                    "properties": {"mode": {"const": "all"}},
+                    "not": {"required": ["csl_id"]},
+                },
             ],
         },
     },
@@ -510,6 +524,19 @@ _GROUP_PROPERTIES = {
         "analysis_id": {"type": "string"},
         "paper_id": {"type": "string"},
         "query": {"type": "string"},
+        # Verification may cite an append-only Verifier report instead of a
+        # free-text reference; both spellings are accepted by papers.verify_note.
+        "report_id": {"type": "string"},
+        "verifier_report_id": {"type": "string"},
+    },
+    "shutong_claim": {
+        "paper_id": {"type": "string"},
+        "text": {"type": "string"},
+        "claim_id": {"type": "string"},
+        "note_ids": {"type": "array", "items": {"type": "string"}},
+        "evidence": {"type": "string"},
+        "report_id": {"type": "string"},
+        "verifier_report_id": {"type": "string"},
     },
 }
 
@@ -899,9 +926,30 @@ for _name in tuple(_HANDLERS):
 # ---------------------------------------------------------------------------
 
 
+@contextlib.contextmanager
+def stdout_guard() -> Iterator[None]:
+    """Send incidental Python-level stdout to stderr while MCP owns fd 1.
+
+    ``mcp.server.stdio.stdio_server`` wraps the process stdout *before* the
+    server loop starts and keeps that wrapper for protocol frames, so moving
+    ``sys.stdout`` does not disturb JSON-RPC writes. Third-party libraries that
+    ``print()`` progress during ingestion (citeindex's PDF pipeline does) would
+    otherwise interleave text into the JSON-RPC stream and corrupt framing.
+    """
+    if sys.stderr is None:  # pragma: no cover - embedded interpreters
+        with contextlib.redirect_stdout(io.StringIO()):
+            yield
+        return
+    with contextlib.redirect_stdout(sys.stderr):
+        yield
+
+
 async def main() -> None:
     async with stdio_server() as (read_stream, write_stream):
-        await server.run(read_stream, write_stream, server.create_initialization_options())
+        # Redirection starts after the transport has captured stdout for MCP
+        # frames, and covers every handler thread for the session's lifetime.
+        with stdout_guard():
+            await server.run(read_stream, write_stream, server.create_initialization_options())
 
 
 def _parse_args() -> argparse.Namespace:
