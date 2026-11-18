@@ -1,0 +1,59 @@
+{
+  "name": "@ephremyuan/shutong",
+  "version": "0.1.1",
+  "description": "TypeScript MCP server for Shutong, with a local SQLite FTS5 search index",
+  "type": "module",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "files": [
+    "dist",
+    "tools.generated.json",
+    "README.md",
+    "CHANGELOG.md",
+    "CUTOVER.md",
+    "QUALITY.md",
+    "LICENSE"
+  ],
+  "bin": {
+    "shutong-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.ts",
+    "bench": "node src/search/bench.ts",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc -p tsconfig.build.json && cp tools.generated.json dist/",
+    "prepack": "npm run build",
+    "start:src": "node src/index.ts",
+    "quality": "node scripts/quality.ts"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "^2.4.0",
+    "@node-rs/jieba": "^2.0.4",
+    "@types/node": "^24.0.0",
+    "typescript": "^5.8.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "^2.4.0",
+    "jszip": "^3.10.2",
+    "yaml": "^2.9.1"
+  },
+  "main": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Areopaguaworkshop/shutong.git"
+  },
+  "homepage": "https://github.com/Areopaguaworkshop/shutong",
+  "bugs": {
+    "url": "https://github.com/Areopaguaworkshop/shutong/issues"
+  }
+}

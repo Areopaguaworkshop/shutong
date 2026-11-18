@@ -75,6 +75,20 @@ ollama pull qwen3.5:cloud              # primary model
 
 > **GROBID** (PDF structure extraction) is handled inside the `citeindex` project, not here — no action needed in this repo.
 
+### Install the TypeScript MCP server (optional)
+
+```bash
+npm install -g @ephremyuan/shutong
+shutong-mcp install --host opencode
+```
+
+`@ephremyuan/shutong` is the standalone Node.js MCP server (Node ≥24) with a
+local SQLite FTS5 index and its own host installers. It exposes the same 26-tool
+surface as the Python backend and is the cutover target described in
+[packages/shutong-mcp/CUTOVER.md](packages/shutong-mcp/CUTOVER.md); rollback is
+`shutong-mcp rollback`. Package details:
+[packages/shutong-mcp/README.md](packages/shutong-mcp/README.md).
+
 ### Diagnose setup
 
 ```bash

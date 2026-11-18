@@ -1,0 +1,1176 @@
+[
+  {
+    "description": "Search the local corpus by BM25 keyword or regular expression.",
+    "inputSchema": {
+      "oneOf": [
+        {
+          "properties": {
+            "mode": {
+              "enum": [
+                "keyword"
+              ]
+            }
+          },
+          "required": [
+            "query"
+          ]
+        },
+        {
+          "properties": {
+            "mode": {
+              "enum": [
+                "regex"
+              ]
+            }
+          },
+          "required": [
+            "pattern"
+          ]
+        }
+      ],
+      "properties": {
+        "field": {
+          "default": "text",
+          "enum": [
+            "text",
+            "title",
+            "author",
+            "year"
+          ],
+          "type": "string"
+        },
+        "library_wide": {
+          "default": false,
+          "type": "boolean"
+        },
+        "mode": {
+          "default": "keyword",
+          "enum": [
+            "keyword",
+            "regex"
+          ],
+          "type": "string"
+        },
+        "paper_id": {
+          "type": "string"
+        },
+        "pattern": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string"
+        },
+        "top_k": {
+          "default": 20,
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "name": "shutong_search"
+  },
+  {
+    "description": "Search public scholarly metadata APIs and scholar-supplied public catalogue/OAI-PMH/publisher endpoints; returns metadata only.",
+    "inputSchema": {
+      "properties": {
+        "adapters": {
+          "items": {
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "per_source": {
+          "default": 10,
+          "type": "integer"
+        },
+        "query": {
+          "type": "string"
+        },
+        "sources": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "query"
+      ],
+      "type": "object"
+    },
+    "name": "shutong_bibliography_search"
+  },
+  {
+    "description": "List available and planned scholarly source routes with access class and actual implementation status.",
+    "inputSchema": {
+      "properties": {},
+      "type": "object"
+    },
+    "name": "shutong_bibliography_source_catalog"
+  },
+  {
+    "description": "Activate a standalone paper; project works must be activated through the confirmed workspace planner.",
+    "inputSchema": {
+      "properties": {
+        "confirmed": {
+          "default": false,
+          "type": "boolean"
+        },
+        "paper_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "paper_id"
+      ],
+      "type": "object"
+    },
+    "name": "shutong_paper_use"
+  },
+  {
+    "description": "Show the active or named paper manifest.",
+    "inputSchema": {
+      "properties": {
+        "paper_id": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "name": "shutong_paper_status"
+  },
+  {
+    "description": "Check primary/secondary source requirements for a paper.",
+    "inputSchema": {
+      "properties": {
+        "paper_id": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "name": "shutong_paper_audit"
+  },
+  {
+    "description": "Export scholar-approved draft Markdown to DOCX only after the paper evidence gates pass.",
+    "inputSchema": {
+      "properties": {
+        "draft": {
+          "type": "string"
+        },
+        "draft_requested": {
+          "default": false,
+          "type": "boolean"
+        },
+        "filename": {
+          "default": "draft",
+          "type": "string"
+        },
+        "paper_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "paper_id",
+        "draft"
+      ],
+      "type": "object"
+    },
+    "name": "shutong_paper_export_docx"
+  },
+  {
+    "description": "Ingest a document, URL, or media file into the corpus.",
+    "inputSchema": {
+      "properties": {
+        "doc_type": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "is_primary": {
+          "default": false,
+          "type": "boolean"
+        },
+        "lang": {
+          "default": "auto",
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "text_direction": {
+          "default": "horizontal",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source"
+      ],
+      "type": "object"
+    },
+    "name": "shutong_ingest"
+  },
+  {
+    "description": "Return ingestion status for the current process.",
+    "inputSchema": {
+      "properties": {},
+      "type": "object"
+    },
+    "name": "shutong_ingest_status"
+  },
+  {
+    "description": "Delete a document directory from the local corpus.",
+    "inputSchema": {
+      "properties": {
+        "csl_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "csl_id"
+      ],
+      "type": "object"
+    },
+    "name": "shutong_delete_document"
+  },
+  {
+    "description": "Verify a document/node or the complete corpus Merkle integrity.",
+    "inputSchema": {
+      "oneOf": [
+        {
+          "properties": {
+            "mode": {
+              "enum": [
+                "node"
+              ]
+            }
+          },
+          "required": [
+            "csl_id"
+          ]
+        },
+        {
+          "not": {
+            "required": [
+              "csl_id"
+            ]
+          },
+          "properties": {
+            "mode": {
+              "const": "all"
+            }
+          },
+          "required": [
+            "mode"
+          ]
+        }
+      ],
+      "properties": {
+        "csl_id": {
+          "type": "string"
+        },
+        "mode": {
+          "default": "node",
+          "enum": [
+            "node",
+            "all"
+          ],
+          "type": "string"
+        },
+        "node_hash": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "type": "object"
+    },
+    "name": "shutong_verify"
+  },
+  {
+    "description": "Return compact cross-session research context (passport + diary + graph) for injection at session start.",
+    "inputSchema": {
+      "properties": {
+        "max_tokens": {
+          "default": 500,
+          "type": "integer"
+        },
+        "passport_id": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "name": "shutong_state_wake_up"
+  },
+  {
+    "description": "Return a unified snapshot of all research state (passports, graph, diary, memory).",
+    "inputSchema": {
+      "properties": {},
+      "type": "object"
+    },
+    "name": "shutong_state_snapshot"
+  },
+  {
+    "description": "Record a session across diary and passport in one call.",
+    "inputSchema": {
+      "properties": {
+        "insights": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "open_questions": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "passport_id": {
+          "type": "string"
+        },
+        "session_id": {
+          "type": "string"
+        },
+        "sources": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "topics": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "session_id"
+      ],
+      "type": "object"
+    },
+    "name": "shutong_state_record_session"
+  },
+  {
+    "description": "Unified visibility: corpus health, Merkle integrity, and research state (passports, graph, diary, memory) in one call.",
+    "inputSchema": {
+      "properties": {},
+      "type": "object"
+    },
+    "name": "shutong_status"
+  },
+  {
+    "description": "Shutong workspace workflow actions.",
+    "inputSchema": {
+      "oneOf": [
+        {
+          "properties": {
+            "action": {
+              "const": "create_paper"
+            }
+          },
+          "required": [
+            "action",
+            "paper_id",
+            "title"
+          ]
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "create_project"
+            }
+          },
+          "required": [
+            "action",
+            "project_id",
+            "title"
+          ]
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "create_work"
+            }
+          },
+          "required": [
+            "action",
+            "project_id",
+            "work_id",
+            "title"
+          ]
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "list"
+            }
+          },
+          "required": [
+            "action"
+          ]
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "plan_switch"
+            }
+          },
+          "required": [
+            "action",
+            "query"
+          ]
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "activate"
+            }
+          },
+          "required": [
+            "action",
+            "project_id",
+            "work_id"
+          ]
+        }
+      ],
+      "type": "object"
+    },
+    "name": "shutong_workspace"
+  },
+  {
+    "description": "Shutong bibliography workflow actions.",
+    "inputSchema": {
+      "oneOf": [
+        {
+          "properties": {
+            "action": {
+              "const": "set"
+            }
+          },
+          "required": [
+            "action",
+            "paper_id",
+            "entries"
+          ]
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "update"
+            }
+          },
+          "required": [
+            "action",
+            "paper_id",
+            "scope",
+            "entries"
+          ]
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "import"
+            }
+          },
+          "required": [
+            "action",
+            "paper_id",
+            "format",
+            "content"
+          ]
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "approve"
+            }
+          },
+          "required": [
+            "action",
+            "paper_id"
+          ]
+        }
+      ],
+      "type": "object"
+    },
+    "name": "shutong_bibliography"
+  },
+  {
+    "description": "Shutong source workflow actions.",
+    "inputSchema": {
+      "oneOf": [
+        {
+          "properties": {
+            "action": {
+              "const": "set_access"
+            }
+          },
+          "required": [
+            "action",
+            "paper_id",
+            "source_id",
+            "category"
+          ]
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "authorize"
+            }
+          },
+          "required": [
+            "action",
+            "paper_id",
+            "mode"
+          ]
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "add"
+            }
+          },
+          "required": [
+            "action",
+            "paper_id",
+            "source_id"
+          ]
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "mark_ingested"
+            }
+          },
+          "required": [
+            "action",
+            "paper_id",
+            "source_id"
+          ]
+        }
+      ],
+      "type": "object"
+    },
+    "name": "shutong_source"
+  },
+  {
+    "description": "Shutong note workflow actions.",
+    "inputSchema": {
+      "oneOf": [
+        {
+          "properties": {
+            "action": {
+              "const": "add"
+            },
+            "analysis_id": {
+              "type": "string"
+            },
+            "claim": {
+              "type": "string"
+            },
+            "confidence": {
+              "enum": [
+                "known",
+                "probable",
+                "speculative"
+              ],
+              "type": "string"
+            },
+            "evidence": {
+              "type": "string"
+            },
+            "locator": {
+              "type": "string"
+            },
+            "note_id": {
+              "type": "string"
+            },
+            "paper_id": {
+              "type": "string"
+            },
+            "query": {
+              "type": "string"
+            },
+            "report_id": {
+              "type": "string"
+            },
+            "source_id": {
+              "type": "string"
+            },
+            "tags": {
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array"
+            },
+            "verifier_report_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "action",
+            "paper_id",
+            "source_id",
+            "locator",
+            "claim",
+            "evidence",
+            "confidence",
+            "tags"
+          ]
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "search"
+            },
+            "analysis_id": {
+              "type": "string"
+            },
+            "claim": {
+              "type": "string"
+            },
+            "confidence": {
+              "enum": [
+                "known",
+                "probable",
+                "speculative"
+              ],
+              "type": "string"
+            },
+            "evidence": {
+              "type": "string"
+            },
+            "locator": {
+              "type": "string"
+            },
+            "note_id": {
+              "type": "string"
+            },
+            "paper_id": {
+              "type": "string"
+            },
+            "query": {
+              "type": "string"
+            },
+            "report_id": {
+              "type": "string"
+            },
+            "source_id": {
+              "type": "string"
+            },
+            "tags": {
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array"
+            },
+            "verifier_report_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "action",
+            "paper_id",
+            "query"
+          ]
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "verify"
+            },
+            "analysis_id": {
+              "type": "string"
+            },
+            "claim": {
+              "type": "string"
+            },
+            "confidence": {
+              "enum": [
+                "known",
+                "probable",
+                "speculative"
+              ],
+              "type": "string"
+            },
+            "evidence": {
+              "type": "string"
+            },
+            "locator": {
+              "type": "string"
+            },
+            "note_id": {
+              "type": "string"
+            },
+            "paper_id": {
+              "type": "string"
+            },
+            "query": {
+              "type": "string"
+            },
+            "report_id": {
+              "type": "string"
+            },
+            "source_id": {
+              "type": "string"
+            },
+            "tags": {
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array"
+            },
+            "verifier_report_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "action",
+            "paper_id",
+            "note_id",
+            "evidence"
+          ]
+        }
+      ],
+      "type": "object"
+    },
+    "name": "shutong_note"
+  },
+  {
+    "description": "Shutong claim workflow actions.",
+    "inputSchema": {
+      "oneOf": [
+        {
+          "properties": {
+            "action": {
+              "const": "add"
+            },
+            "claim_id": {
+              "type": "string"
+            },
+            "evidence": {
+              "type": "string"
+            },
+            "note_ids": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "paper_id": {
+              "type": "string"
+            },
+            "report_id": {
+              "type": "string"
+            },
+            "text": {
+              "type": "string"
+            },
+            "verifier_report_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "action",
+            "paper_id",
+            "text",
+            "note_ids"
+          ]
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "verify"
+            },
+            "claim_id": {
+              "type": "string"
+            },
+            "evidence": {
+              "type": "string"
+            },
+            "note_ids": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "paper_id": {
+              "type": "string"
+            },
+            "report_id": {
+              "type": "string"
+            },
+            "text": {
+              "type": "string"
+            },
+            "verifier_report_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "action",
+            "paper_id",
+            "claim_id",
+            "evidence"
+          ]
+        }
+      ],
+      "type": "object"
+    },
+    "name": "shutong_claim"
+  },
+  {
+    "description": "Shutong corpus workflow actions.",
+    "inputSchema": {
+      "oneOf": [
+        {
+          "properties": {
+            "action": {
+              "const": "status"
+            }
+          },
+          "required": [
+            "action"
+          ]
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "tree"
+            }
+          },
+          "required": [
+            "action"
+          ]
+        }
+      ],
+      "type": "object"
+    },
+    "name": "shutong_corpus"
+  },
+  {
+    "description": "Shutong citation workflow actions.",
+    "inputSchema": {
+      "oneOf": [
+        {
+          "properties": {
+            "action": {
+              "const": "resolve"
+            }
+          },
+          "required": [
+            "action",
+            "citation_key"
+          ]
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "render"
+            }
+          },
+          "required": [
+            "action",
+            "csl_id"
+          ]
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "tree"
+            }
+          },
+          "required": [
+            "action",
+            "csl_id"
+          ]
+        }
+      ],
+      "type": "object"
+    },
+    "name": "shutong_citation"
+  },
+  {
+    "description": "Shutong memory workflow actions.",
+    "inputSchema": {
+      "oneOf": [
+        {
+          "properties": {
+            "action": {
+              "const": "search"
+            }
+          },
+          "required": [
+            "action",
+            "query"
+          ]
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "list"
+            }
+          },
+          "required": [
+            "action"
+          ]
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "save"
+            }
+          },
+          "required": [
+            "action",
+            "title",
+            "content"
+          ]
+        }
+      ],
+      "type": "object"
+    },
+    "name": "shutong_memory"
+  },
+  {
+    "description": "Shutong outreach workflow actions.",
+    "inputSchema": {
+      "oneOf": [
+        {
+          "properties": {
+            "action": {
+              "const": "record_contact"
+            }
+          },
+          "required": [
+            "action",
+            "paper_id",
+            "name",
+            "provenance"
+          ]
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "draft"
+            }
+          },
+          "required": [
+            "action",
+            "paper_id",
+            "contact_id",
+            "body"
+          ]
+        }
+      ],
+      "type": "object"
+    },
+    "name": "shutong_outreach"
+  },
+  {
+    "description": "Shutong verifier_report workflow actions.",
+    "inputSchema": {
+      "oneOf": [
+        {
+          "properties": {
+            "action": {
+              "const": "record"
+            }
+          },
+          "required": [
+            "action",
+            "paper_id",
+            "outcome"
+          ]
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "override"
+            }
+          },
+          "required": [
+            "action",
+            "paper_id",
+            "report_id",
+            "reason"
+          ]
+        }
+      ],
+      "type": "object"
+    },
+    "name": "shutong_verifier_report"
+  },
+  {
+    "description": "Run paper-scoped concordance, collocations, contextual sentiment evidence, exact quotation checks or source text reuse; retrieve, annotate and review saved provenance records.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "properties": {
+            "action": {
+              "const": "run"
+            }
+          },
+          "required": [
+            "mode",
+            "language",
+            "question",
+            "source_ids"
+          ]
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "get"
+            }
+          },
+          "required": [
+            "analysis_id"
+          ]
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "annotate"
+            }
+          },
+          "required": [
+            "analysis_id",
+            "record_sha256",
+            "model_id",
+            "annotations"
+          ]
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "review"
+            }
+          },
+          "required": [
+            "analysis_id",
+            "record_sha256",
+            "outcome",
+            "evidence",
+            "reviewer"
+          ]
+        }
+      ],
+      "properties": {
+        "action": {
+          "enum": [
+            "run",
+            "get",
+            "annotate",
+            "review"
+          ]
+        },
+        "analysis_id": {
+          "pattern": "^analysis-[a-f0-9]{32}$",
+          "type": "string"
+        },
+        "annotations": {
+          "items": {
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "context": {
+          "maximum": 1000,
+          "minimum": 20,
+          "type": "integer"
+        },
+        "evidence": {
+          "type": "string"
+        },
+        "language": {
+          "enum": [
+            "en",
+            "zh"
+          ]
+        },
+        "limit": {
+          "maximum": 200,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "minimum_tokens": {
+          "maximum": 30,
+          "minimum": 4,
+          "type": "integer"
+        },
+        "mode": {
+          "enum": [
+            "concordance",
+            "collocations",
+            "contextual_sentiment",
+            "quotation",
+            "text_reuse"
+          ]
+        },
+        "model_id": {
+          "type": "string"
+        },
+        "outcome": {
+          "enum": [
+            "pass",
+            "fail",
+            "uncertain"
+          ]
+        },
+        "paper_id": {
+          "pattern": "^[a-z0-9][a-z0-9-]{0,62}$",
+          "type": "string"
+        },
+        "query": {
+          "type": "string"
+        },
+        "question": {
+          "type": "string"
+        },
+        "record_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "reviewer": {
+          "type": "string"
+        },
+        "rubric": {
+          "type": "string"
+        },
+        "source_ids": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 50,
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "window": {
+          "maximum": 20,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "action",
+        "paper_id"
+      ],
+      "type": "object"
+    },
+    "name": "shutong_analysis"
+  }
+]
