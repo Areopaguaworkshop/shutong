@@ -1,7 +1,8 @@
 # Publishing Shutong as an MCP server — 0.0.3
 
-This guide covers the 0.0.3 release. Nothing in the 0.0.3 train is published or
-tested yet; treat every status below as a plan until a command proves otherwise.
+This guide covers the 0.0.3 release. Both 0.0.3 packages are published and the
+launcher is verified from a clean install; keep the release order below for future
+versions.
 
 ## Two PyPI distributions, one server
 
@@ -14,9 +15,9 @@ The supported layout is two distributions:
 
 | Artifact | Registry | Identifier | Version | Status |
 | --- | --- | --- | --- | --- |
-| Backend + MCP implementation | PyPI | `shutong-backend` | 0.0.3 | not published |
-| Thin launcher | PyPI | `shutong-backend-mcp` | 0.0.3 | not published |
-| Registry metadata | MCP Registry | `io.github.Areopaguaworkshop/shutong` | 0.0.3 | not published |
+| Backend + MCP implementation | PyPI | `shutong-backend` | 0.0.3 | published |
+| Thin launcher | PyPI | `shutong-backend-mcp` | 0.0.3 | published |
+| Registry metadata | MCP Registry | `io.github.Areopaguaworkshop/shutong` | 0.0.3 | validated, not published |
 
 `packages/shutong-backend-mcp/` declares the exact dependency
 `shutong-backend==0.0.3` and exposes the same console script
@@ -125,14 +126,11 @@ need a reference file.
 }
 ```
 
-### Expected validation failure before publish
+### Validation
 
-`shutong-backend-mcp==0.0.3` and `shutong-backend==0.0.3` do not exist yet.
-`mcp-publisher validate` checks the live registry and package state, so it is
-expected to fail until both PyPI uploads in steps 1–2 succeed. A failure that
-names the missing 0.0.3 package or version is not a schema defect; a schema,
-marker, or identifier error is. Re-run validation after publishing and only then
-run `mcp-publisher publish`.
+`mcp-publisher validate` passed on this machine after both PyPI uploads. For a
+future version, run it only after both packages are public; a failure naming the
+missing version is index lag, while a marker or identifier error is a real defect.
 
 Rules that reject a publish: description over 100 characters, a range as version,
 `"version": "latest"`, package not yet public, missing `mcp-name:` marker, or a
@@ -140,9 +138,8 @@ registry host other than `pypi.org` / `registry.npmjs.org`.
 
 ## PyPI authentication
 
-Neither package is published yet. Create one project-scoped token per
-distribution (Account settings → API tokens), or a first-upload token scoped to
-the new project name:
+Both 0.0.3 packages are public. Keep one project-scoped token per distribution
+(Account settings → API tokens) for the next upload:
 
 ```bash
 export UV_PUBLISH_TOKEN=pypi-...
