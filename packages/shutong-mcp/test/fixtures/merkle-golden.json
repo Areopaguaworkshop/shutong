@@ -1,0 +1,232 @@
+{
+  "canonicalize": [
+    {
+      "expected": "a\nb",
+      "input": "  a\r\n\tb  "
+    },
+    {
+      "expected": "a b",
+      "input": "a b"
+    },
+    {
+      "expected": "a b",
+      "input": "a　b"
+    },
+    {
+      "expected": "a b",
+      "input": "a\u001cb"
+    },
+    {
+      "expected": "a\n\nb",
+      "input": "a\n\nb"
+    },
+    {
+      "expected": "",
+      "input": ""
+    },
+    {
+      "expected": "",
+      "input": "  \t "
+    }
+  ],
+  "hashPayload": [
+    {
+      "expected": "7e18f737311b2dc3b2f269dd78396b0351f14fb66efa879f768cb23181883c78",
+      "input": "  a\r\n\tb  "
+    },
+    {
+      "expected": "43258cff783fe7036d8a43033f830adfc60ec037382473548ac742b888292777",
+      "input": {
+        "a": 1,
+        "b": 2
+      }
+    },
+    {
+      "expected": "85050a45472be84d1fd8192093ec28115dcc9ad804730e54efd4deb8dfb9ebc4",
+      "input": {
+        "nested": {
+          "y": null,
+          "z": true
+        },
+        "unicode": "袁永甲"
+      }
+    }
+  ],
+  "json": [
+    {
+      "expected": "{\"a\":1,\"b\":2}",
+      "input": {
+        "a": 1,
+        "b": 2
+      }
+    },
+    {
+      "expected": "{\"arr\":[1,\"x\",false],\"nested\":{\"y\":null,\"z\":true},\"unicode\":\"袁永甲\"}",
+      "input": {
+        "arr": [
+          1,
+          "x",
+          false
+        ],
+        "nested": {
+          "y": null,
+          "z": true
+        },
+        "unicode": "袁永甲"
+      }
+    },
+    {
+      "expected": "{\"\":2,\"😀\":1}",
+      "input": {
+        "": 2,
+        "😀": 1
+      }
+    },
+    {
+      "expected": "{\"nested\":[{\"a\":1,\"b\":2},null,true]}",
+      "input": {
+        "nested": [
+          {
+            "a": 1,
+            "b": 2
+          },
+          null,
+          true
+        ]
+      }
+    }
+  ],
+  "merkle": [
+    {
+      "expected": {
+        "algorithm": "sha256",
+        "leaf_count": 5,
+        "levels": [
+          [
+            "a",
+            "b",
+            "c",
+            "d",
+            "e"
+          ],
+          [
+            "fb8e20fc2e4c3f248c60c39bd652f3c1347298bb977b8b4d5903b85055620603",
+            "21e721c35a5823fdb452fa2f9f0a612c74fb952e06927489c6b27a43b817bed4",
+            "27a84712e4b22c415fc544d55cdee82327a829f96d03329457f76ebf9af4dcaa"
+          ],
+          [
+            "12a40550c10c6339bf6f271445270e49b844d6c9e8abc36b9b642be532befe94",
+            "afecbddad2dba2c47cb1e5afc9f622fe4e3793eab9ab9ee2433152cd70ffbec5"
+          ],
+          [
+            "3da44b6eb5511a3300965d849e0a2d000e4bf10d9e0afa62c66ebf2b0f04aa04"
+          ]
+        ],
+        "root": "3da44b6eb5511a3300965d849e0a2d000e4bf10d9e0afa62c66ebf2b0f04aa04"
+      },
+      "leaves": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e"
+      ]
+    },
+    {
+      "expected": {
+        "algorithm": "sha256",
+        "leaf_count": 2,
+        "levels": [
+          [
+            "aa",
+            "bb"
+          ],
+          [
+            "486b34250bd4400c0aa90516fce9a9c0633a922eb40d0828cf299bc4e825acf4"
+          ]
+        ],
+        "root": "486b34250bd4400c0aa90516fce9a9c0633a922eb40d0828cf299bc4e825acf4"
+      },
+      "leaves": [
+        "aa",
+        "bb"
+      ]
+    },
+    {
+      "expected": {
+        "algorithm": "sha256",
+        "leaf_count": 1,
+        "levels": [
+          [
+            "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          ]
+        ],
+        "root": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "leaves": []
+    }
+  ],
+  "proof": [
+    {
+      "expected": [
+        {
+          "hash": "a",
+          "position": "left"
+        },
+        {
+          "hash": "21e721c35a5823fdb452fa2f9f0a612c74fb952e06927489c6b27a43b817bed4",
+          "position": "right"
+        },
+        {
+          "hash": "afecbddad2dba2c47cb1e5afc9f622fe4e3793eab9ab9ee2433152cd70ffbec5",
+          "position": "right"
+        }
+      ],
+      "leafIndex": 1,
+      "leaves": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e"
+      ]
+    },
+    {
+      "expected": [
+        {
+          "hash": "e",
+          "position": "left"
+        },
+        {
+          "hash": "27a84712e4b22c415fc544d55cdee82327a829f96d03329457f76ebf9af4dcaa",
+          "position": "left"
+        },
+        {
+          "hash": "12a40550c10c6339bf6f271445270e49b844d6c9e8abc36b9b642be532befe94",
+          "position": "left"
+        }
+      ],
+      "leafIndex": 4,
+      "leaves": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e"
+      ]
+    },
+    {
+      "expected": [
+        {
+          "hash": "bb",
+          "position": "right"
+        }
+      ],
+      "leafIndex": 0,
+      "leaves": [
+        "aa",
+        "bb"
+      ]
+    }
+  ]
+}

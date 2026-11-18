@@ -1,0 +1,2869 @@
+[
+  {
+    "id": "zh-01",
+    "language": "zh",
+    "query": "中国",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "source:p593:para11:306b71cd",
+        "source_id": "772bd0694524b01f",
+        "page": 593,
+        "score": 12.606605407108992
+      },
+      {
+        "node_id": "pregadio_2013_the_encyclopedia_of_taoism_2_volume_set:p1364:para11:306b71cd",
+        "source_id": "124cc82b2e436796",
+        "page": 1364,
+        "score": 12.606605407108992
+      },
+      {
+        "node_id": "king_2019_syriac_world:p705:para11:8bc7816a",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 705,
+        "score": 11.073075077868726
+      },
+      {
+        "node_id": "nicolini_zani_matteo_2022_the_luminous_way_to_the_east_oxford:p391:para12:bf64d3d5",
+        "source_id": "9e7d1de947b63c66",
+        "page": 391,
+        "score": 9.974645620042416
+      },
+      {
+        "node_id": "the_religious_identity_of_si_sites_in:p444:para1:ebad049b",
+        "source_id": "ad7a41e3dfb9a540",
+        "page": 444,
+        "score": 7.282388555330547
+      }
+    ]
+  },
+  {
+    "id": "zh-02",
+    "language": "zh",
+    "query": "自由意志",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "e7_ad_94_e8_af_bb_e8_80_85_e9_97_ae_e4_ba_8c_ef_bc_9a_e7_88_b1_e7_a5_9e_e7_88_b1_e4_ba_ba_e4_b9_8b_e5_bf_83_ef_bc_8c_e4_ba_ba_e7_9a_86_e6_9c_89_e4_b9_8b_e5_bc_95_e5_8f_91_e7_9a_84_e5_9b_9b_e4_b8_aa:p2:para17:e47fcf48",
+        "source_id": "74e7336b28d81323",
+        "page": 2,
+        "score": 19.617241028676325
+      },
+      {
+        "node_id": "e8_a2_81_e6_b0_b8_e7_94_b2_ef_bc_9a_e8_ae_ba_e6_97_a0_e4_b8_ad_e7_94_9f_e6_9c_89_e4_b8_8e_e9_81_93_e6_88_90_e8_82_89_e8_ba_ab:p2:para5:afff40ea",
+        "source_id": "02155be0484da912",
+        "page": 2,
+        "score": 17.868908013233323
+      },
+      {
+        "node_id": "e7_ad_94_e8_af_bb_e8_80_85_e9_97_ae_e4_ba_8c_ef_bc_9a_e7_88_b1_e7_a5_9e_e7_88_b1_e4_ba_ba_e4_b9_8b_e5_bf_83_ef_bc_8c_e4_ba_ba_e7_9a_86_e6_9c_89_e4_b9_8b_e5_bc_95_e5_8f_91_e7_9a_84_e5_9b_9b_e4_b8_aa:p2:para20:627c2408",
+        "source_id": "74e7336b28d81323",
+        "page": 2,
+        "score": 16.918542555321803
+      },
+      {
+        "node_id": "e9_9a_8f_e6_83_b37_e5_88_99_e8_ae_ba_e6_8c_89_e4_b8_8a_e5_b8_9d_e7_9a_84_e5_bd_a2_e8_b1_a1_e9_80_a0_e4_ba_ba:p1:para10:1190502e",
+        "source_id": "2fd78c6b283852b2",
+        "page": 1,
+        "score": 16.70248617697853
+      }
+    ]
+  },
+  {
+    "id": "zh-03",
+    "language": "zh",
+    "query": "尼西亚",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "e8_af_91_e4_bd_9c_ef_bc_9a_e9_a9_b3_e7_bd_97_e6_96_af_e5_9f_ba_c2_b7_e7_b1_b3_e5_b0_94_ef_bc_88_e4_bf_84_e7_bd_97_e6_96_af_e4_b8_96_e7_95_8c_ef_bc_89_e6_80_9d_e6_83_b3_e4_b9_8b:p1:para9:a8ba87c9",
+        "source_id": "3970b700249e2571",
+        "page": 1,
+        "score": 16.494123560724642
+      },
+      {
+        "node_id": "ware_orthodox_church_6_7_chapter3:p5:para22:ef5be2e8",
+        "source_id": "e2a57ed582a2ed20",
+        "page": 5,
+        "score": 16.494123560724642
+      },
+      {
+        "node_id": "church_history_ii_latin9_jerome:p3:para5:a31505bd",
+        "source_id": "1fce036dffdf4f8f",
+        "page": 3,
+        "score": 15.38472426665088
+      },
+      {
+        "node_id": "e5_90_9b_e5_a3_ab_e5_9d_a6_e4_b8_81_e5_a0_a1_e6_9c_9d_e5_9c_a3_e6_b8_b8_e4_b8_8a_e9_97_ae_e7_ad_94_e9_83_a8_e5_88_86_by_daniel_li:p2:para4:ae3f60cd",
+        "source_id": "d8c248ad8d405a54",
+        "page": 2,
+        "score": 13.154667362060012
+      }
+    ]
+  },
+  {
+    "id": "zh-04",
+    "language": "zh",
+    "query": "教会 传统",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "ware_orthodox_church_2:p2:para23:e211cfe5",
+        "source_id": "9b899a037d0faf4d",
+        "page": 2,
+        "score": 13.841769774674734
+      },
+      {
+        "node_id": "ware_orthodox_church_1:p3:para48:1594e984",
+        "source_id": "d8836662550427ec",
+        "page": 3,
+        "score": 13.76780690530933
+      },
+      {
+        "node_id": "lydia_e5_8d_9a_e5_a3_ab_e5_9c_a3_e7_81_b5_e9_99_8d_e4_b8_b4_e8_8a_82:p23:para6:4c104942",
+        "source_id": "7141e72b47e6a425",
+        "page": 23,
+        "score": 13.460806593594768
+      },
+      {
+        "node_id": "kariatlis_e5_8d_9a_e5_a3_ab_e6_95_99_e4_bc_9a_e6_98_af_e4_bb_80_e4_b9_88:p2:para28:818574ea",
+        "source_id": "fea74321f06d9fa9",
+        "page": 2,
+        "score": 12.912886564271245
+      },
+      {
+        "node_id": "kariatlis_e5_8d_9a_e5_a3_ab_e6_95_99_e4_bc_9a_e6_98_af_e4_bb_80_e4_b9_88:p2:para27:ce29d5a8",
+        "source_id": "fea74321f06d9fa9",
+        "page": 2,
+        "score": 12.329919770126459
+      },
+      {
+        "node_id": "kariatlis_e5_8d_9a_e5_a3_ab_e6_95_99_e4_bc_9a_e6_98_af_e4_bb_80_e4_b9_88:p2:para24:e4db5ab6",
+        "source_id": "fea74321f06d9fa9",
+        "page": 2,
+        "score": 12.196299012764126
+      },
+      {
+        "node_id": "kariatlis_e5_8d_9a_e5_a3_ab_e6_95_99_e4_bc_9a_e6_98_af_e4_bb_80_e4_b9_88:p2:para29:cea87fd2",
+        "source_id": "fea74321f06d9fa9",
+        "page": 2,
+        "score": 11.360873763266518
+      },
+      {
+        "node_id": "ware_orthodox_church_2:p2:para36:cf54880a",
+        "source_id": "9b899a037d0faf4d",
+        "page": 2,
+        "score": 11.238081373846217
+      },
+      {
+        "node_id": "kariatlis_e5_8d_9a_e5_a3_ab_e6_95_99_e4_bc_9a_e6_98_af_e4_bb_80_e4_b9_88:p2:para26:5f207f8b",
+        "source_id": "fea74321f06d9fa9",
+        "page": 2,
+        "score": 11.022788326151613
+      },
+      {
+        "node_id": "kariatlis_e5_8d_9a_e5_a3_ab_e6_95_99_e4_bc_9a_e6_98_af_e4_bb_80_e4_b9_88:p2:para23:8334c578",
+        "source_id": "fea74321f06d9fa9",
+        "page": 2,
+        "score": 10.885130224846968
+      }
+    ]
+  },
+  {
+    "id": "zh-05",
+    "language": "zh",
+    "query": "神学 历史",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "church_history_ii_syriac9_theodore:p5:para37:d72b26a1",
+        "source_id": "409d6dd2e5830aeb",
+        "page": 5,
+        "score": 12.127052262614786
+      },
+      {
+        "node_id": "syriac9_ppt:p3:para1:02b4529d",
+        "source_id": "5b504f1f1d0b815c",
+        "page": 3,
+        "score": 10.876067729953746
+      },
+      {
+        "node_id": "e9_83_ad_e5_ad_90_e7_84_b6_ef_bc_9a_e5_9c_a3_e5_b8_95_e6_8b_89_e7_8e_9b_e6_96_af_e5_85_b3_e4_ba_8e_e7_a5_9e_e7_9a_84_e6_9c_ac_e8_b4_a8_e4_b8_8e_e7_a5_9e_e7_9a_84_e8_83_bd_e9_87_8f_e4_b9_8b_e5_b8_8c:p6:para3:f723ed70",
+        "source_id": "99e7a9e31c9ba8fb",
+        "page": 6,
+        "score": 10.211935001519489
+      },
+      {
+        "node_id": "e4_b8_ba_e4_bd_95_e5_85_b3_e4_ba_8e_e4_b8_9c_e6_96_b9_e6_95_99_e4_bc_9a_e8_ae_b0_e8_bd_bd_e6_af_94_e8_be_83_e5_b0_91_ef_bc_9f:p1:para2:529e789e",
+        "source_id": "1c39b9f2eabcdc27",
+        "page": 1,
+        "score": 9.015957993103038
+      },
+      {
+        "node_id": "e5_9c_a3_e7_bb_8f_e8_af_bb_e5_8e_9f_e6_96_87_e6_9b_b4_e5_a5_bd_e7_90_86_e8_a7_a3_ef_bc_9f_e5_85_bc_e8_ae_ba_e6_99_af_e6_95_99_e6_98_af_e4_bb_80_e4_b9_88_ef_bc_9f:p1:para1:529e789e",
+        "source_id": "2fce1ae75583c39b",
+        "page": 1,
+        "score": 9.015957993103038
+      },
+      {
+        "node_id": "ware_orthodox_church_19:p16:para1:880e4c28",
+        "source_id": "1c67746df28b9896",
+        "page": 16,
+        "score": 8.416205899424877
+      }
+    ]
+  },
+  {
+    "id": "zh-06",
+    "language": "zh",
+    "query": "三位一体",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "e6_97_a9_e6_9c_9f_e6_95_99_e4_bc_9a_e7_9a_84_e6_95_99_e4_b9_89_e5_b0_bc_e8_a5_bf_e4_ba_9a_e4_bf_a1_e7_bb_8f:p3:para2:712fc0c1",
+        "source_id": "95f637e085d4388f",
+        "page": 3,
+        "score": 17.36407522675606
+      },
+      {
+        "node_id": "ware_orthodox_church_3_5_chapter2:p6:para14:3989184c",
+        "source_id": "70b7760a7fe9c4d3",
+        "page": 6,
+        "score": 16.066328387788246
+      },
+      {
+        "node_id": "ware_orthodox_church_3_5_chapter2:p6:para2:14194668",
+        "source_id": "70b7760a7fe9c4d3",
+        "page": 6,
+        "score": 16.066328387788246
+      },
+      {
+        "node_id": "pino_tikhon_e5_8d_9a_e5_a3_ab_e5_92_8c_e5_ad_90_e5_8f_a5_e4_b8_8e_e6_8b_9c_e5_8d_a0_e5_ba_ad_e4_b9_8b_e5_9b_9e_e5_ba_94:p3:para1:338ccc63",
+        "source_id": "9b53f0e0724a48fc",
+        "page": 3,
+        "score": 15.342613701408148
+      },
+      {
+        "node_id": "church_history_ii_latin6_augustine_trinity:p6:para2:06bc7651",
+        "source_id": "1bab3ed74256965d",
+        "page": 6,
+        "score": 14.707747366808846
+      }
+    ]
+  },
+  {
+    "id": "zh-07",
+    "language": "zh",
+    "query": "基督论",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "e6_9d_8e_e6_b3_89_e5_8d_9a_e5_a3_ab_e5_86_8d_e6_80_9d_e5_88_98_e5_b0_8f_e6_9e_ab_e7_9a_84_e8_b6_85_e8_b6_8a_e5_9f_ba_e7_9d_a3_e8_ae_ba:p1:para1:b311bdde",
+        "source_id": "c9eab1a4af23969d",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "e6_9d_8e_e6_b3_89_e5_8d_9a_e5_a3_ab_e5_86_8d_e6_80_9d_e5_88_98_e5_b0_8f_e6_9e_ab_e7_9a_84_e8_b6_85_e8_b6_8a_e5_9f_ba_e7_9d_a3_e8_ae_ba:p1:para3:b311bdde",
+        "source_id": "c9eab1a4af23969d",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "e8_80_b6_e7_a8_a3_e4_b8_ba_e4_bd_95_e6_9d_a5:p1:para16:997b436c",
+        "source_id": "12d17388865c4999",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "e6_99_af_e6_95_99_e5_b9_b6_e9_9d_9e_e5_bc_82_e7_ab_af:p2:para3:08872a43",
+        "source_id": "80570d97f044b55b",
+        "page": 2,
+        "score": 5.0
+      },
+      {
+        "node_id": "e6_99_af_e6_95_99_e5_b9_b6_e9_9d_9e_e5_bc_82_e7_ab_af:p3:para2:50176c91",
+        "source_id": "80570d97f044b55b",
+        "page": 3,
+        "score": 5.0
+      },
+      {
+        "node_id": "ware_orthodox_church_3_5_chapter2:p3:para19:8aa6bbb0",
+        "source_id": "70b7760a7fe9c4d3",
+        "page": 3,
+        "score": 5.0
+      },
+      {
+        "node_id": "church_history_ii_syriac9_theodore:p5:para10:f44d6747",
+        "source_id": "409d6dd2e5830aeb",
+        "page": 5,
+        "score": 5.0
+      },
+      {
+        "node_id": "church_history_ii_syriac9_theodore:p5:para8:c6bfeaa4",
+        "source_id": "409d6dd2e5830aeb",
+        "page": 5,
+        "score": 5.0
+      },
+      {
+        "node_id": "e5_8a_b3_e6_9b_bc_e5_8d_9a_e5_a3_ab_e4_b8_ad_e5_9b_bd_e5_a4_a9_e4_b8_bb_e5_9f_ba_e7_9d_a3_e6_95_99_e5_8f_b2_e7_95_a5:p5:para9:5c4355cf",
+        "source_id": "339a6c65f68c8c15",
+        "page": 5,
+        "score": 5.0
+      },
+      {
+        "node_id": "lydia_e5_8d_9a_e5_a3_ab_ef_bc_9a_e6_ad_a3_e6_95_99_e7_9a_84_e5_9c_a3_e8_af_9e_e8_8a_82:p5:para9:46293a12",
+        "source_id": "503f6b381bfa5d4b",
+        "page": 5,
+        "score": 5.0
+      }
+    ]
+  },
+  {
+    "id": "zh-08",
+    "language": "zh",
+    "query": "圣灵",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "church_history_ii_syriac4_odes:p3:para8:9835283a",
+        "source_id": "90cc06823ec8d1f2",
+        "page": 3,
+        "score": 18.78401304066236
+      },
+      {
+        "node_id": "church_history_ii_latin6_augustine_trinity:p17:para3:54948885",
+        "source_id": "1bab3ed74256965d",
+        "page": 17,
+        "score": 17.845315348698477
+      },
+      {
+        "node_id": "church_history_ii_latin6_augustine_trinity:p12:para1:3338fbb4",
+        "source_id": "1bab3ed74256965d",
+        "page": 12,
+        "score": 16.99207133850075
+      },
+      {
+        "node_id": "lydia_e5_8d_9a_e5_a3_ab_e5_9c_a3_e7_81_b5_e9_99_8d_e4_b8_b4_e8_8a_82:p11:para6:c995ab43",
+        "source_id": "7141e72b47e6a425",
+        "page": 11,
+        "score": 16.483545287490344
+      },
+      {
+        "node_id": "e5_a5_a5_e5_88_a9_e9_87_91_e4_b8_8e_e4_ba_9a_e5_8e_86_e5_b1_b1_e5_a4_a7_e4_bc_a0_e7_bb_9f_e6_95_99_e4_bc_9a_e5_8e_86_e5_8f_b2_e5_b8_8c_e8_85_8a_e4_bc_a0_e7_bb_9f_e4_b9_8b_e4_b8_80:p12:para2:6b850746",
+        "source_id": "49c45ada649bd000",
+        "page": 12,
+        "score": 16.483545287490344
+      },
+      {
+        "node_id": "lydia_e5_8d_9a_e5_a3_ab_e5_9c_a3_e7_81_b5_e9_99_8d_e4_b8_b4_e8_8a_82:p23:para4:39a11d82",
+        "source_id": "7141e72b47e6a425",
+        "page": 23,
+        "score": 16.483545287490344
+      },
+      {
+        "node_id": "e8_ae_ba_e5_af_b9_e5_94_af_e7_8b_ac_e5_9c_a3_e7_bb_8f_e7_9a_84_e8_af_af_e8_a7_a3_e5_92_8c_e8_af_af_e7_94_a8:p5:para1:79676c28",
+        "source_id": "37bbd4ab13f5f62b",
+        "page": 5,
+        "score": 16.24511957727087
+      },
+      {
+        "node_id": "lydia_e5_8d_9a_e5_a3_ab_e5_9c_a3_e7_81_b5_e9_99_8d_e4_b8_b4_e8_8a_82:p19:para8:ae3cc115",
+        "source_id": "7141e72b47e6a425",
+        "page": 19,
+        "score": 15.796785682135724
+      },
+      {
+        "node_id": "pino_tikhon_e5_8d_9a_e5_a3_ab_e5_92_8c_e5_ad_90_e5_8f_a5_e4_b8_8e_e6_8b_9c_e5_8d_a0_e5_ba_ad_e4_b9_8b_e5_9b_9e_e5_ba_94:p2:para3:d520894d",
+        "source_id": "9b53f0e0724a48fc",
+        "page": 2,
+        "score": 15.58576274843674
+      },
+      {
+        "node_id": "kariatlis_e6_96_b0_e7_ba_a6_e6_97_b6_e6_9c_9f_e7_9a_84_e6_95_99_e4_bc_9a:p5:para2:e0c7c8a9",
+        "source_id": "255d3e8174e478b1",
+        "page": 5,
+        "score": 15.382830558336417
+      }
+    ]
+  },
+  {
+    "id": "zh-09",
+    "language": "zh",
+    "query": "救恩",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "about:p1:para26:f88f3491",
+        "source_id": "ff8a95def2238f87",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "about:p1:para30:94b72cf5",
+        "source_id": "ff8a95def2238f87",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "e4_b8_80_e6_ac_a1_e6_88_96_e4_b8_80_e6_97_a6_e5_be_97_e6_95_91_e6_b0_b8_e8_bf_9c_e5_be_97_e6_95_91:p1:para12:985b5e2e",
+        "source_id": "d1c7bba80b16c920",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "e4_b8_80_e6_ac_a1_e6_88_96_e4_b8_80_e6_97_a6_e5_be_97_e6_95_91_e6_b0_b8_e8_bf_9c_e5_be_97_e6_95_91:p1:para16:cd281320",
+        "source_id": "d1c7bba80b16c920",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "e4_b8_80_e6_ac_a1_e6_88_96_e4_b8_80_e6_97_a6_e5_be_97_e6_95_91_e6_b0_b8_e8_bf_9c_e5_be_97_e6_95_91:p1:para18:0c833e3d",
+        "source_id": "d1c7bba80b16c920",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "e4_b8_80_e6_ac_a1_e6_88_96_e4_b8_80_e6_97_a6_e5_be_97_e6_95_91_e6_b0_b8_e8_bf_9c_e5_be_97_e6_95_91:p1:para3:cfb5cac5",
+        "source_id": "d1c7bba80b16c920",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "e4_b8_80_e6_ac_a1_e6_88_96_e4_b8_80_e6_97_a6_e5_be_97_e6_95_91_e6_b0_b8_e8_bf_9c_e5_be_97_e6_95_91:p1:para5:52790860",
+        "source_id": "d1c7bba80b16c920",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "e4_b8_80_e6_ac_a1_e6_88_96_e4_b8_80_e6_97_a6_e5_be_97_e6_95_91_e6_b0_b8_e8_bf_9c_e5_be_97_e6_95_91:p1:para6:be228309",
+        "source_id": "d1c7bba80b16c920",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "e4_b8_ba_e4_bd_95_e5_9c_a3_e5_83_8f_e7_9c_8b_e8_b5_b7_e6_9d_a5_e4_b8_8d_e5_96_9c_e5_ba_86_ef_bc_9f:p1:para18:df951491",
+        "source_id": "91d4f0c37e454ced",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "e5_86_8d_e6_ac_a1_e9_a9_b3_e6_96_a5_e4_b8_80_e6_97_a6_e5_be_97_e6_95_91_e6_b0_b8_e8_bf_9c_e5_be_97_e6_95_91:p1:para10:bbc8317c",
+        "source_id": "b41cfaf8f666a45b",
+        "page": 1,
+        "score": 5.0
+      }
+    ]
+  },
+  {
+    "id": "zh-10",
+    "language": "zh",
+    "query": "原罪",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "church_history_ii_latin8_augustine_freewill:p6:para18:54cc1d51",
+        "source_id": "d31d893e98c79664",
+        "page": 6,
+        "score": 21.99726660424678
+      },
+      {
+        "node_id": "church_history_ii_latin8_augustine_freewill:p8:para2:0201e593",
+        "source_id": "d31d893e98c79664",
+        "page": 8,
+        "score": 19.012732955042694
+      },
+      {
+        "node_id": "church_history_ii_latin8_augustine_freewill:p10:para12:c18c7c3b",
+        "source_id": "d31d893e98c79664",
+        "page": 10,
+        "score": 17.52720148338325
+      },
+      {
+        "node_id": "ware_orthodox_church_15:p14:para2:7bc6889b",
+        "source_id": "2198f0c8ae4dda21",
+        "page": 14,
+        "score": 17.267106988524432
+      },
+      {
+        "node_id": "church_history_ii_latin8_augustine_freewill:p10:para5:4d37dbc3",
+        "source_id": "d31d893e98c79664",
+        "page": 10,
+        "score": 16.11340355101033
+      },
+      {
+        "node_id": "church_history_ii_latin8_augustine_freewill:p6:para28:3c2bacf1",
+        "source_id": "d31d893e98c79664",
+        "page": 6,
+        "score": 14.65981694419856
+      },
+      {
+        "node_id": "ware_orthodox_church_15:p20:para1:ed6389d4",
+        "source_id": "2198f0c8ae4dda21",
+        "page": 20,
+        "score": 14.50442458156852
+      },
+      {
+        "node_id": "church_history_ii_latin8_augustine_freewill:p10:para17:9ad16aea",
+        "source_id": "d31d893e98c79664",
+        "page": 10,
+        "score": 14.208170646223182
+      },
+      {
+        "node_id": "church_history_ii_latin8_augustine_freewill:p6:para29:a66c766e",
+        "source_id": "d31d893e98c79664",
+        "page": 6,
+        "score": 14.066863097780745
+      },
+      {
+        "node_id": "e8_ae_ba_e8_87_aa_e7_94_b1_e6_84_8f_e5_bf_97_e4_b8_8e_e5_8e_9f_e7_bd_aa:p1:para18:ee7e5a80",
+        "source_id": "2b08586dae790b57",
+        "page": 1,
+        "score": 12.558890617580438
+      }
+    ]
+  },
+  {
+    "id": "zh-11",
+    "language": "zh",
+    "query": "恩典",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "about:p1:para19:532341e9",
+        "source_id": "ff8a95def2238f87",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "about:p1:para20:b6bdf737",
+        "source_id": "ff8a95def2238f87",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "about:p1:para27:4d976c20",
+        "source_id": "ff8a95def2238f87",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "church_history_ii_latin10_cassian:p1:para1:b8e930ba",
+        "source_id": "5688daf08553a771",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "e5_86_8d_e6_ac_a1_e9_a9_b3_e6_96_a5_e4_b8_80_e6_97_a6_e5_be_97_e6_95_91_e6_b0_b8_e8_bf_9c_e5_be_97_e6_95_91:p1:para4:280f7ead",
+        "source_id": "b41cfaf8f666a45b",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "e5_86_8d_e6_ac_a1_e9_a9_b3_e6_96_a5_e4_b8_80_e6_97_a6_e5_be_97_e6_95_91_e6_b0_b8_e8_bf_9c_e5_be_97_e6_95_91:p1:para6:bbe888f3",
+        "source_id": "b41cfaf8f666a45b",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "e5_86_8d_e6_ac_a1_e9_a9_b3_e6_96_a5_e4_b8_80_e6_97_a6_e5_be_97_e6_95_91_e6_b0_b8_e8_bf_9c_e5_be_97_e6_95_91:p1:para8:2e5670f2",
+        "source_id": "b41cfaf8f666a45b",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "e5_86_8d_e6_ac_a1_e9_a9_b3_e6_96_a5_e4_b8_80_e6_97_a6_e5_be_97_e6_95_91_e6_b0_b8_e8_bf_9c_e5_be_97_e6_95_91:p1:para9:c97f9720",
+        "source_id": "b41cfaf8f666a45b",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "e5_b9_b4_e7_bb_88_e7_9a_84_e4_b8_80_e4_ba_9b_e6_84_9f_e6_83_b3:p1:para1:6681ae48",
+        "source_id": "3ead879cb7472ac0",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "e5_b9_b4_e7_bb_88_e7_9a_84_e4_b8_80_e4_ba_9b_e6_84_9f_e6_83_b3:p1:para6:1f8b7fd2",
+        "source_id": "3ead879cb7472ac0",
+        "page": 1,
+        "score": 5.0
+      }
+    ]
+  },
+  {
+    "id": "zh-12",
+    "language": "zh",
+    "query": "称义",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "e5_86_8d_e6_ac_a1_e9_a9_b3_e6_96_a5_e4_b8_80_e6_97_a6_e5_be_97_e6_95_91_e6_b0_b8_e8_bf_9c_e5_be_97_e6_95_91:p1:para4:280f7ead",
+        "source_id": "b41cfaf8f666a45b",
+        "page": 1,
+        "score": 19.49237160195362
+      },
+      {
+        "node_id": "e8_a2_81_e6_b0_b8_e7_94_b2_ef_bc_9a_e5_9b_a0_e4_bf_a1_e7_a7_b0_e4_b9_89_e7_ad_89_e4_ba_8e_e6_95_91_e6_81_a9_e5_90_97_ef_bc_9f:p1:para6:d9cafde3",
+        "source_id": "8b1b55edcad04eff",
+        "page": 1,
+        "score": 19.49237160195362
+      }
+    ]
+  },
+  {
+    "id": "zh-13",
+    "language": "zh",
+    "query": "道成肉身",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "e9_9a_8f_e6_83_b39_e5_88_99_e8_ae_ba_e5_8a_a8_e9_9d_99_e7_81_b5_e6_80_a7:p1:para17:b3d18ebb",
+        "source_id": "f128177787407d12",
+        "page": 1,
+        "score": 18.715069531945375
+      },
+      {
+        "node_id": "e9_9a_8f_e6_83_b39_e5_88_99_e8_ae_ba_e5_8a_a8_e9_9d_99_e7_81_b5_e6_80_a7:p1:para6:58552ab1",
+        "source_id": "f128177787407d12",
+        "page": 1,
+        "score": 17.1967078296558
+      },
+      {
+        "node_id": "e8_80_b6_e7_a8_a3_e4_b8_ba_e4_bd_95_e6_9d_a5:p1:para41:f6069166",
+        "source_id": "12d17388865c4999",
+        "page": 1,
+        "score": 16.932504176701457
+      },
+      {
+        "node_id": "e8_80_b6_e7_a8_a3_e4_b8_ba_e4_bd_95_e6_9d_a5:p1:para50:e0c986ee",
+        "source_id": "12d17388865c4999",
+        "page": 1,
+        "score": 16.67950412957191
+      },
+      {
+        "node_id": "e8_a2_81_e6_b0_b8_e7_94_b2_ef_bc_9a_e8_ae_ba_e6_97_a0_e4_b8_ad_e7_94_9f_e6_9c_89_e4_b8_8e_e9_81_93_e6_88_90_e8_82_89_e8_ba_ab:p1:para7:195a7787",
+        "source_id": "02155be0484da912",
+        "page": 1,
+        "score": 16.67950412957191
+      },
+      {
+        "node_id": "pino_tikhon_bible_church_fathers:p21:para1:54d785d7",
+        "source_id": "8fb5a3e9908d8325",
+        "page": 21,
+        "score": 15.98102544150506
+      },
+      {
+        "node_id": "e8_ae_ba_e6_94_bf_e6_b2_bb_e8_af_ad_e8_a8_80_e7_90_86_e6_80_a7:p1:para16:b22d319d",
+        "source_id": "1f7b5d7d4c21dcab",
+        "page": 1,
+        "score": 15.17007961289843
+      },
+      {
+        "node_id": "church_history_ii_syriac7_ephrem:p3:para57:bb402fa1",
+        "source_id": "127d93143ce96261",
+        "page": 3,
+        "score": 14.985718936378934
+      },
+      {
+        "node_id": "ware_orthodox_church_18:p4:para133:f27544bc",
+        "source_id": "da9275a51fa3762c",
+        "page": 4,
+        "score": 14.807923338820094
+      },
+      {
+        "node_id": "ware_orthodox_church_3_5_chapter2:p6:para2:14194668",
+        "source_id": "70b7760a7fe9c4d3",
+        "page": 6,
+        "score": 14.636348281293103
+      }
+    ]
+  },
+  {
+    "id": "zh-14",
+    "language": "zh",
+    "query": "十字架",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "truth_about_origin_of_islam:p331:para1:77691345",
+        "source_id": "65e0eb0b66bc663e",
+        "page": 331,
+        "score": 23.234756875539993
+      },
+      {
+        "node_id": "kariatlis3_e6_95_99_e4_bc_9a_e4_b8_8e_e5_9c_a3_e5_a5_a5_e5_a6_99:p2:para58:d0f1f0e3",
+        "source_id": "8978d84ec8837455",
+        "page": 2,
+        "score": 15.819880963810437
+      },
+      {
+        "node_id": "mellas_e5_8d_9a_e5_a3_ab_ef_bc_9a_e7_a5_9e_e5_ad_a6_e4_b9_8b_e8_89_b2_e4_b8_9c_e6_ad_a3_e6_95_99_e7_9a_84_e5_9c_a3_e5_83_8f:p4:para1:c1070edb",
+        "source_id": "95cffdd94925c657",
+        "page": 4,
+        "score": 14.17060118838735
+      }
+    ]
+  },
+  {
+    "id": "zh-15",
+    "language": "zh",
+    "query": "复活",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "about:p1:para17:29710e84",
+        "source_id": "ff8a95def2238f87",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "about:p1:para19:532341e9",
+        "source_id": "ff8a95def2238f87",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "about:p1:para20:b6bdf737",
+        "source_id": "ff8a95def2238f87",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "about:p1:para26:f88f3491",
+        "source_id": "ff8a95def2238f87",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "e5_9c_a3_e5_be_92_e4_bc_a0_e8_ae_b0_e4_b8_ad_e8_ae_b0_e8_bd_bd_e7_9a_84_e7_a5_9e_e8_bf_b9_e9_83_bd_e6_98_af_e7_9c_9f_e7_9a_84_e5_90_97_ef_bc_9f:p1:para3:e6e2fec6",
+        "source_id": "2c35e47eb2266443",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "e5_b0_bc_e6_92_92_e7_9a_84_e6_a0_bc_e5_88_97_e9_ab_98_e5_88_a9_e8_ae_ba_e8_82_89_e4_bd_93_e5_a4_8d_e6_b4_bb:p1:para1:379c4b7f",
+        "source_id": "08e3c16229aa11aa",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "e5_bd_93_e4_bb_8a_e6_97_b6_e4_bb_a3_e5_af_b9_e7_81_b5_e4_bf_ae_e4_bc_a0_e7_bb_9f_e7_9a_84_e4_b8_89_e5_a4_a7_e8_af_af_e8_a7_a3:p1:para7:a334ef82",
+        "source_id": "7a60db2f35c285bb",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "e6_84_bf_e5_a4_a7_e5_ae_b6_e5_9c_a82023_e5_b9_b4_e6_89_be_e5_88_b0_e7_9c_9f_e5_85_89:p1:para24:62ea8c4b",
+        "source_id": "f1befdd45f424d84",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "e8_80_b6_e7_a8_a3_e4_b8_ba_e4_bd_95_e6_9d_a5:p1:para21:b8409a58",
+        "source_id": "12d17388865c4999",
+        "page": 1,
+        "score": 5.0
+      },
+      {
+        "node_id": "e8_80_b6_e7_a8_a3_e4_b8_ba_e4_bd_95_e6_9d_a5:p1:para23:0149eeab",
+        "source_id": "12d17388865c4999",
+        "page": 1,
+        "score": 5.0
+      }
+    ]
+  },
+  {
+    "id": "zh-16",
+    "language": "zh",
+    "query": "教父",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "ware_orthodox_church_16:p15:para12:48ada2fb",
+        "source_id": "4c8aa14b32786e06",
+        "page": 15,
+        "score": 21.07299510796081
+      },
+      {
+        "node_id": "ware_orthodox_church_14:p19:para2:4ede7ba7",
+        "source_id": "21b621de3071c148",
+        "page": 19,
+        "score": 17.868908013233323
+      },
+      {
+        "node_id": "ware_orthodox_church_3_5_chapter2:p6:para13:6a152a05",
+        "source_id": "70b7760a7fe9c4d3",
+        "page": 6,
+        "score": 16.293050933724388
+      },
+      {
+        "node_id": "ware_orthodox_church_14:p16:para2:3c747d5e",
+        "source_id": "21b621de3071c148",
+        "page": 16,
+        "score": 14.906635843743663
+      }
+    ]
+  },
+  {
+    "id": "zh-17",
+    "language": "zh",
+    "query": "奥古斯丁",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "church_history_ii_latin5_augustine_confessoins:p1:para1:67acffa9",
+        "source_id": "984faa577c00061c",
+        "page": 1,
+        "score": 18.56310445174619
+      },
+      {
+        "node_id": "church_history_ii_latin6_augustine_trinity:p1:para1:a2522be1",
+        "source_id": "1bab3ed74256965d",
+        "page": 1,
+        "score": 18.56310445174619
+      },
+      {
+        "node_id": "church_history_ii_latin7_augustine_city_of_god:p1:para1:746f1f08",
+        "source_id": "d8eca9dedc44254f",
+        "page": 1,
+        "score": 18.56310445174619
+      },
+      {
+        "node_id": "church_history_ii_latin7_augustine_city_of_god:p6:para1:9f6a9775",
+        "source_id": "d8eca9dedc44254f",
+        "page": 6,
+        "score": 18.56310445174619
+      },
+      {
+        "node_id": "church_history_ii_latin9_jerome:p13:para2:b72e6818",
+        "source_id": "1fce036dffdf4f8f",
+        "page": 13,
+        "score": 16.104418573557773
+      },
+      {
+        "node_id": "church_history_ii_latin7_augustine_city_of_god:p6:para2:d1caa466",
+        "source_id": "d8eca9dedc44254f",
+        "page": 6,
+        "score": 15.181573407679222
+      },
+      {
+        "node_id": "church_history_ii_latin6_augustine_trinity:p4:para1:1dbb175f",
+        "source_id": "1bab3ed74256965d",
+        "page": 4,
+        "score": 10.663292410267509
+      }
+    ]
+  },
+  {
+    "id": "zh-18",
+    "language": "zh",
+    "query": "阿塔那修",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "e5_a5_a5_e5_88_a9_e9_87_91_e4_b8_8e_e4_ba_9a_e5_8e_86_e5_b1_b1_e5_a4_a7_e4_bc_a0_e7_bb_9f_e6_95_99_e4_bc_9a_e5_8e_86_e5_8f_b2_e5_b8_8c_e8_85_8a_e4_bc_a0_e7_bb_9f_e4_b9_8b_e4_b8_80:p3:para3:11107896",
+        "source_id": "49c45ada649bd000",
+        "page": 3,
+        "score": 17.757462205272134
+      }
+    ]
+  },
+  {
+    "id": "zh-19",
+    "language": "zh",
+    "query": "金口约翰",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "e8_ae_ba_e5_a6_82_e4_bd_95_e9_98_85_e8_af_bb_e5_ba_94_e7_94_a8_e5_9c_a3_e7_bb_8f:p2:para1:fc3e284d",
+        "source_id": "140ae970f9c9e812",
+        "page": 2,
+        "score": 19.7473250499245
+      },
+      {
+        "node_id": "e9_98_bf_e7_94_b2_e9_87_91_e5_8f_a3_e7_ba_a6_e7_bf_b0_e7_94_9f_e5_b9_b3:p7:para7:a734c127",
+        "source_id": "7b6dc7cda49539b8",
+        "page": 7,
+        "score": 17.15319981758146
+      },
+      {
+        "node_id": "e5_9c_a3_e7_bb_8f_e6_ad_a3_e5_85_b8_e7_9a_84_e5_bd_a2_e6_88_90_e6_95_99_e4_bc_9a_e5_8e_86_e5_8f_b2_e5_b8_8c_e8_85_8a_e7_af_873:p6:para3:f08316e5",
+        "source_id": "033d8cdfea59f437",
+        "page": 6,
+        "score": 15.690571023511724
+      },
+      {
+        "node_id": "church_history_ii_latin10_cassian:p6:para1:15097b06",
+        "source_id": "5688daf08553a771",
+        "page": 6,
+        "score": 14.542176941152633
+      },
+      {
+        "node_id": "e6_b2_99_e6_bc_a0_e6_95_99_e7_88_b6_e8_a8_80_e8_a1_8c_e5_bd_95_e4_b8_8e_e5_bf_83_e7_a5_b7_e4_bc_a0_e7_bb_9f:p3:para4:3c211689",
+        "source_id": "a9b20c6d21f923d8",
+        "page": 3,
+        "score": 13.990319239853559
+      },
+      {
+        "node_id": "e5_8d_a1_e8_a5_bf_e5_ae_89_e8_ae_ba_e8_87_aa_e7_94_b1_e6_84_8f_e5_bf_97_e4_b8_8e_e6_81_a9_e5_85_b8:p6:para1:a8728d1a",
+        "source_id": "30d18f649604a4c7",
+        "page": 6,
+        "score": 9.851647909979842
+      }
+    ]
+  },
+  {
+    "id": "zh-20",
+    "language": "zh",
+    "query": "格列高利",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "e5_b0_bc_e6_92_92_e7_9a_84_e6_a0_bc_e5_88_97_e9_ab_98_e5_88_a9_e8_ae_ba_e8_82_89_e4_bd_93_e5_a4_8d_e6_b4_bb:p3:para50:44540968",
+        "source_id": "08e3c16229aa11aa",
+        "page": 3,
+        "score": 19.405667381312966
+      },
+      {
+        "node_id": "e5_b0_bc_e6_92_92_e7_9a_84_e6_a0_bc_e5_88_97_e9_ab_98_e5_88_a9_e8_ae_ba_e8_82_89_e4_bd_93_e5_a4_8d_e6_b4_bb:p3:para62:37e01065",
+        "source_id": "08e3c16229aa11aa",
+        "page": 3,
+        "score": 19.405667381312966
+      },
+      {
+        "node_id": "ware_orthodox_church_15:p13:para12:4b4725e7",
+        "source_id": "2198f0c8ae4dda21",
+        "page": 13,
+        "score": 19.405667381312966
+      },
+      {
+        "node_id": "ware_orthodox_church_13:p11:para15:7f3e4ef2",
+        "source_id": "75962e9cdc56b153",
+        "page": 11,
+        "score": 17.15319981758146
+      },
+      {
+        "node_id": "e5_b0_bc_e6_92_92_e7_9a_84_e6_a0_bc_e5_88_97_e9_ab_98_e5_88_a9_e8_ae_ba_e8_82_89_e4_bd_93_e5_a4_8d_e6_b4_bb:p5:para1:d3e27bad",
+        "source_id": "08e3c16229aa11aa",
+        "page": 5,
+        "score": 16.071261983367584
+      },
+      {
+        "node_id": "ware_orthodox_church_14:p16:para2:3c747d5e",
+        "source_id": "21b621de3071c148",
+        "page": 16,
+        "score": 14.542176941152633
+      }
+    ]
+  },
+  {
+    "id": "zh-21",
+    "language": "zh",
+    "query": "圣像",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "ware_orthodox_church_3_5_chapter2:p6:para61:b655970a",
+        "source_id": "70b7760a7fe9c4d3",
+        "page": 6,
+        "score": 20.33131006832931
+      },
+      {
+        "node_id": "ware_orthodox_church_3_5_chapter2:p6:para38:cd18904b",
+        "source_id": "70b7760a7fe9c4d3",
+        "page": 6,
+        "score": 20.25116799925761
+      },
+      {
+        "node_id": "lydia_e5_8d_9a_e5_a3_ab_ef_bc_9a_e6_ad_a3_e6_95_99_e7_9a_84_e5_9c_a3_e8_af_9e_e8_8a_82:p3:para2:e9bd103a",
+        "source_id": "503f6b381bfa5d4b",
+        "page": 3,
+        "score": 18.83784633323632
+      },
+      {
+        "node_id": "ware_orthodox_church_17:p1:para1:af769dea",
+        "source_id": "8eee3f8814907660",
+        "page": 1,
+        "score": 17.40131333871591
+      },
+      {
+        "node_id": "ware_orthodox_church_17:p7:para22:07f75695",
+        "source_id": "8eee3f8814907660",
+        "page": 7,
+        "score": 16.027562766670464
+      },
+      {
+        "node_id": "lydia_e5_8d_9a_e5_a3_ab_e5_9c_a3_e7_81_b5_e9_99_8d_e4_b8_b4_e8_8a_82:p12:para2:9d1cf954",
+        "source_id": "7141e72b47e6a425",
+        "page": 12,
+        "score": 15.827657848576594
+      },
+      {
+        "node_id": "mellas_e5_8d_9a_e5_a3_ab_ef_bc_9a_e7_a5_9e_e5_ad_a6_e4_b9_8b_e8_89_b2_e4_b8_9c_e6_ad_a3_e6_95_99_e7_9a_84_e5_9c_a3_e5_83_8f:p6:para1:cacfcdd2",
+        "source_id": "95cffdd94925c657",
+        "page": 6,
+        "score": 14.027522344210459
+      },
+      {
+        "node_id": "mellas_e5_8d_9a_e5_a3_ab_ef_bc_9a_e7_a5_9e_e5_ad_a6_e4_b9_8b_e8_89_b2_e4_b8_9c_e6_ad_a3_e6_95_99_e7_9a_84_e5_9c_a3_e5_83_8f:p5:para3:ea4423c6",
+        "source_id": "95cffdd94925c657",
+        "page": 5,
+        "score": 13.163810376191995
+      },
+      {
+        "node_id": "ware_orthodox_church_17:p6:para8:faaa8152",
+        "source_id": "8eee3f8814907660",
+        "page": 6,
+        "score": 9.386601238006982
+      }
+    ]
+  },
+  {
+    "id": "zh-22",
+    "language": "zh",
+    "query": "圣餐",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "lydia_orthodox_liturgy:p5:para11:8adb5ec4",
+        "source_id": "08b5cf2177f38c7c",
+        "page": 5,
+        "score": 15.64582726527197
+      },
+      {
+        "node_id": "mellas_e5_8d_9a_e5_a3_ab_ef_bc_9a_e7_a5_9e_e5_ad_a6_e4_b9_8b_e8_89_b2_e4_b8_9c_e6_ad_a3_e6_95_99_e7_9a_84_e5_9c_a3_e5_83_8f:p5:para3:ea4423c6",
+        "source_id": "95cffdd94925c657",
+        "page": 5,
+        "score": 14.045258174651547
+      },
+      {
+        "node_id": "mellas_e5_8d_9a_e5_a3_ab_ef_bc_9a_e7_a5_9e_e5_ad_a6_e4_b9_8b_e8_89_b2_e4_b8_9c_e6_ad_a3_e6_95_99_e7_9a_84_e5_9c_a3_e5_83_8f:p8:para2:477ef172",
+        "source_id": "95cffdd94925c657",
+        "page": 8,
+        "score": 11.118370106911268
+      }
+    ]
+  },
+  {
+    "id": "zh-23",
+    "language": "zh",
+    "query": "礼仪",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "lydia_orthodox_liturgy:p4:para4:d4b80084",
+        "source_id": "08b5cf2177f38c7c",
+        "page": 4,
+        "score": 18.62777891999953
+      },
+      {
+        "node_id": "gcdfl_third_year_record:p9:para1:802f2081",
+        "source_id": "45ade884bb82ecfc",
+        "page": 9,
+        "score": 18.31205826161584
+      },
+      {
+        "node_id": "e4_b8_ad_e5_9b_bd_e6_95_99_e4_bc_9a_e8_bf_88_e5_90_91_e5_a4_a7_e5_85_ac_e4_bc_a0_e7_bb_9f_e7_9a_84_e7_ac_ac_e4_b8_80_e6_ad_a5:p3:para2:6a4606a7",
+        "source_id": "b34d20aac21a28e3",
+        "page": 3,
+        "score": 17.44696553245127
+      },
+      {
+        "node_id": "lydia_orthodox_liturgy:p3:para5:b5c5ddb9",
+        "source_id": "08b5cf2177f38c7c",
+        "page": 3,
+        "score": 17.44696553245127
+      },
+      {
+        "node_id": "e9_9d_99_e4_bf_ae_e4_bc_a0_e7_bb_9f_e5_8f_97_e5_88_b0_e5_8d_b0_e5_ba_a6_e4_bd_9b_e6_95_99_e5_bd_b1_e5_93_8d_e5_90_97_ef_bc_9f_e5_85_bc_e8_ae_ba_e5_a6_82_e4_bd_95_e5_88_a4_e6_96_ad_e4_b8_80_e4_b8_aa:p2:para7:8b7f3c58",
+        "source_id": "5f0fa899fe7ad539",
+        "page": 2,
+        "score": 16.687449083110494
+      },
+      {
+        "node_id": "gcdfl_third_year_record:p5:para4:8d002655",
+        "source_id": "45ade884bb82ecfc",
+        "page": 5,
+        "score": 16.45446447429336
+      },
+      {
+        "node_id": "church_history_ii_syriac2_thomas:p8:para2:5a28b8d9",
+        "source_id": "565a2e40a6491321",
+        "page": 8,
+        "score": 16.015293558142236
+      },
+      {
+        "node_id": "romanos_e7_a5_9e_e7_88_b6_ef_bc_9a_e6_ad_a3_e6_95_99_e4_b9_8b_e5_a3_b0:p14:para1:91b0e8e2",
+        "source_id": "dfe4eef02ff313d4",
+        "page": 14,
+        "score": 15.416246043352567
+      },
+      {
+        "node_id": "about_biblio_orthodox:p1:para3:c9d65ff1",
+        "source_id": "fde9929dac9262d9",
+        "page": 1,
+        "score": 13.817780670685849
+      },
+      {
+        "node_id": "e6_88_91_e4_bf_a1_e4_bd_bf_e5_be_92_e7_9a_84_e6_95_99_e4_bc_9a:p2:para26:ad4cbbd2",
+        "source_id": "5fac0a22f32c5e6f",
+        "page": 2,
+        "score": 13.42969712594773
+      }
+    ]
+  },
+  {
+    "id": "zh-24",
+    "language": "zh",
+    "query": "修道",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "ware_orthodox_church_18:p4:para20:59b719d8",
+        "source_id": "da9275a51fa3762c",
+        "page": 4,
+        "score": 19.806303654002786
+      },
+      {
+        "node_id": "e5_8d_a1_e8_a5_bf_e5_ae_89_e8_ae_ba_e8_87_aa_e7_94_b1_e6_84_8f_e5_bf_97_e4_b8_8e_e6_81_a9_e5_85_b8:p2:para1:b342fdde",
+        "source_id": "30d18f649604a4c7",
+        "page": 2,
+        "score": 16.552943172903554
+      }
+    ]
+  },
+  {
+    "id": "zh-25",
+    "language": "zh",
+    "query": "袁永甲",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "e6_b2_99_e6_bc_a0_e6_95_99_e7_88_b6_e8_a8_80_e8_a1_8c_e5_bd_95_e4_b8_8e_e5_bf_83_e7_a5_b7_e4_bc_a0_e7_bb_9f:p1:para1:156ed62b",
+        "source_id": "a9b20c6d21f923d8",
+        "page": 1,
+        "score": 19.19147619181239
+      },
+      {
+        "node_id": "e4_b8_9c_e6_ad_a3_e6_95_99_e4_b8_8e_e6_96_b0_e6_95_99_e6_95_99_e4_b9_89_e4_b9_8b_e4_b8_8d_e5_90_8c:p1:para2:bece31cb",
+        "source_id": "5bf7910c7bfbbb71",
+        "page": 1,
+        "score": 16.834285825675813
+      },
+      {
+        "node_id": "ware_orthodox_church_2:p1:para2:72b3f350",
+        "source_id": "9b899a037d0faf4d",
+        "page": 1,
+        "score": 16.362462344928485
+      },
+      {
+        "node_id": "quote_policy:p3:para5:c48fb27c",
+        "source_id": "695defeb4b0a8beb",
+        "page": 3,
+        "score": 15.721288584323073
+      },
+      {
+        "node_id": "e5_a5_a5_e5_88_a9_e9_87_91_e4_b8_8e_e4_ba_9a_e5_8e_86_e5_b1_b1_e5_a4_a7_e4_bc_a0_e7_bb_9f_e6_95_99_e4_bc_9a_e5_8e_86_e5_8f_b2_e5_b8_8c_e8_85_8a_e4_bc_a0_e7_bb_9f_e4_b9_8b_e4_b8_80:p1:para1:f44f894d",
+        "source_id": "49c45ada649bd000",
+        "page": 1,
+        "score": 15.148611367210739
+      },
+      {
+        "node_id": "e9_98_bf_e7_94_b2_e9_87_91_e5_8f_a3_e7_ba_a6_e7_bf_b0_e7_94_9f_e5_b9_b3:p1:para1:247a87bd",
+        "source_id": "7b6dc7cda49539b8",
+        "page": 1,
+        "score": 15.148611367210739
+      },
+      {
+        "node_id": "e7_a5_9e_e5_ad_a6_e5_ae_b6_e6_a0_bc_e5_88_97_e9_ab_98_e5_88_a9:p1:para1:8e73a4de",
+        "source_id": "f61f33f8c9b7f228",
+        "page": 1,
+        "score": 14.473881978827471
+      },
+      {
+        "node_id": "e5_90_9b_e5_a3_ab_e5_9d_a6_e4_b8_81_e4_b8_8e_e5_b0_bc_e8_a5_bf_e4_ba_9a:p1:para1:42c98de5",
+        "source_id": "5a231499fa41056d",
+        "page": 1,
+        "score": 14.169079328327493
+      },
+      {
+        "node_id": "non_orthodox:p1:para1:77493f76",
+        "source_id": "bc133b0cccfe5e69",
+        "page": 1,
+        "score": 13.614755292532886
+      },
+      {
+        "node_id": "about:p1:para36:9e5f4e13",
+        "source_id": "ff8a95def2238f87",
+        "page": 1,
+        "score": 13.009480818794685
+      }
+    ]
+  },
+  {
+    "id": "en-01",
+    "language": "en",
+    "query": "theology",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "king_2019_syriac_world:p756:para2:34f5b9a9",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 756,
+        "score": 9.61965393547519
+      },
+      {
+        "node_id": "david:p1:para1:14f6c588",
+        "source_id": "46a712a944b853d5",
+        "page": 1,
+        "score": 9.39150563457053
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p3:para2_line3:d5a9eba5",
+        "source_id": "e36f82edaa8743ca",
+        "page": 3,
+        "score": 9.39150563457053
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p454:para6_line11:1e022a66",
+        "source_id": "e36f82edaa8743ca",
+        "page": 454,
+        "score": 9.39150563457053
+      },
+      {
+        "node_id": "nicolini_zani_matteo_2022_the_luminous_way_to_the_east_oxford:p347:para12:56e53167",
+        "source_id": "9e7d1de947b63c66",
+        "page": 347,
+        "score": 9.370070097213306
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p10:para2_line34:a8a1a8fb",
+        "source_id": "e36f82edaa8743ca",
+        "page": 10,
+        "score": 9.17392855472744
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p73:para2_line1:b2ff3254",
+        "source_id": "e36f82edaa8743ca",
+        "page": 73,
+        "score": 9.17392855472744
+      },
+      {
+        "node_id": "e5_a5_a5_e5_88_a9_e9_87_91_e4_b8_8e_e4_ba_9a_e5_8e_86_e5_b1_b1_e5_a4_a7_e4_bc_a0_e7_bb_9f_e6_95_99_e4_bc_9a_e5_8e_86_e5_8f_b2_e5_b8_8c_e8_85_8a_e4_bc_a0_e7_bb_9f_e4_b9_8b_e4_b8_80:p7:para7:d2def8d2",
+        "source_id": "49c45ada649bd000",
+        "page": 7,
+        "score": 9.153473643416646
+      },
+      {
+        "node_id": "ware_orthodox_church_15:p23:para2:cb4e2762",
+        "source_id": "2198f0c8ae4dda21",
+        "page": 23,
+        "score": 8.966204608025148
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p520:para1_line1:c9bd38f9",
+        "source_id": "e36f82edaa8743ca",
+        "page": 520,
+        "score": 8.966204608025148
+      }
+    ]
+  },
+  {
+    "id": "en-02",
+    "language": "en",
+    "query": "church history",
+    "status": "ok",
+    "retrieval_method": "pageindex",
+    "hits": []
+  },
+  {
+    "id": "en-03",
+    "language": "en",
+    "query": "free will",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "silvas_2014_basil_sr_syriac:p45:para2:e998912b",
+        "source_id": "1ceadb5da8579faf",
+        "page": 45,
+        "score": 9.34946447109281
+      },
+      {
+        "node_id": "sogdian3_2021_dictionary_christian_sogdian_syriac_and_english_sims_williams:p399:para8:e471c5bf",
+        "source_id": "8068e69edc3e9a67",
+        "page": 399,
+        "score": 9.122337478207198
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p509:para6_line2:5dcceae1",
+        "source_id": "e36f82edaa8743ca",
+        "page": 509,
+        "score": 9.122337478207198
+      },
+      {
+        "node_id": "about_us:p1:para1:ccad89d0",
+        "source_id": "4cb3b7395bd28816",
+        "page": 1,
+        "score": 8.905983978394
+      },
+      {
+        "node_id": "silvas_2008_macrina_younger:p4:para9:fbb67be1",
+        "source_id": "4a8e41d5e0903267",
+        "page": 4,
+        "score": 8.905983978394
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p199:para5_line4:700ca057",
+        "source_id": "e36f82edaa8743ca",
+        "page": 199,
+        "score": 8.905983978394
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p376:para7_line5:b17524d1",
+        "source_id": "e36f82edaa8743ca",
+        "page": 376,
+        "score": 8.905983978394
+      },
+      {
+        "node_id": "silvas_2014_basil_sr_syriac:p6:para11:4ae55958",
+        "source_id": "1ceadb5da8579faf",
+        "page": 6,
+        "score": 8.69965518910856
+      },
+      {
+        "node_id": "silvas_2014_basil_sr_syriac:p46:para2:ca8bb59f",
+        "source_id": "1ceadb5da8579faf",
+        "page": 46,
+        "score": 8.69965518910856
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p50:para1_line1:60d456c2",
+        "source_id": "e36f82edaa8743ca",
+        "page": 50,
+        "score": 8.69965518910856
+      }
+    ]
+  },
+  {
+    "id": "en-04",
+    "language": "en",
+    "query": "original sin",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "church_history_ii_latin8_augustine_freewill:p8:para13:6f3db825",
+        "source_id": "d31d893e98c79664",
+        "page": 8,
+        "score": 13.539297886699837
+      },
+      {
+        "node_id": "church_history_ii_latin8_augustine_freewill:p6:para27:45928001",
+        "source_id": "d31d893e98c79664",
+        "page": 6,
+        "score": 12.28865118690316
+      },
+      {
+        "node_id": "church_history_ii_latin8_augustine_freewill:p10:para25:737d32d1",
+        "source_id": "d31d893e98c79664",
+        "page": 10,
+        "score": 11.951546247800568
+      },
+      {
+        "node_id": "silvas_2008_macrina_younger:p267:para15:1453bab9",
+        "source_id": "4a8e41d5e0903267",
+        "page": 267,
+        "score": 11.722431585703156
+      },
+      {
+        "node_id": "silvas_2008_macrina_younger:p238:para6:7c2e55c6",
+        "source_id": "4a8e41d5e0903267",
+        "page": 238,
+        "score": 9.442320812450664
+      },
+      {
+        "node_id": "silvas_rule_basil_latin_en:p136:para4:dcffac0d",
+        "source_id": "68b72ed3847817a9",
+        "page": 136,
+        "score": 9.312875993044264
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p298:para2_line4:6688f033",
+        "source_id": "e36f82edaa8743ca",
+        "page": 298,
+        "score": 9.184459714552858
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p298:para5_line8:c2cf72e5",
+        "source_id": "e36f82edaa8743ca",
+        "page": 298,
+        "score": 9.184459714552858
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p450:para4_line6:bea28f53",
+        "source_id": "e36f82edaa8743ca",
+        "page": 450,
+        "score": 9.184459714552858
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p339:para1_line2:ab9e5e8a",
+        "source_id": "e36f82edaa8743ca",
+        "page": 339,
+        "score": 9.059536758820096
+      }
+    ]
+  },
+  {
+    "id": "en-05",
+    "language": "en",
+    "query": "grace",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "church_history_ii_latin8_augustine_freewill:p8:para8:0e57f262",
+        "source_id": "d31d893e98c79664",
+        "page": 8,
+        "score": 12.23753874352192
+      },
+      {
+        "node_id": "church_history_ii_latin8_augustine_freewill:p9:para1:058e4f5e",
+        "source_id": "d31d893e98c79664",
+        "page": 9,
+        "score": 10.27950347104485
+      },
+      {
+        "node_id": "church_history_ii_latin8_augustine_freewill:p4:para1:5cae6800",
+        "source_id": "d31d893e98c79664",
+        "page": 4,
+        "score": 9.89651626007029
+      },
+      {
+        "node_id": "church_history_ii_latin8_augustine_freewill:p6:para15:52018a6c",
+        "source_id": "d31d893e98c79664",
+        "page": 6,
+        "score": 9.89651626007029
+      },
+      {
+        "node_id": "church_history_ii_latin8_augustine_freewill:p8:para14:30f128f1",
+        "source_id": "d31d893e98c79664",
+        "page": 8,
+        "score": 9.89651626007029
+      },
+      {
+        "node_id": "church_history_ii_latin8_augustine_freewill:p8:para9:52018a6c",
+        "source_id": "d31d893e98c79664",
+        "page": 8,
+        "score": 9.89651626007029
+      },
+      {
+        "node_id": "2025_12_19_theotokos_in_temple:p4:para2:cd9cbe53",
+        "source_id": "5810082fe17bd141",
+        "page": 4,
+        "score": 9.679289570335655
+      },
+      {
+        "node_id": "e5_8d_a1_e8_a5_bf_e5_ae_89_e8_ae_ba_e8_87_aa_e7_94_b1_e6_84_8f_e5_bf_97_e4_b8_8e_e6_81_a9_e5_85_b8:p7:para4:1bb64498",
+        "source_id": "30d18f649604a4c7",
+        "page": 7,
+        "score": 9.541042171150304
+      },
+      {
+        "node_id": "church_history_ii_latin8_augustine_freewill:p8:para18:2610d0ee",
+        "source_id": "d31d893e98c79664",
+        "page": 8,
+        "score": 9.541042171150304
+      },
+      {
+        "node_id": "church_history_ii_latin8_augustine_freewill:p10:para1:8d9becab",
+        "source_id": "d31d893e98c79664",
+        "page": 10,
+        "score": 9.541042171150304
+      }
+    ]
+  },
+  {
+    "id": "en-06",
+    "language": "en",
+    "query": "justification",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p169:para1_line41:8ff7006f",
+        "source_id": "e36f82edaa8743ca",
+        "page": 169,
+        "score": 13.145149565611339
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p299:para8_line6:8f843ab7",
+        "source_id": "e36f82edaa8743ca",
+        "page": 299,
+        "score": 12.840610190576701
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p334:para7_line3:c3aafc61",
+        "source_id": "e36f82edaa8743ca",
+        "page": 334,
+        "score": 12.549862098203805
+      },
+      {
+        "node_id": "nicolini_zani_matteo_2022_the_luminous_way_to_the_east_oxford:p69:para3:c545a9ec",
+        "source_id": "9e7d1de947b63c66",
+        "page": 69,
+        "score": 8.915968288315282
+      },
+      {
+        "node_id": "silvas_2015_asketik_basil:p278:para6:f5280df6",
+        "source_id": "25678158fa2549df",
+        "page": 278,
+        "score": 7.6804542609079425
+      },
+      {
+        "node_id": "kohn_2008:p235:para2:4048b259",
+        "source_id": "43715195719c401d",
+        "page": 235,
+        "score": 5.646187821595805
+      },
+      {
+        "node_id": "silvas_2008_macrina_younger:p63:para2:fa0e74c8",
+        "source_id": "4a8e41d5e0903267",
+        "page": 63,
+        "score": 5.589249965302527
+      },
+      {
+        "node_id": "pregadio_2013_the_encyclopedia_of_taoism_2_volume_set:p595:para8:1df6717b",
+        "source_id": "124cc82b2e436796",
+        "page": 595,
+        "score": 5.1720017914152505
+      },
+      {
+        "node_id": "silvas_rule_basil_latin_en:p140:para5:45fe9e23",
+        "source_id": "68b72ed3847817a9",
+        "page": 140,
+        "score": 5.03115723391061
+      },
+      {
+        "node_id": "source:p133:para1:13f17fb6",
+        "source_id": "772bd0694524b01f",
+        "page": 133,
+        "score": 4.854879055147967
+      }
+    ]
+  },
+  {
+    "id": "en-07",
+    "language": "en",
+    "query": "incarnation",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "ware_orthodox_church_3_5_chapter2:p6:para6:188d6ec5",
+        "source_id": "70b7760a7fe9c4d3",
+        "page": 6,
+        "score": 12.12247088298572
+      },
+      {
+        "node_id": "2025_12_19_theotokos_in_temple:p13:para7:a403d61c",
+        "source_id": "5810082fe17bd141",
+        "page": 13,
+        "score": 12.12247088298572
+      },
+      {
+        "node_id": "ware_orthodox_church_15:p21:para62:1e06cdca",
+        "source_id": "2198f0c8ae4dda21",
+        "page": 21,
+        "score": 11.279931278209062
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p276:para4_line5:1fb2e6fd",
+        "source_id": "e36f82edaa8743ca",
+        "page": 276,
+        "score": 11.279931278209062
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p399:para1_line13:a7782f5f",
+        "source_id": "e36f82edaa8743ca",
+        "page": 399,
+        "score": 11.279931278209062
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p192:para5_line1:9eb97c83",
+        "source_id": "e36f82edaa8743ca",
+        "page": 192,
+        "score": 10.546897637393984
+      },
+      {
+        "node_id": "the_religious_identity_of_si_sites_in:p161:para2:76d8026b",
+        "source_id": "ad7a41e3dfb9a540",
+        "page": 161,
+        "score": 10.323276043819245
+      },
+      {
+        "node_id": "king_2019_syriac_world:p778:para1:5e1d8be7",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 778,
+        "score": 9.158209261311903
+      },
+      {
+        "node_id": "church_history_ii_latin8_augustine_freewill:p10:para1:8d9becab",
+        "source_id": "d31d893e98c79664",
+        "page": 10,
+        "score": 8.989126427528996
+      },
+      {
+        "node_id": "dimitri_ef_bc_9a_e6_95_99_e7_88_b6_e7_b2_be_e7_a5_9e:p3:para18:a8d87983",
+        "source_id": "c0317e790ce5488a",
+        "page": 3,
+        "score": 8.092664701325342
+      }
+    ]
+  },
+  {
+    "id": "en-08",
+    "language": "en",
+    "query": "Trinity",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "church_history_ii_latin3_hilary:p5:para9:9fa07823",
+        "source_id": "46f11d5a29e5a748",
+        "page": 5,
+        "score": 11.811153531523034
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p162:para1_line6:0ce6d02e",
+        "source_id": "e36f82edaa8743ca",
+        "page": 162,
+        "score": 10.716617087650807
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p11:para2_line11:77336e8c",
+        "source_id": "e36f82edaa8743ca",
+        "page": 11,
+        "score": 10.473962266058928
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p75:para4_line4:c37b1148",
+        "source_id": "e36f82edaa8743ca",
+        "page": 75,
+        "score": 10.473962266058928
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p165:para4_line13:7e0d6651",
+        "source_id": "e36f82edaa8743ca",
+        "page": 165,
+        "score": 10.473962266058928
+      },
+      {
+        "node_id": "king_2019_syriac_world:p238:para3:9a7853e7",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 238,
+        "score": 10.13835672650654
+      },
+      {
+        "node_id": "church_history_ii_latin3_hilary:p4:para5:36c234b5",
+        "source_id": "46f11d5a29e5a748",
+        "page": 4,
+        "score": 10.020190784402176
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p180:para4_line13:0745c162",
+        "source_id": "e36f82edaa8743ca",
+        "page": 180,
+        "score": 10.020190784402176
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p119:para3_line3:5b849d82",
+        "source_id": "e36f82edaa8743ca",
+        "page": 119,
+        "score": 9.807736742638614
+      },
+      {
+        "node_id": "church_history_ii_latin7_augustine_city_of_god:p6:para3:aaad6445",
+        "source_id": "d8eca9dedc44254f",
+        "page": 6,
+        "score": 9.60410480320118
+      }
+    ]
+  },
+  {
+    "id": "en-09",
+    "language": "en",
+    "query": "Christology",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p3:para2_line15:18547f7e",
+        "source_id": "e36f82edaa8743ca",
+        "page": 3,
+        "score": 11.40810903386199
+      },
+      {
+        "node_id": "king_2019_syriac_world:p431:para3:1e27369e",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 431,
+        "score": 11.40810903386199
+      },
+      {
+        "node_id": "king_2019_syriac_world:p889:para21:a07ae0c8",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 889,
+        "score": 11.14381242938758
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p3:para2_line30:e23b929d",
+        "source_id": "e36f82edaa8743ca",
+        "page": 3,
+        "score": 10.891484685026679
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p190:para2_line3:3bcd1288",
+        "source_id": "e36f82edaa8743ca",
+        "page": 190,
+        "score": 10.419624560135661
+      },
+      {
+        "node_id": "silvas_2015_asketik_basil:p328:para7:292f7844",
+        "source_id": "25678158fa2549df",
+        "page": 328,
+        "score": 10.198701486005614
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p349:para7_line1:6fed739c",
+        "source_id": "e36f82edaa8743ca",
+        "page": 349,
+        "score": 10.198701486005614
+      },
+      {
+        "node_id": "king_2019_syriac_world:p443:para20:aaedac3d",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 443,
+        "score": 9.588780417876182
+      },
+      {
+        "node_id": "king_2019_syriac_world:p443:para8:db93752b",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 443,
+        "score": 9.588780417876182
+      },
+      {
+        "node_id": "king_2019_syriac_world:p473:para8:c595a7db",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 473,
+        "score": 9.401367919939542
+      }
+    ]
+  },
+  {
+    "id": "en-10",
+    "language": "en",
+    "query": "Holy Spirit",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p405:para3_line12:a94142f2",
+        "source_id": "e36f82edaa8743ca",
+        "page": 405,
+        "score": 13.772345355570444
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p405:para3_line3:74681c67",
+        "source_id": "e36f82edaa8743ca",
+        "page": 405,
+        "score": 13.772345355570444
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p166:para1_line1:e1fd546e",
+        "source_id": "e36f82edaa8743ca",
+        "page": 166,
+        "score": 13.445708117534464
+      },
+      {
+        "node_id": "2025_12_19_theotokos_in_temple:p5:para3:72bdb023",
+        "source_id": "5810082fe17bd141",
+        "page": 5,
+        "score": 13.134205572312439
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p162:para1_line42:7c61a5f1",
+        "source_id": "e36f82edaa8743ca",
+        "page": 162,
+        "score": 13.134205572312439
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p180:para2_line22:554850a7",
+        "source_id": "e36f82edaa8743ca",
+        "page": 180,
+        "score": 13.134205572312439
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p204:para1_line15:eebb0839",
+        "source_id": "e36f82edaa8743ca",
+        "page": 204,
+        "score": 13.134205572312439
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p267:para2_line5:69795726",
+        "source_id": "e36f82edaa8743ca",
+        "page": 267,
+        "score": 13.134205572312439
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p465:para1_line14:5611ac96",
+        "source_id": "e36f82edaa8743ca",
+        "page": 465,
+        "score": 13.134205572312439
+      },
+      {
+        "node_id": "king_2019_syriac_world:p450:para5:e1b1946c",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 450,
+        "score": 13.104920516459142
+      }
+    ]
+  },
+  {
+    "id": "en-11",
+    "language": "en",
+    "query": "salvation",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "source:p142:para2:bf9d7962",
+        "source_id": "772bd0694524b01f",
+        "page": 142,
+        "score": 8.697184619620126
+      },
+      {
+        "node_id": "early_daoist_scriptures_t:p270:para2:14113862",
+        "source_id": "33556876c192b9e6",
+        "page": 270,
+        "score": 8.697184619620126
+      },
+      {
+        "node_id": "pregadio_2013_the_encyclopedia_of_taoism_2_volume_set:p913:para2:bf9d7962",
+        "source_id": "124cc82b2e436796",
+        "page": 913,
+        "score": 8.697184619620126
+      },
+      {
+        "node_id": "source:p72:para10:03913232",
+        "source_id": "772bd0694524b01f",
+        "page": 72,
+        "score": 8.609800779736515
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p297:para7_line2:0bc27123",
+        "source_id": "e36f82edaa8743ca",
+        "page": 297,
+        "score": 8.609800779736515
+      },
+      {
+        "node_id": "pregadio_2013_the_encyclopedia_of_taoism_2_volume_set:p443:para7:d9315247",
+        "source_id": "124cc82b2e436796",
+        "page": 443,
+        "score": 8.609800779736515
+      },
+      {
+        "node_id": "pregadio_2013_the_encyclopedia_of_taoism_2_volume_set:p695:para8:99fd8eab",
+        "source_id": "124cc82b2e436796",
+        "page": 695,
+        "score": 8.609800779736515
+      },
+      {
+        "node_id": "pregadio_2013_the_encyclopedia_of_taoism_2_volume_set:p843:para10:03913232",
+        "source_id": "124cc82b2e436796",
+        "page": 843,
+        "score": 8.609800779736515
+      },
+      {
+        "node_id": "early_daoist_scriptures_t:p281:para1:73f78c5a",
+        "source_id": "33556876c192b9e6",
+        "page": 281,
+        "score": 8.400642472702788
+      },
+      {
+        "node_id": "early_daoist_scriptures_t:p285:para1:f7b09946",
+        "source_id": "33556876c192b9e6",
+        "page": 285,
+        "score": 8.400642472702788
+      }
+    ]
+  },
+  {
+    "id": "en-12",
+    "language": "en",
+    "query": "atonement",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p267:para7_line5:9894055e",
+        "source_id": "e36f82edaa8743ca",
+        "page": 267,
+        "score": 14.405667381312965
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p272:para2_line16:151f06b2",
+        "source_id": "e36f82edaa8743ca",
+        "page": 272,
+        "score": 13.767740942901236
+      },
+      {
+        "node_id": "silvas_2015_asketik_basil:p246:para5:a034929a",
+        "source_id": "25678158fa2549df",
+        "page": 246,
+        "score": 7.1337537624344955
+      },
+      {
+        "node_id": "pregadio_2013_the_encyclopedia_of_taoism_2_volume_set:p297:para5:d1daf1c2",
+        "source_id": "124cc82b2e436796",
+        "page": 297,
+        "score": 4.500496631178483
+      },
+      {
+        "node_id": "2025_04_08_holy_week_bible:p9:para1:5b8fb58f",
+        "source_id": "4024ce5fe97d30ca",
+        "page": 9,
+        "score": 4.086424074295947
+      },
+      {
+        "node_id": "simswilliams_2015_lifeofserapionandotherchristiansogdiantextsfromms_e25e26_brepols2015:p61:para1:631d9f04",
+        "source_id": "5b6d4be1e8577e22",
+        "page": 61,
+        "score": 1.396803736735209
+      }
+    ]
+  },
+  {
+    "id": "en-13",
+    "language": "en",
+    "query": "resurrection",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "silvas_2008_macrina_younger:p163:para1:80f10808",
+        "source_id": "4a8e41d5e0903267",
+        "page": 163,
+        "score": 10.328806731957721
+      },
+      {
+        "node_id": "silvas_2008_macrina_younger:p165:para1:bbfffc1d",
+        "source_id": "4a8e41d5e0903267",
+        "page": 165,
+        "score": 10.328806731957721
+      },
+      {
+        "node_id": "silvas_2008_macrina_younger:p169:para1:bbfffc1d",
+        "source_id": "4a8e41d5e0903267",
+        "page": 169,
+        "score": 10.328806731957721
+      },
+      {
+        "node_id": "silvas_2008_macrina_younger:p175:para1:bbfffc1d",
+        "source_id": "4a8e41d5e0903267",
+        "page": 175,
+        "score": 10.328806731957721
+      },
+      {
+        "node_id": "2025_04_08_holy_week_bible:p10:para7:61e66ffe",
+        "source_id": "4024ce5fe97d30ca",
+        "page": 10,
+        "score": 10.083839530218945
+      },
+      {
+        "node_id": "silvas_2008_macrina_younger:p243:para2:2e9f4867",
+        "source_id": "4a8e41d5e0903267",
+        "page": 243,
+        "score": 10.083839530218945
+      },
+      {
+        "node_id": "king_2019_syriac_world:p432:para12:2cf954b2",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 432,
+        "score": 10.083839530218945
+      },
+      {
+        "node_id": "silvas_2008_macrina_younger:p272:para4:998e988f",
+        "source_id": "4a8e41d5e0903267",
+        "page": 272,
+        "score": 9.850222851066338
+      },
+      {
+        "node_id": "king_2019_syriac_world:p607:para7:71c1a07d",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 607,
+        "score": 9.850222851066338
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p113:para4_line3:122f1885",
+        "source_id": "e36f82edaa8743ca",
+        "page": 113,
+        "score": 9.627185669741639
+      }
+    ]
+  },
+  {
+    "id": "en-14",
+    "language": "en",
+    "query": "eucharist",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p52:para4_line2:8f1c9b70",
+        "source_id": "e36f82edaa8743ca",
+        "page": 52,
+        "score": 10.917141406478276
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p520:para1_line1:c9bd38f9",
+        "source_id": "e36f82edaa8743ca",
+        "page": 520,
+        "score": 10.917141406478276
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p376:para9_line15:419b87ae",
+        "source_id": "e36f82edaa8743ca",
+        "page": 376,
+        "score": 10.67541941780783
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p386:para7_line11:0f2c18d6",
+        "source_id": "e36f82edaa8743ca",
+        "page": 386,
+        "score": 10.67541941780783
+      },
+      {
+        "node_id": "ware_orthodox_church_2:p2:para25:9d3d3e7d",
+        "source_id": "9b899a037d0faf4d",
+        "page": 2,
+        "score": 10.444169735811952
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p467:para6_line5:a5f29d78",
+        "source_id": "e36f82edaa8743ca",
+        "page": 467,
+        "score": 10.444169735811952
+      },
+      {
+        "node_id": "king_2019_syriac_world:p233:para5:6f71d773",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 233,
+        "score": 10.053209875005072
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p190:para7_line2:9571f4ab",
+        "source_id": "e36f82edaa8743ca",
+        "page": 190,
+        "score": 10.010478131943518
+      },
+      {
+        "node_id": "silvas_2014_basil_sr_syriac:p366:para2:dcc663b4",
+        "source_id": "1ceadb5da8579faf",
+        "page": 366,
+        "score": 9.806864306358086
+      },
+      {
+        "node_id": "sogdian3_2021_dictionary_christian_sogdian_syriac_and_english_sims_williams:p376:para6:1eedbfa4",
+        "source_id": "8068e69edc3e9a67",
+        "page": 376,
+        "score": 9.611368400631203
+      }
+    ]
+  },
+  {
+    "id": "en-15",
+    "language": "en",
+    "query": "liturgy",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "king_2019_syriac_world:p781:para3:7b159589",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 781,
+        "score": 9.37324205095945
+      },
+      {
+        "node_id": "kariatlis3_e6_95_99_e4_bc_9a_e4_b8_8e_e5_9c_a3_e5_a5_a5_e5_a6_99:p2:para54:a8a59ba2",
+        "source_id": "8978d84ec8837455",
+        "page": 2,
+        "score": 9.342562358002471
+      },
+      {
+        "node_id": "king_2019_syriac_world:p787:para1:dfa533ae",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 787,
+        "score": 9.139868062581
+      },
+      {
+        "node_id": "king_2019_syriac_world:p787:para3:1df6727a",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 787,
+        "score": 8.990166459833771
+      },
+      {
+        "node_id": "king_2019_syriac_world:p445:para1:db23b555",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 445,
+        "score": 8.917832805391278
+      },
+      {
+        "node_id": "king_2019_syriac_world:p448:para2:7a399e4f",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 448,
+        "score": 8.917832805391278
+      },
+      {
+        "node_id": "kariatlis3_e6_95_99_e4_bc_9a_e4_b8_8e_e5_9c_a3_e5_a5_a5_e5_a6_99:p2:para49:c1f7ea41",
+        "source_id": "8978d84ec8837455",
+        "page": 2,
+        "score": 8.88659773125709
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p11:para2_line8:1ace2320",
+        "source_id": "e36f82edaa8743ca",
+        "page": 11,
+        "score": 8.706329520974908
+      },
+      {
+        "node_id": "king_2019_syriac_world:p448:para4:93ed04f7",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 448,
+        "score": 8.706329520974908
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p11:para2_line17:1db8c4f0",
+        "source_id": "e36f82edaa8743ca",
+        "page": 11,
+        "score": 8.504626213003455
+      }
+    ]
+  },
+  {
+    "id": "en-16",
+    "language": "en",
+    "query": "monasticism",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "pregadio_2013_the_encyclopedia_of_taoism_2_volume_set:p151:para2:8a442e34",
+        "source_id": "124cc82b2e436796",
+        "page": 151,
+        "score": 10.728459658045669
+      },
+      {
+        "node_id": "king_2019_syriac_world:p250:para2:6c31886b",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 250,
+        "score": 10.728459658045669
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p104:para1_line18:57508200",
+        "source_id": "e36f82edaa8743ca",
+        "page": 104,
+        "score": 10.46134360514281
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p11:para2_line40:5fde3c0a",
+        "source_id": "e36f82edaa8743ca",
+        "page": 11,
+        "score": 10.20720567864171
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p13:para2_line1:d625e195",
+        "source_id": "e36f82edaa8743ca",
+        "page": 13,
+        "score": 10.20720567864171
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p63:para1_line7:2d5f441f",
+        "source_id": "e36f82edaa8743ca",
+        "page": 63,
+        "score": 10.20720567864171
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p72:para1_line2:b79e0bfb",
+        "source_id": "e36f82edaa8743ca",
+        "page": 72,
+        "score": 10.20720567864171
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p73:para1_line1:21a94181",
+        "source_id": "e36f82edaa8743ca",
+        "page": 73,
+        "score": 10.20720567864171
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p111:para1_line2:21a94181",
+        "source_id": "e36f82edaa8743ca",
+        "page": 111,
+        "score": 10.20720567864171
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p117:para1_line2:21a94181",
+        "source_id": "e36f82edaa8743ca",
+        "page": 117,
+        "score": 10.20720567864171
+      }
+    ]
+  },
+  {
+    "id": "en-17",
+    "language": "en",
+    "query": "patristic",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p527:para7_line2:5f80407d",
+        "source_id": "e36f82edaa8743ca",
+        "page": 527,
+        "score": 12.799047918824682
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p3:para2_line24:60d7ed5d",
+        "source_id": "e36f82edaa8743ca",
+        "page": 3,
+        "score": 11.740791473138096
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p3:para2_line32:3fdb6313",
+        "source_id": "e36f82edaa8743ca",
+        "page": 3,
+        "score": 11.196783467782973
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p10:para2_line10:90e0743f",
+        "source_id": "e36f82edaa8743ca",
+        "page": 10,
+        "score": 11.196783467782973
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p527:para8_line3:655a2533",
+        "source_id": "e36f82edaa8743ca",
+        "page": 527,
+        "score": 11.196783467782973
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p524:para1_line17:e2359fd0",
+        "source_id": "e36f82edaa8743ca",
+        "page": 524,
+        "score": 10.943256307807403
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p141:para1_line4:47f718d7",
+        "source_id": "e36f82edaa8743ca",
+        "page": 141,
+        "score": 10.70095609580466
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p524:para1_line16:b3f190b0",
+        "source_id": "e36f82edaa8743ca",
+        "page": 524,
+        "score": 10.70095609580466
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p525:para1_line22:62438711",
+        "source_id": "e36f82edaa8743ca",
+        "page": 525,
+        "score": 10.70095609580466
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p526:para1_line24:5f8bed64",
+        "source_id": "e36f82edaa8743ca",
+        "page": 526,
+        "score": 10.70095609580466
+      }
+    ]
+  },
+  {
+    "id": "en-18",
+    "language": "en",
+    "query": "Augustine",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "church_history_ii_latin8_augustine_freewill:p8:para15:14135f16",
+        "source_id": "d31d893e98c79664",
+        "page": 8,
+        "score": 11.907426679945376
+      },
+      {
+        "node_id": "church_history_ii_latin5_augustine_confessoins:p13:para50:2ac5ece9",
+        "source_id": "984faa577c00061c",
+        "page": 13,
+        "score": 10.884966280300624
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p3:para2_line5:868be1bc",
+        "source_id": "e36f82edaa8743ca",
+        "page": 3,
+        "score": 10.778257802941113
+      },
+      {
+        "node_id": "ware_orthodox_church_15:p16:para1:48e553ac",
+        "source_id": "2198f0c8ae4dda21",
+        "page": 16,
+        "score": 10.522631018344944
+      },
+      {
+        "node_id": "church_history_ii_latin5_augustine_confessoins:p15:para1:0e0664cb",
+        "source_id": "984faa577c00061c",
+        "page": 15,
+        "score": 10.375853093532147
+      },
+      {
+        "node_id": "king_2019_syriac_world:p3:para21:b6827da6",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 3,
+        "score": 10.046106172575096
+      },
+      {
+        "node_id": "church_history_ii_latin5_augustine_confessoins:p14:para19:e083aea6",
+        "source_id": "984faa577c00061c",
+        "page": 14,
+        "score": 10.046106172575096
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p500:para4_line1:719a1cf7",
+        "source_id": "e36f82edaa8743ca",
+        "page": 500,
+        "score": 10.046106172575096
+      },
+      {
+        "node_id": "church_history_ii_latin8_augustine_freewill:p8:para11:32b4be4f",
+        "source_id": "d31d893e98c79664",
+        "page": 8,
+        "score": 9.823670218691756
+      },
+      {
+        "node_id": "church_history_ii_latin8_augustine_freewill:p8:para13:6f3db825",
+        "source_id": "d31d893e98c79664",
+        "page": 8,
+        "score": 9.823670218691756
+      }
+    ]
+  },
+  {
+    "id": "en-19",
+    "language": "en",
+    "query": "Athanasius",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p122:para7_line1:26e0132d",
+        "source_id": "e36f82edaa8743ca",
+        "page": 122,
+        "score": 12.062350314548947
+      },
+      {
+        "node_id": "king_2019_syriac_world:p889:para18:d1744ef2",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 889,
+        "score": 11.885839380846464
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p120:para15_line6:93b1bf7c",
+        "source_id": "e36f82edaa8743ca",
+        "page": 120,
+        "score": 11.769319054571755
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p75:para2_line27:c1213ed9",
+        "source_id": "e36f82edaa8743ca",
+        "page": 75,
+        "score": 10.969846051453274
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p519:para1_line10:e2e14cd9",
+        "source_id": "e36f82edaa8743ca",
+        "page": 519,
+        "score": 10.969846051453274
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p31:para7_line4:a302c19e",
+        "source_id": "e36f82edaa8743ca",
+        "page": 31,
+        "score": 10.726957102392632
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p75:para2_line22:7fa2b1e9",
+        "source_id": "e36f82edaa8743ca",
+        "page": 75,
+        "score": 10.726957102392632
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p79:para4_line10:f7b0e5d4",
+        "source_id": "e36f82edaa8743ca",
+        "page": 79,
+        "score": 10.726957102392632
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p79:para4_line6:6815e8c3",
+        "source_id": "e36f82edaa8743ca",
+        "page": 79,
+        "score": 10.49459101712447
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p232:para5_line3:bf0bc22e",
+        "source_id": "e36f82edaa8743ca",
+        "page": 232,
+        "score": 10.49459101712447
+      }
+    ]
+  },
+  {
+    "id": "en-20",
+    "language": "en",
+    "query": "Chrysostom",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p99:para2_line28:4e072bbc",
+        "source_id": "e36f82edaa8743ca",
+        "page": 99,
+        "score": 11.170883024945716
+      },
+      {
+        "node_id": "ware_orthodox_church_15:p21:para38:540ab452",
+        "source_id": "2198f0c8ae4dda21",
+        "page": 21,
+        "score": 10.923542813854151
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p99:para3_line10:38af7533",
+        "source_id": "e36f82edaa8743ca",
+        "page": 99,
+        "score": 10.923542813854151
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p99:para3_line1:ed1ad966",
+        "source_id": "e36f82edaa8743ca",
+        "page": 99,
+        "score": 10.923542813854151
+      },
+      {
+        "node_id": "silvas_2008_macrina_younger:p266:para5:a146330a",
+        "source_id": "4a8e41d5e0903267",
+        "page": 266,
+        "score": 10.686918311986021
+      },
+      {
+        "node_id": "nicolini_zani_matteo_2022_the_luminous_way_to_the_east_oxford:p322:para14:41d51913",
+        "source_id": "9e7d1de947b63c66",
+        "page": 322,
+        "score": 10.550600528347925
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p99:para3_line2:8fc35656",
+        "source_id": "e36f82edaa8743ca",
+        "page": 99,
+        "score": 10.460327916829797
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p99:para3_line6:3e715699",
+        "source_id": "e36f82edaa8743ca",
+        "page": 99,
+        "score": 10.460327916829797
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p518:para1_line16:19159065",
+        "source_id": "e36f82edaa8743ca",
+        "page": 518,
+        "score": 10.460327916829797
+      },
+      {
+        "node_id": "king_2019_syriac_world:p891:para32:4cf837d6",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 891,
+        "score": 10.460327916829797
+      }
+    ]
+  },
+  {
+    "id": "en-21",
+    "language": "en",
+    "query": "Gregory",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p124:para2_line4:3631b13b",
+        "source_id": "e36f82edaa8743ca",
+        "page": 124,
+        "score": 8.548316950790493
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p525:para1_line25:4ebd6cfc",
+        "source_id": "e36f82edaa8743ca",
+        "page": 525,
+        "score": 8.548316950790493
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p90:para2_line13:a3cc5e08",
+        "source_id": "e36f82edaa8743ca",
+        "page": 90,
+        "score": 8.433606764534883
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p98:para2_line1:b24efb0f",
+        "source_id": "e36f82edaa8743ca",
+        "page": 98,
+        "score": 8.433606764534883
+      },
+      {
+        "node_id": "nicolini_zani_matteo_2022_the_luminous_way_to_the_east_oxford:p245:para11:9024088b",
+        "source_id": "9e7d1de947b63c66",
+        "page": 245,
+        "score": 8.235213262519714
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p120:para17_line16:262394b1",
+        "source_id": "e36f82edaa8743ca",
+        "page": 120,
+        "score": 7.823923567923338
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p120:para18_line2:969b622a",
+        "source_id": "e36f82edaa8743ca",
+        "page": 120,
+        "score": 7.823923567923338
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p120:para23_line1:e20483c3",
+        "source_id": "e36f82edaa8743ca",
+        "page": 120,
+        "score": 7.823923567923338
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p120:para8_line1:daea7ad1",
+        "source_id": "e36f82edaa8743ca",
+        "page": 120,
+        "score": 7.823923567923338
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p121:para7_line1:daea7ad1",
+        "source_id": "e36f82edaa8743ca",
+        "page": 121,
+        "score": 7.823923567923338
+      }
+    ]
+  },
+  {
+    "id": "en-22",
+    "language": "en",
+    "query": "icon",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "about_biblio_orthodox:p12:para1:8998a4a5",
+        "source_id": "fde9929dac9262d9",
+        "page": 12,
+        "score": 12.394293368638134
+      },
+      {
+        "node_id": "kohn_2008:p280:para14:ce409000",
+        "source_id": "43715195719c401d",
+        "page": 280,
+        "score": 10.047353494349288
+      },
+      {
+        "node_id": "about_biblio_orthodox:p12:para3:dfe8f191",
+        "source_id": "fde9929dac9262d9",
+        "page": 12,
+        "score": 10.029815874738972
+      },
+      {
+        "node_id": "source:p706:para10:8fd51340",
+        "source_id": "772bd0694524b01f",
+        "page": 706,
+        "score": 9.868460494276476
+      },
+      {
+        "node_id": "pregadio_2013_the_encyclopedia_of_taoism_2_volume_set:p1477:para10:8fd51340",
+        "source_id": "124cc82b2e436796",
+        "page": 1477,
+        "score": 9.868460494276476
+      },
+      {
+        "node_id": "king_2019_syriac_world:p128:para2:fdef3046",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 128,
+        "score": 8.53230365102478
+      },
+      {
+        "node_id": "e5_ad_99_e6_b3_bd_e6_b1_90_e5_8d_9a_e5_a3_ab_ef_bc_9a_e4_b8_ad_e4_b8_96_e7_ba_aa_e7_9a_84_e5_9f_ba_e7_9d_a3_e6_95_99_e7_8e_8b_e5_9b_bd_e9_9f_b3_e9_a2_91_ef_bc_89:p4:para5:d883444b",
+        "source_id": "4c9d38cda52b8d02",
+        "page": 4,
+        "score": 8.505497956296914
+      },
+      {
+        "node_id": "sogdian3_2021_dictionary_christian_sogdian_syriac_and_english_sims_williams:p147:para1:1aca38c4",
+        "source_id": "8068e69edc3e9a67",
+        "page": 147,
+        "score": 5.949211813545305
+      },
+      {
+        "node_id": "silvas_2008_macrina_younger:p174:para4:051a4d3f",
+        "source_id": "4a8e41d5e0903267",
+        "page": 174,
+        "score": 5.88603258020922
+      },
+      {
+        "node_id": "silvas_2008_macrina_younger:p11:para3:f61f514d",
+        "source_id": "4a8e41d5e0903267",
+        "page": 11,
+        "score": 5.077245279609284
+      }
+    ]
+  },
+  {
+    "id": "en-23",
+    "language": "en",
+    "query": "council",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p526:para1_line25:2a3eb380",
+        "source_id": "e36f82edaa8743ca",
+        "page": 526,
+        "score": 10.306949128792343
+      },
+      {
+        "node_id": "king_2019_syriac_world:p890:para2:3dbcdb3d",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 890,
+        "score": 9.812679031254826
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p121:para16_line2:f13798e7",
+        "source_id": "e36f82edaa8743ca",
+        "page": 121,
+        "score": 9.674399579328805
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p121:para17_line1:f13798e7",
+        "source_id": "e36f82edaa8743ca",
+        "page": 121,
+        "score": 9.674399579328805
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p120:para10_line1:9aa73d12",
+        "source_id": "e36f82edaa8743ca",
+        "page": 120,
+        "score": 9.433527402688105
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p120:para15_line7:f7b0853a",
+        "source_id": "e36f82edaa8743ca",
+        "page": 120,
+        "score": 9.433527402688105
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p120:para21_line1:bf287723",
+        "source_id": "e36f82edaa8743ca",
+        "page": 120,
+        "score": 9.433527402688105
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p120:para21_line4:276b5368",
+        "source_id": "e36f82edaa8743ca",
+        "page": 120,
+        "score": 9.433527402688105
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p122:para7_line13:83db65c0",
+        "source_id": "e36f82edaa8743ca",
+        "page": 122,
+        "score": 9.433527402688105
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p122:para7_line9:a370b8ae",
+        "source_id": "e36f82edaa8743ca",
+        "page": 122,
+        "score": 9.433527402688105
+      }
+    ]
+  },
+  {
+    "id": "en-24",
+    "language": "en",
+    "query": "Nicaea",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p120:para10_line2:202ff621",
+        "source_id": "e36f82edaa8743ca",
+        "page": 120,
+        "score": 12.663530990673717
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p75:para2_line5:b9fb292c",
+        "source_id": "e36f82edaa8743ca",
+        "page": 75,
+        "score": 11.783386464120618
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p116:para1_line9:49aa0782",
+        "source_id": "e36f82edaa8743ca",
+        "page": 116,
+        "score": 11.783386464120618
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p8:para2_line26:ea875e75",
+        "source_id": "e36f82edaa8743ca",
+        "page": 8,
+        "score": 11.516576936747075
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p115:para1_line8:eb9b20c3",
+        "source_id": "e36f82edaa8743ca",
+        "page": 115,
+        "score": 11.516576936747075
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p526:para1_line25:2a3eb380",
+        "source_id": "e36f82edaa8743ca",
+        "page": 526,
+        "score": 11.516576936747075
+      },
+      {
+        "node_id": "ware_orthodox_church_3_5_chapter2:p5:para5:a57d2c28",
+        "source_id": "70b7760a7fe9c4d3",
+        "page": 5,
+        "score": 11.017635461930395
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p32:para11_line4:78ac11b1",
+        "source_id": "e36f82edaa8743ca",
+        "page": 32,
+        "score": 11.017635461930395
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p111:para6_line8:e9a94e42",
+        "source_id": "e36f82edaa8743ca",
+        "page": 111,
+        "score": 11.017635461930395
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p32:para11_line5:67b10d3b",
+        "source_id": "e36f82edaa8743ca",
+        "page": 32,
+        "score": 10.345337033501435
+      }
+    ]
+  },
+  {
+    "id": "en-25",
+    "language": "en",
+    "query": "Chalcedon",
+    "status": "ok",
+    "retrieval_method": "bm25",
+    "hits": [
+      {
+        "node_id": "king_2019_syriac_world:p435:para4:4babf23c",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 435,
+        "score": 12.11829921306224
+      },
+      {
+        "node_id": "king_2019_syriac_world:p438:para4:1501af77",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 438,
+        "score": 10.970783677580869
+      },
+      {
+        "node_id": "king_2019_syriac_world:p443:para12:895c5437",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 443,
+        "score": 10.845433366288917
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p526:para1_line25:2a3eb380",
+        "source_id": "e36f82edaa8743ca",
+        "page": 526,
+        "score": 10.746334669824453
+      },
+      {
+        "node_id": "king_2019_syriac_world:p432:para7:c472507b",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 432,
+        "score": 10.508394600112918
+      },
+      {
+        "node_id": "silvas_2015_asketikon_of_st_basil_the_great:p216:para4_line14:a94fe073",
+        "source_id": "e36f82edaa8743ca",
+        "page": 216,
+        "score": 10.062784141534495
+      },
+      {
+        "node_id": "king_2019_syriac_world:p443:para16:9b6b5ee2",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 443,
+        "score": 9.853856811544839
+      },
+      {
+        "node_id": "king_2019_syriac_world:p443:para20:aaedac3d",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 443,
+        "score": 9.46099144661325
+      },
+      {
+        "node_id": "king_2019_syriac_world:p169:para5:41512905",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 169,
+        "score": 9.276076581250246
+      },
+      {
+        "node_id": "king_2019_syriac_world:p171:para6:09e70166",
+        "source_id": "22e0b1bbeb0d6bf5",
+        "page": 171,
+        "score": 9.09825146076477
+      }
+    ]
+  }
+]

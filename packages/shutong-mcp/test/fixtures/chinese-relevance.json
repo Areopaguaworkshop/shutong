@@ -1,0 +1,22 @@
+[
+  { "id": "zh-r01", "query": "尼西亚", "expected": ["6bb95e706dbfb0e2", "5a231499fa41056d", "f128177787407d12"] },
+  { "id": "zh-r02", "query": "自由意志", "expected": ["2b08586dae790b57", "30d18f649604a4c7"] },
+  { "id": "zh-r03", "query": "圣像", "expected": ["70231cb2a33ab9ea", "686a341878d22ee5"] },
+  { "id": "zh-r04", "query": "景教", "expected": ["80570d97f044b55b", "2fce1ae75583c39b"] },
+  { "id": "zh-r05", "query": "沙漠教父", "expected": ["a9b20c6d21f923d8", "7a6b453128261e18", "7098d139c55c950a"] },
+  { "id": "zh-r06", "query": "心祷", "expected": ["7098d139c55c950a", "a9b20c6d21f923d8"] },
+  { "id": "zh-r07", "query": "大公传统", "expected": ["261c89d4d772dee1", "b34d20aac21a28e3", "fcceaadae5cede12"] },
+  { "id": "zh-r08", "query": "圣灵", "expected": ["68180f1b17c385f9", "7141e72b47e6a425", "90cc06823ec8d1f2"] },
+  { "id": "zh-r09", "query": "救恩", "expected": ["2c39aed1e7b0947c", "8b1b55edcad04eff"] },
+  { "id": "zh-r10", "query": "称义", "expected": ["8b1b55edcad04eff", "b41cfaf8f666a45b"] },
+  { "id": "zh-r11", "query": "道成肉身", "expected": ["02155be0484da912", "12d17388865c4999"] },
+  { "id": "zh-r12", "query": "十字架", "expected": ["65e0eb0b66bc663e", "2198f0c8ae4dda21"] },
+  { "id": "zh-r13", "query": "复活", "expected": ["f6d8dc0b17b4fd8f", "4024ce5fe97d30ca", "08e3c16229aa11aa"] },
+  { "id": "zh-r14", "query": "教父", "expected": ["21b621de3071c148", "f0a989174df044ad", "49c45ada649bd000"] },
+  { "id": "zh-r15", "query": "灵修", "expected": ["8cc18c75c6d9a262", "7a60db2f35c285bb"] },
+  { "id": "zh-r16", "query": "翻译", "expected": ["1fce036dffdf4f8f", "99e7a9e31c9ba8fb"] },
+  { "id": "zh-r17", "query": "希腊哲学", "expected": ["165d2d962206b2ac"] },
+  { "id": "zh-r18", "query": "政教", "expected": ["b0e83a91c7cbc80d", "d0bd44882ac6dda5"] },
+  { "id": "zh-r19", "query": "预定", "expected": ["0959c07551618271"] },
+  { "id": "zh-r20", "query": "圣经原文", "expected": ["2fce1ae75583c39b"] }
+]
