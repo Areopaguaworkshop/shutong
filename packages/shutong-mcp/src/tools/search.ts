@@ -1,13 +1,18 @@
-import { getSearchIndex } from "./context.ts";
+import { searchPassages } from "./passage-search.ts";
+import { currentPaperId, sourcePaper, StoreError } from "./paper-store.ts";
+import { getSearchIndex, errorPayload } from "./context.ts";
 
 export interface SearchArgs {
   query?: string;
   pattern?: string;
-  mode?: "keyword" | "regex";
+  mode?: "keyword" | "regex" | "passages";
   field?: string;
   top_k?: number;
   paper_id?: string;
   library_wide?: boolean;
+  source_ids?: string[];
+  intent?: "topic" | "quotation" | "parallel";
+  seed?: { source_id: string; node_id: string };
 }
 
 export async function handleSearch(args: SearchArgs): Promise<Record<string, unknown>> {
@@ -15,13 +20,31 @@ export async function handleSearch(args: SearchArgs): Promise<Record<string, unk
   const mode = args.mode ?? "keyword";
   const limit = Math.max(1, Math.min(200, Number(args.top_k ?? 20) || 20));
 
-  if (args.paper_id) {
-    return {
-      status: "error",
-      error_code: "not_implemented",
-      message: "Paper-scoped search is deferred until the paper state slice lands.",
-      next_action: "Omit paper_id for library-wide search.",
-    };
+  if (!["keyword", "regex", "passages"].includes(mode)) {
+    return errorPayload("invalid_input", "Choose keyword, regex or passages.");
+  }
+  if (args.paper_id !== undefined && !args.paper_id) {
+    return errorPayload("invalid_paper_id", "paper_id must be non-empty.");
+  }
+  const paperId = args.paper_id ?? (args.library_wide ? null : currentPaperId());
+  let sourceIds = args.source_ids;
+  if (args.source_ids !== undefined &&
+      (!Array.isArray(args.source_ids) || args.source_ids.some((id) => typeof id !== "string" || !id))) {
+    return errorPayload("invalid_input", "source_ids must contain non-empty source IDs.");
+  }
+  try {
+    if (paperId) {
+      const manifest = sourcePaper(paperId).sourcePaper;
+      const allowed = (manifest.sources ?? []).map((source: { source_id: string }) => source.source_id);
+      sourceIds = sourceIds === undefined ? allowed : sourceIds.filter((id) => allowed.includes(id));
+    }
+  } catch (error) {
+    if (error instanceof StoreError) return errorPayload(error.code, error.message);
+    throw error;
+  }
+  sourceIds = sourceIds === undefined ? undefined : [...new Set(sourceIds)];
+  if (mode === "passages") {
+    return searchPassages(index, args, { limit, sourceIds });
   }
 
   if (mode === "regex") {
@@ -40,7 +63,7 @@ export async function handleSearch(args: SearchArgs): Promise<Record<string, unk
         message: "mode=regex only supports field=text",
       };
     }
-    const results = index.regexSearch(pattern, { limit });
+    const results = index.regexSearch(pattern, { limit, sourceIds });
     return {
       status: "ok",
       query: pattern,
@@ -65,7 +88,7 @@ export async function handleSearch(args: SearchArgs): Promise<Record<string, unk
       message: `field=${args.field} is deferred; only full-text search is implemented.`,
     };
   }
-  const results = index.search(query, { limit });
+  const results = index.search(query, { limit, sourceIds });
   return {
     status: "ok",
     query,

@@ -7,9 +7,9 @@ tool and no `pipeline_id`; the backend keeps the state.
 
 1. `research` — `shutong_search`, then `shutong_verify` on every cited passage.
    Exclude failures.
-2. `outline` — the host agent writes the outline from verified notes only.
+2. `outline` — the host agent writes the outline from citable corpus passages.
 3. `draft` — only after `shutong_paper_audit` reports every stage present, and
-   only on an explicit scholar request. Draft from verified claims.
+   only on an explicit scholar request. Draft from cited corpus passages.
 4. `style` — apply the paper's citation style with `shutong_citation` action
    `render`.
 5. `quality` — `shutong_verifier_report` action `record` with inspected evidence.

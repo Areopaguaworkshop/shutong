@@ -134,6 +134,8 @@ async def _handle_doctor(params: dict[str, Any]) -> Any:
 
 
 async def _handle_search(params: dict[str, Any]) -> Any:
+    if params.get("mode") == "passages":
+        return await _tool_call("shutong_search", dict(params))
     arguments = {
         "query": params["query"],
         "top_k": params.get("top_k", 20),

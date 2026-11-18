@@ -9,37 +9,27 @@
 
 ---
 
-## Why This Exists
+## What Shutong does
 
-Large Language Models write fluently but **cannot cite their sources**. When an LLM tells you about a study, a historical event, or a legal precedent, there is no way to verify the claim, trace it back to a page, or reproduce the evidence chain. For scholars, this makes LLM output fundamentally unusable in serious work.
-
-**Shutong is a host-agnostic academic-research application.** Its Python backend owns the research workflow, cross-session state, and Merkle-verified integrity. A host's own primary agent uses Shutong's MCP tools and skill pack to become a citation-safe research assistant.
-
-### What Shutong does for researchers
-
-- **Ingests any source** — PDFs (digital or scanned), URLs, DJVU, EPUB, DOCX, video/audio — into a structured, hash-verified corpus via [citeindex](https://pypi.org/project/citeindex/).
-- **Answers questions** with Chicago author-date citations, where every inline reference traces to a specific passage in your documents.
-- **Eliminates hallucination** by design: BM25 deterministic retrieval, mandatory evidence-to-claim mapping, and fail-closed Merkle integrity verification.
-- **Enforces paper evidence gates** — approved bibliography → ingested source → verified note → verified claim → explicit draft.
-- **Persists cross-session state locally** — research passports, knowledge graph, session diary, and memory, auto-injected at session start without sending paper content or notes to external services.
-- **Supports host-agent EN→ZH-Simplified translation** while preserving citations and established theological terminology.
-
----
+Shutong helps a host agent discover scholarly sources, ingest approved material,
+and retrieve passages with edition-specific Chicago author-date citations.
+The host uses those passages to answer questions and can export a requested draft
+to DOCX. Workspace scope, corpus integrity checks, and session state live locally.
 
 ## Architecture
 
-Shutong ships one MCP server and a portable skill pack. The backend owns durable state and evidence gates; the host keeps its own agent runtime. A host skill routes the primary agent through the scholarly workflow.
+```text
+Host agent and project skills
+  ├─ Python backend over MCP or DeepSeek Harness RPC
+  │    └─ Passage mode calls the installed shutong-mcp executable
+  └─ Standalone TypeScript MCP server
+       ├─ CiteIndex intake → corpus text, CSL metadata and Merkle artifacts
+       ├─ SQLite FTS5 → scoped passage retrieval
+       └─ Optional local Passim and BGE-M3 → text parallels and semantic matches
+```
 
-```
-Host primary agent (OpenCode / Claude Code / Codex / Pi / DeepSeek Harness)
-        │  MCP (or NDJSON RPC for DeepSeek Harness)
-        ▼
-Python backend = MCP tools + evidence gates
-  ├── host skills        — role prompts and skill routing, no agent definitions
-  ├── shutong_state_*    — cross-session state (wake_up / snapshot / record_session)
-  ├── shutong_status     — corpus + integrity + state visibility
-  └── domain tools       — search / verify / ingest / paper / notes / memory
-```
+Python also provides corpus intake, workspace operations, and legacy keyword and
+regex retrieval. The host owns the session and answer synthesis.
 
 ### Host adapters
 
@@ -83,7 +73,7 @@ shutong-mcp install --host opencode
 ```
 
 `@ephremyuan/shutong` is the standalone Node.js MCP server (Node ≥24) with a
-local SQLite FTS5 index and its own host installers. It exposes the same 26-tool
+local SQLite FTS5 index and its own host installers. It exposes the same 24-tool
 surface as the Python backend and is the cutover target described in
 [packages/shutong-mcp/CUTOVER.md](packages/shutong-mcp/CUTOVER.md); rollback is
 `shutong-mcp rollback`. Package details:
@@ -118,40 +108,30 @@ codex
 
 Shutong auto-loads the project instructions, calls `shutong_state_wake_up` at
 session start, confirms the active work, and routes only necessary tasks to
-Workspace Planner, Bibliographer, Ingestor, Noter, and Verifier.
+Workspace Planner, Bibliographer, Ingestor, and Verifier.
 
 ### The workflow, step by step
 
-```
-1. Confirm work        shutong_workspace(action: plan_switch) → scholar confirmation
-2. Discover            Bibliographer saves an annotated bibliography shortlist
-3. Approve + ingest    scholar approval → authorized source intake
-4. Read and note       Noter creates source-located notes
-5. Verify              Verifier checks notes and claim-evidence links
-6. Draft               explicit scholar request, verified claims only
-7. Export              shutong_paper_export_docx
-```
+1. Confirm the work and choose the source scope.
+2. Discover sources, approve access and ingest them.
+3. Use `shutong_search` in passage mode to retrieve cited text for a question,
+   quotation or parallel passage.
+4. If requested, draft from the cited passages and export the supplied Markdown
+   with `shutong_paper_export_docx`.
 
-The enforced lineage is `approved bibliography → ingested source → verified
-note → verified claim → explicit draft`. A missing link blocks drafting and
-identifies the next scholar action.
-
-For collocations, contextual sentiment, quotation checks and source text reuse,
-see the [evidence analysis workflow](docs/evidence-analysis.md). Four skills
-extend the existing roles; the main agent writes requested reports and short
-cited syntheses from verified evidence. Analysis-linked notes also require a
-current passing analysis review.
+See the [passage-search setup](packages/shutong-mcp/README.md#passage-search)
+for Passim, BGE-M3 and scoped requests.
 
 ## Architecture implementation status
 
 The active contract is [the architecture brief](docs/archetecture-2026-08-29.md)
 and its [implementation plan](docs/plans/2026-08-29-paper-scoped-scholar-agent-plan.md).
-The legacy documents formerly under `docs/` are retired.
+These documents describe the earlier paper-scoped architecture. The current passage search contract is documented below.
 
 | Area | Status |
 |---|---|
-| Paper/work boundaries, approvals, source intake, notes, claims, audit gate, and local DOCX export | Implemented and covered by paper-model tests. |
-| Shutong conductor plus Bibliographer, Noter, Ingestor, Verifier, and Workspace Planner | Rendered for Codex, OpenCode, and Claude Code; host-renderer tests cover the generated files. |
+| Paper/work scope, approvals, source intake and local DOCX export | Implemented and covered by paper-model tests. |
+| Shutong conductor plus Bibliographer, Ingestor, Verifier, and Workspace Planner | Rendered for Codex, OpenCode, and Claude Code; host-renderer tests cover the generated files. |
 | Public metadata discovery | Crossref, OpenAlex, Semantic Scholar, DOAJ, Open Library, plus scholar-supplied HTTPS catalogue, OAI-PMH, and publisher metadata endpoints. |
 | First-run backend setup | `shutong setup` creates a per-user virtual environment and installs the bundled backend; package contents are checked with `npm pack --dry-run`. |
 | Full plan parity | Not yet complete: adapter health/rate policies and frozen parser fixtures, enforced 30–50 annotated bibliography screening, independent bibliography verification, and a single cross-host end-to-end evidence-artifact fixture remain outstanding. |
@@ -167,7 +147,18 @@ bun run shutong -- paper use nicea
 bun run shutong -- paper audit
 ```
 
-An active paper restricts `shutong_search` and regex search to its approved sources. Paper workspaces store metadata, source approvals, notes, and audit state locally; retrieval and drafting fail closed when the evidence lineage is incomplete.
+An active paper scopes searches to its source set. To retrieve cited passages
+through either MCP server, call `shutong_search` with:
+
+```json
+{"mode":"passages","intent":"topic","query":"How do these authors describe hospitality?","top_k":10}
+```
+
+Use `intent: "quotation"` with wording to locate or `intent: "parallel"` with
+wording or a seed passage ID. The result includes original text, a locator, a
+citation, and match details. A discovered bibliography record becomes searchable
+after ingestion and indexing. For a running TypeScript MCP server, restart the
+server after ingestion so the default index rebuild sees the new source.
 
 ---
 
@@ -193,7 +184,7 @@ bun run shutong -- status       # show engine status
 
 ---
 
-## 26 MCP Tools
+## 24 MCP Tools
 
 | Category | Tool | Description |
 |----------|------|-------------|
@@ -201,7 +192,7 @@ bun run shutong -- status       # show engine status
 | **State** | `shutong_state_snapshot` | unified snapshot of all research state |
 | **State** | `shutong_state_record_session` | record a session across diary + passport |
 | **Status** | `shutong_status` | corpus health + integrity + research state in one call |
-| Research | `shutong_search` | keyword or regex corpus search (`mode`) |
+| Research | `shutong_search` | keyword, regex, or ranked cited passages (`mode`) |
 | Research | `shutong_verify` | node or whole-corpus Merkle verification (`mode`) |
 | Bibliography | `shutong_bibliography_search` | public scholarly metadata search |
 | Bibliography | `shutong_bibliography_source_catalog` | available source adapters and access classes |
@@ -210,7 +201,6 @@ bun run shutong -- status       # show engine status
 | Ingest | `shutong_delete_document` | remove document from corpus |
 | Paper | `shutong_paper_use`, `shutong_paper_status`, `shutong_paper_audit`, `shutong_paper_export_docx` | activation, gates, status, and export |
 | Workspace | `shutong_workspace` | `create_paper`, `create_project`, `create_work`, `list`, `plan_switch`, `activate` |
-| Paper evidence | `shutong_bibliography`, `shutong_source`, `shutong_note`, `shutong_claim` | approval, lawful access, notes, and claims |
 | Corpus | `shutong_corpus`, `shutong_citation` | corpus state and citation operations |
 | Memory | `shutong_memory` | search, list, and save research memory |
 | Outreach | `shutong_outreach` | record public contact or draft unsent outreach |
@@ -233,7 +223,7 @@ shutong/
 ├── adapters/                    # DeepSeek Harness plugin + adapter README
 ├── packages/shutong-backend/    # Python backend (the agent)
 │   ├── shutong_backend/
-│   │   ├── mcp_server.py        # MCP tool surface (26 tools)
+│   │   ├── mcp_server.py        # MCP tool surface (24 tools)
 │   │   ├── rpc_server.py        # NDJSON RPC surface
 │   │   ├── agents/              # pipeline, chat, writing, review, memory
 │   │   ├── state.py             # unified research state facade
@@ -248,15 +238,16 @@ shutong/
 
 ---
 
-## Key Design Rules
+## Design rules
 
-- **No embeddings.** All retrieval is BM25 keyword search — deterministic and reproducible.
-- **Merkle-verified.** Every text node has a SHA-256 hash. Document integrity is a Merkle tree.
-- **Fail-closed integrity.** The integrity verifier rejects answers where any hash, Merkle proof, or citation key fails.
-- **Host-side translation.** Preserve citations and established domain terminology; translation is not an MCP workflow.
-- **Backend-as-agent.** The Python backend owns the pipeline, state, and enforcement; hosts are thin adapters.
-- **Structured errors.** Every tool error returns `{status: "error", error_code, message, next_action}`.
-- **Scholar-first.** The default agent mode is a research assistant, not a generic coding shell.
+- **Separate discovery and corpus search.** Bibliography discovery returns
+  candidate metadata. CiteIndex intake creates the artifacts used for retrieval.
+- **Inspect the original text.** Use passage locators and Merkle integrity
+  checks before quoting. Cite the source edition used by the passage.
+- **Keep advanced retrieval optional.** Passim and BGE-M3 require local setup.
+  Search reports unavailable methods and can return exact or BM25 results.
+- **Cite from retrieval.** The public workflow uses located corpus passages.
+  Existing notes and claims remain available on disk.
 
 ## Development
 

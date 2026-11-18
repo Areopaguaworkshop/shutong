@@ -56,13 +56,18 @@ def get_glossary_dir() -> str:
 TOOL_DEFINITIONS: list[dict[str, Any]] = [
     {
         "name": "shutong_search",
-        "description": "Search the local corpus by BM25 keyword or regular expression.",
+        "description": "Search the local corpus by keyword, regular expression or ranked citable passages.",
         "inputSchema": {
             "type": "object",
             "properties": {
                 "query": {"type": "string"},
                 "pattern": {"type": "string"},
-                "mode": {"type": "string", "enum": ["keyword", "regex"], "default": "keyword"},
+                "mode": {"type": "string", "enum": ["keyword", "regex", "passages"], "default": "keyword"},
+                "intent": {"enum": ["topic", "quotation", "parallel"]},
+                "source_ids": {"type": "array", "items": {"type": "string"}},
+                "seed": {"type": "object", "required": ["source_id", "node_id"], "properties": {
+                    "source_id": {"type": "string"}, "node_id": {"type": "string"},
+                }},
                 "field": {"type": "string", "enum": ["text", "title", "author", "year"], "default": "text"},
                 "top_k": {"type": "integer", "default": 20},
                 "paper_id": {"type": "string"},
@@ -73,6 +78,8 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
             # ``mode`` therefore means keyword search, never both branches.
             "oneOf": [
                 {"required": ["query"], "properties": {"mode": {"enum": ["keyword"]}}},
+                {"required": ["mode"], "properties": {"mode": {"enum": ["passages"]}},
+                 "anyOf": [{"required": ["query"]}, {"required": ["seed"]}]},
                 {"required": ["pattern"], "properties": {"mode": {"enum": ["regex"]}}},
             ],
         },
@@ -487,8 +494,6 @@ _GROUP_ACTIONS = {
     "shutong_workspace": ("create_paper", "create_project", "create_work", "list", "plan_switch", "activate"),
     "shutong_bibliography": ("set", "update", "import", "approve"),
     "shutong_source": ("set_access", "authorize", "add", "mark_ingested"),
-    "shutong_note": ("add", "search", "verify"),
-    "shutong_claim": ("add", "verify"),
     "shutong_corpus": ("status", "tree"),
     "shutong_citation": ("resolve", "render", "tree"),
     "shutong_memory": ("search", "list", "save"),
@@ -606,6 +611,8 @@ async def _handle_analysis(args: dict[str, Any]) -> dict[str, Any]:
 
 async def _handle_search(args: dict[str, Any]) -> dict[str, Any]:
     mode = args.pop("mode", "keyword")
+    if mode == "passages":
+        return await research.search_passages(args, get_corpus_root())
     if mode == "regex":
         if not args.get("pattern"):
             raise ShutongError("invalid_input", "Regex search requires pattern.")
@@ -888,8 +895,6 @@ _GROUP_HANDLERS = {
     "shutong_workspace": {"create_paper": _handle_paper_create, "create_project": _handle_workspace_create_project, "create_work": _handle_workspace_create_work, "list": _handle_workspace_list, "plan_switch": _handle_workspace_plan_switch, "activate": _handle_workspace_activate},
     "shutong_bibliography": {"set": _handle_paper_set_bibliography, "update": _handle_paper_update_bibliography, "import": _handle_paper_import_bibliography, "approve": _handle_paper_approve_bibliography},
     "shutong_source": {"set_access": _handle_paper_set_source_access, "authorize": _handle_paper_authorize_ingestion, "add": _handle_paper_add_source, "mark_ingested": _handle_paper_mark_source_ingested},
-    "shutong_note": {"add": _handle_paper_add_note, "search": _handle_paper_search_notes, "verify": _handle_paper_verify_note},
-    "shutong_claim": {"add": _handle_paper_add_claim, "verify": _handle_paper_verify_claim},
     "shutong_corpus": {"status": _handle_corpus_status, "tree": _handle_corpus_tree},
     "shutong_citation": {"resolve": _handle_resolve_citation, "render": _handle_cite_render, "tree": _handle_cite_tree},
     "shutong_memory": {"search": _handle_memory_search, "list": _handle_memory_list, "save": _handle_memory_save},

@@ -405,8 +405,6 @@ EXPECTED_TOOL_NAMES = [
     "shutong_workspace",
     "shutong_bibliography",
     "shutong_source",
-    "shutong_note",
-    "shutong_claim",
     "shutong_corpus",
     "shutong_citation",
     "shutong_memory",
@@ -416,10 +414,10 @@ EXPECTED_TOOL_NAMES = [
 
 
 class TestHandlerRegistration:
-    """Only the 26-tool public contract is registered in _HANDLERS."""
+    """Only the 24-tool public contract is registered in _HANDLERS."""
 
     def test_handler_count(self):
-        assert len(_HANDLERS) == 26, f"Expected public handler surface, got {len(_HANDLERS)}"
+        assert len(_HANDLERS) == 24, f"Expected public handler surface, got {len(_HANDLERS)}"
 
     @pytest.mark.parametrize("name", EXPECTED_TOOL_NAMES)
     def test_handler_registered(self, name):
@@ -434,7 +432,7 @@ class TestToolDefinitions:
     """Only the conductor-facing public surface is advertised."""
 
     def test_definition_count(self):
-        assert len(TOOL_DEFINITIONS) == 26, (
+        assert len(TOOL_DEFINITIONS) == 24, (
             f"Expected current tool surface, got {len(TOOL_DEFINITIONS)}"
         )
 
@@ -467,24 +465,11 @@ class TestToolDefinitions:
         create_paper = next(branch for branch in workspace["inputSchema"]["oneOf"] if branch["properties"]["action"]["const"] == "create_paper")
         assert create_paper["required"] == ["action", "paper_id", "title"]
 
-    def test_note_add_requires_structured_evidence_fields(self):
-        note = next(tool for tool in TOOL_DEFINITIONS if tool["name"] == "shutong_note")
-        add = next(branch for branch in note["inputSchema"]["oneOf"] if branch["properties"]["action"]["const"] == "add")
-        assert add["required"] == ["action", "paper_id", "source_id", "locator", "claim", "evidence", "confidence", "tags"]
-        assert add["properties"]["confidence"]["enum"] == ["known", "probable", "speculative"]
-
-    @pytest.mark.parametrize("name", ["shutong_note", "shutong_claim"])
-    def test_verify_actions_accept_a_verifier_report_link(self, name):
-        """Verifier decisions can cite an append-only report id alongside evidence."""
-        tool = next(tool for tool in TOOL_DEFINITIONS if tool["name"] == name)
-        verify_branch = next(
-            branch for branch in tool["inputSchema"]["oneOf"]
-            if branch["properties"]["action"]["const"] == "verify"
-        )
-        assert verify_branch["properties"]["report_id"]["type"] == "string"
-        assert verify_branch["properties"]["verifier_report_id"]["type"] == "string"
-        # The existing free-text evidence contract is preserved.
-        assert "evidence" in verify_branch["required"]
+    def test_passage_search_accepts_query_or_seed(self):
+        search = next(tool for tool in TOOL_DEFINITIONS if tool["name"] == "shutong_search")
+        branch = next(item for item in search["inputSchema"]["oneOf"]
+                      if item["properties"]["mode"]["enum"] == ["passages"])
+        assert branch["anyOf"] == [{"required": ["query"]}, {"required": ["seed"]}]
 
 
 class TestPublicDispatch:

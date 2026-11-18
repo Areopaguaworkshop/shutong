@@ -211,11 +211,12 @@ export class SearchIndex {
       "SELECT n.node_id, n.source_id, n.page, n.para, n.text, bm25(nodes_fts) AS score " +
       "FROM nodes_fts JOIN nodes n ON n.id = nodes_fts.rowid WHERE nodes_fts MATCH ?";
     const params: Array<string | number> = [match];
+    if (options.sourceIds !== undefined && sourceIds.length === 0) return [];
     if (sourceIds.length > 0) {
       sql += ` AND n.source_id IN (${sourceIds.map(() => "?").join(",")})`;
       params.push(...sourceIds);
     }
-    sql += " ORDER BY score LIMIT ?";
+    sql += " ORDER BY score, n.id LIMIT ?";
     params.push(limit);
     return this.db.prepare(sql).all(...params).map((row: any) => ({
       node_id: String(row.node_id),
@@ -241,6 +242,7 @@ export class SearchIndex {
     );
     let sql = "SELECT node_id, source_id, page, para, text, 0 AS score FROM nodes WHERE regexp(?, text)";
     const params: Array<string | number> = [pattern];
+    if (options.sourceIds !== undefined && sourceIds.length === 0) return [];
     if (sourceIds.length > 0) {
       sql += ` AND source_id IN (${sourceIds.map(() => "?").join(",")})`;
       params.push(...sourceIds);

@@ -123,7 +123,6 @@ class TestProjectInit:
         expected = {
             "explore-bibliography": "shutong_bibliography_search",
             "ingest-source": "mark_ingested",
-            "noter": "shutong_note",
             "verify-bibliography": "shutong_verifier_report",
             "workspace-planner": "plan_switch",
             "paper-workspace": "shutong_workspace",
