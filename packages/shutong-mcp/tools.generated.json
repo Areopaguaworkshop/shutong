@@ -1,6 +1,6 @@
 [
   {
-    "description": "Search the local corpus by BM25 keyword or regular expression.",
+    "description": "Search the local corpus by keyword, regular expression or ranked citable passages.",
     "inputSchema": {
       "oneOf": [
         {
@@ -13,6 +13,30 @@
           },
           "required": [
             "query"
+          ]
+        },
+        {
+          "anyOf": [
+            {
+              "required": [
+                "query"
+              ]
+            },
+            {
+              "required": [
+                "seed"
+              ]
+            }
+          ],
+          "properties": {
+            "mode": {
+              "enum": [
+                "passages"
+              ]
+            }
+          },
+          "required": [
+            "mode"
           ]
         },
         {
@@ -39,6 +63,13 @@
           ],
           "type": "string"
         },
+        "intent": {
+          "enum": [
+            "topic",
+            "quotation",
+            "parallel"
+          ]
+        },
         "library_wide": {
           "default": false,
           "type": "boolean"
@@ -47,7 +78,8 @@
           "default": "keyword",
           "enum": [
             "keyword",
-            "regex"
+            "regex",
+            "passages"
           ],
           "type": "string"
         },
@@ -59,6 +91,27 @@
         },
         "query": {
           "type": "string"
+        },
+        "seed": {
+          "properties": {
+            "node_id": {
+              "type": "string"
+            },
+            "source_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "source_id",
+            "node_id"
+          ],
+          "type": "object"
+        },
+        "source_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
         },
         "top_k": {
           "default": 20,
@@ -559,275 +612,6 @@
       "type": "object"
     },
     "name": "shutong_source"
-  },
-  {
-    "description": "Shutong note workflow actions.",
-    "inputSchema": {
-      "oneOf": [
-        {
-          "properties": {
-            "action": {
-              "const": "add"
-            },
-            "analysis_id": {
-              "type": "string"
-            },
-            "claim": {
-              "type": "string"
-            },
-            "confidence": {
-              "enum": [
-                "known",
-                "probable",
-                "speculative"
-              ],
-              "type": "string"
-            },
-            "evidence": {
-              "type": "string"
-            },
-            "locator": {
-              "type": "string"
-            },
-            "note_id": {
-              "type": "string"
-            },
-            "paper_id": {
-              "type": "string"
-            },
-            "query": {
-              "type": "string"
-            },
-            "report_id": {
-              "type": "string"
-            },
-            "source_id": {
-              "type": "string"
-            },
-            "tags": {
-              "items": {
-                "type": "string"
-              },
-              "minItems": 1,
-              "type": "array"
-            },
-            "verifier_report_id": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "action",
-            "paper_id",
-            "source_id",
-            "locator",
-            "claim",
-            "evidence",
-            "confidence",
-            "tags"
-          ]
-        },
-        {
-          "properties": {
-            "action": {
-              "const": "search"
-            },
-            "analysis_id": {
-              "type": "string"
-            },
-            "claim": {
-              "type": "string"
-            },
-            "confidence": {
-              "enum": [
-                "known",
-                "probable",
-                "speculative"
-              ],
-              "type": "string"
-            },
-            "evidence": {
-              "type": "string"
-            },
-            "locator": {
-              "type": "string"
-            },
-            "note_id": {
-              "type": "string"
-            },
-            "paper_id": {
-              "type": "string"
-            },
-            "query": {
-              "type": "string"
-            },
-            "report_id": {
-              "type": "string"
-            },
-            "source_id": {
-              "type": "string"
-            },
-            "tags": {
-              "items": {
-                "type": "string"
-              },
-              "minItems": 1,
-              "type": "array"
-            },
-            "verifier_report_id": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "action",
-            "paper_id",
-            "query"
-          ]
-        },
-        {
-          "properties": {
-            "action": {
-              "const": "verify"
-            },
-            "analysis_id": {
-              "type": "string"
-            },
-            "claim": {
-              "type": "string"
-            },
-            "confidence": {
-              "enum": [
-                "known",
-                "probable",
-                "speculative"
-              ],
-              "type": "string"
-            },
-            "evidence": {
-              "type": "string"
-            },
-            "locator": {
-              "type": "string"
-            },
-            "note_id": {
-              "type": "string"
-            },
-            "paper_id": {
-              "type": "string"
-            },
-            "query": {
-              "type": "string"
-            },
-            "report_id": {
-              "type": "string"
-            },
-            "source_id": {
-              "type": "string"
-            },
-            "tags": {
-              "items": {
-                "type": "string"
-              },
-              "minItems": 1,
-              "type": "array"
-            },
-            "verifier_report_id": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "action",
-            "paper_id",
-            "note_id",
-            "evidence"
-          ]
-        }
-      ],
-      "type": "object"
-    },
-    "name": "shutong_note"
-  },
-  {
-    "description": "Shutong claim workflow actions.",
-    "inputSchema": {
-      "oneOf": [
-        {
-          "properties": {
-            "action": {
-              "const": "add"
-            },
-            "claim_id": {
-              "type": "string"
-            },
-            "evidence": {
-              "type": "string"
-            },
-            "note_ids": {
-              "items": {
-                "type": "string"
-              },
-              "type": "array"
-            },
-            "paper_id": {
-              "type": "string"
-            },
-            "report_id": {
-              "type": "string"
-            },
-            "text": {
-              "type": "string"
-            },
-            "verifier_report_id": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "action",
-            "paper_id",
-            "text",
-            "note_ids"
-          ]
-        },
-        {
-          "properties": {
-            "action": {
-              "const": "verify"
-            },
-            "claim_id": {
-              "type": "string"
-            },
-            "evidence": {
-              "type": "string"
-            },
-            "note_ids": {
-              "items": {
-                "type": "string"
-              },
-              "type": "array"
-            },
-            "paper_id": {
-              "type": "string"
-            },
-            "report_id": {
-              "type": "string"
-            },
-            "text": {
-              "type": "string"
-            },
-            "verifier_report_id": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "action",
-            "paper_id",
-            "claim_id",
-            "evidence"
-          ]
-        }
-      ],
-      "type": "object"
-    },
-    "name": "shutong_claim"
   },
   {
     "description": "Shutong corpus workflow actions.",

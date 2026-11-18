@@ -5,10 +5,8 @@ import { handleCitation } from "../tools/citation.ts";
 import { handleAnalysis } from "../tools/analysis.ts";
 import { handleBibliography } from "../tools/bibliography.ts";
 import { handleBibliographyGroup } from "../tools/bibliography-writes.ts";
-import { handleClaim } from "../tools/claim.ts";
 import { handleCorpus } from "../tools/corpus.ts";
 import { handleMemory } from "../tools/memory.ts";
-import { handleNote } from "../tools/note.ts";
 import { handlePaperAudit } from "../tools/audit.ts";
 import { handleExportDocx } from "../tools/docx.ts";
 import { handleOutreach } from "../tools/outreach.ts";
@@ -59,8 +57,6 @@ export const IMPLEMENTED_TOOLS = new Set([
   "shutong_delete_document",
   "shutong_paper_use",
   "shutong_state_record_session",
-  "shutong_note",
-  "shutong_claim",
   "shutong_paper_export_docx",
   "shutong_analysis",
   "shutong_ingest",
@@ -115,10 +111,6 @@ async function dispatch(name: string, args: Record<string, unknown>): Promise<un
       return handlePaperUse(args);
     case "shutong_state_record_session":
       return handleStateRecordSession(args);
-    case "shutong_note":
-      return handleNote(args);
-    case "shutong_claim":
-      return handleClaim(args);
     case "shutong_paper_export_docx":
       return handleExportDocx(args);
     case "shutong_analysis":

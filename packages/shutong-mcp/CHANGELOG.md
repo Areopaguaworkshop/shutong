@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.0
+
+- Added scoped passage search with quote spans, context, edition metadata and
+  Chicago citations. Topic retrieval can use local BGE-M3 alongside BM25.
+  Quotation and seed searches can use Passim for related wording.
+- Removed the public note and claim actions. Existing records remain on disk.
+  Explicit DOCX export takes the caller's draft Markdown.
+- Added a retrieval benchmark and a shared passage-mode entry point for the
+  Python backend. Advanced retrieval requires local dependencies and model files.
+
 ## 0.1.1 — 2026-11-18
 
 Packaging and CLI-metadata release. The MCP tool surface is unchanged.

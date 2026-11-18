@@ -213,13 +213,11 @@ process.stdout.write(JSON.stringify({ status: "ok", document_path: dir, standard
         "shutong_bibliography_search",
         "shutong_bibliography_source_catalog",
         "shutong_citation",
-        "shutong_claim",
         "shutong_corpus",
         "shutong_delete_document",
         "shutong_ingest",
         "shutong_ingest_status",
         "shutong_memory",
-        "shutong_note",
         "shutong_outreach",
         "shutong_paper_audit",
         "shutong_paper_export_docx",
@@ -246,17 +244,33 @@ process.stdout.write(JSON.stringify({ status: "ok", document_path: dir, standard
     const search = parseContent(
       await client.callTool({
         name: "shutong_search",
-        arguments: { query: "中国", mode: "keyword", top_k: 5 },
+        arguments: { query: "中国", mode: "keyword", top_k: 5, library_wide: true },
       }),
     );
     assert.equal(search.status, "ok");
     assert.ok(search.results.length > 0);
     assert.equal(search.results[0].source_id, "src-a");
 
+    const scoped = parseContent(await client.callTool({
+      name: "shutong_search", arguments: { mode: "passages", query: "中国", paper_id: "test-paper" },
+    }));
+    assert.equal(scoped.status, "ok");
+    assert.deepEqual(scoped.results, []);
+
+    const passages = parseContent(await client.callTool({
+      name: "shutong_search",
+      arguments: { mode: "passages", query: "中国", library_wide: true, source_ids: ["src-a"] },
+    }));
+    assert.equal(passages.status, "ok");
+    assert.ok(passages.results.length > 0);
+    assert.ok(passages.results.every((hit: any) => hit.source_id === "src-a"));
+    assert.equal(passages.results[0].locator, "1");
+    assert.match(passages.results[0].citation.inText, /, 1\)$/);
+
     const regex = parseContent(
       await client.callTool({
         name: "shutong_search",
-        arguments: { pattern: "经济", mode: "regex", top_k: 5 },
+        arguments: { pattern: "经济", mode: "regex", top_k: 5, library_wide: true },
       }),
     );
     assert.equal(regex.status, "ok");
@@ -576,79 +590,6 @@ process.stdout.write(JSON.stringify({ status: "ok", document_path: dir, standard
       }),
     );
     assert.equal(passReport.status, "ok");
-
-    const addedNote = parseContent(
-      await client.callTool({
-        name: "shutong_note",
-        arguments: {
-          action: "add",
-          paper_id: "write-paper",
-          source_id: "src-a",
-          locator: "p1",
-          claim: "A note claim",
-          evidence: "A note evidence",
-          confidence: "known",
-          tags: ["test"],
-        },
-      }),
-    );
-    assert.equal(addedNote.status, "ok");
-    assert.equal(addedNote.note_id, "note-1");
-
-    const verifiedNote = parseContent(
-      await client.callTool({
-        name: "shutong_note",
-        arguments: {
-          action: "verify",
-          paper_id: "write-paper",
-          note_id: "note-1",
-          evidence: "Verifier checked the note",
-          verifier_report_id: "verifier-pass",
-        },
-      }),
-    );
-    assert.equal(verifiedNote.status, "ok");
-    const noteText = readFileSync(path.join(corpus, "papers", "write-paper", "notes", "note-1.md"), "utf8");
-    assert.match(noteText, /verified: true/);
-    assert.match(noteText, /verifier_report_id: verifier-pass/);
-
-    const searchedNotes = parseContent(
-      await client.callTool({
-        name: "shutong_note",
-        arguments: { action: "search", paper_id: "write-paper", query: "note claim" },
-      }),
-    );
-    assert.equal(searchedNotes.status, "ok");
-    assert.equal(searchedNotes.matches[0].note_id, "note-1");
-
-    const addedClaim = parseContent(
-      await client.callTool({
-        name: "shutong_claim",
-        arguments: {
-          action: "add",
-          paper_id: "write-paper",
-          text: "A claim from note-1",
-          note_ids: ["note-1"],
-        },
-      }),
-    );
-    assert.equal(addedClaim.status, "ok");
-    assert.equal(addedClaim.claim_id, "claim-1");
-
-    const verifiedClaim = parseContent(
-      await client.callTool({
-        name: "shutong_claim",
-        arguments: {
-          action: "verify",
-          paper_id: "write-paper",
-          claim_id: "claim-1",
-          evidence: "Verifier checked the claim",
-          verifier_report_id: "verifier-pass",
-        },
-      }),
-    );
-    assert.equal(verifiedClaim.status, "ok");
-    assert.equal(readJson(path.join(corpus, "papers", "write-paper", "claims", "claim-1.json")).verified, true);
 
     const exported = parseContent(
       await client.callTool({

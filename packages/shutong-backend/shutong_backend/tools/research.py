@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import asyncio
+import json
+import os
 import re
 import time
 from typing import Any
@@ -32,6 +34,35 @@ async def search(args: dict[str, Any], corpus_root: str) -> dict[str, Any]:
     if paper_id:
         result["paper_id"] = paper_id
     return result
+
+
+async def search_passages(args: dict[str, Any], corpus_root: str) -> dict[str, Any]:
+    """Share the SQLite passage implementation with the TypeScript host."""
+    executable = os.environ.get("SHUTONG_MCP_BIN", "shutong-mcp")
+    try:
+        process = await asyncio.create_subprocess_exec(
+            executable, "search-json", stdin=asyncio.subprocess.PIPE,
+            stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
+            env={**os.environ, "SHUTONG_CORPUS_ROOT": corpus_root},
+        )
+    except OSError as exc:
+        raise ShutongError("retrieval_unavailable", "Install shutong-mcp or set SHUTONG_MCP_BIN.") from exc
+    try:
+        stdout, _ = await asyncio.wait_for(
+            process.communicate(json.dumps({**args, "mode": "passages"}).encode()), timeout=330,
+        )
+        return json.loads(stdout)
+    except TimeoutError as exc:
+        process.kill()
+        await process.wait()
+        raise ShutongError("retrieval_timeout", "Passage search exceeded its time budget.") from exc
+    except (ValueError, UnicodeError) as exc:
+        raise ShutongError("retrieval_failed", "The SQLite search process returned an invalid response.") from exc
+    except asyncio.CancelledError:
+        if process.returncode is None:
+            process.kill()
+            await process.wait()
+        raise
 
 
 async def chat(args: dict[str, Any], corpus_root: str) -> dict[str, Any]:

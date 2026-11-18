@@ -1,9 +1,7 @@
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import JSZip from "jszip";
-import { verifyClaimEvidence } from "./audit.ts";
 import { paperDir, readPaper } from "./paper-store.ts";
-import { handlePaperAudit } from "./audit.ts";
 
 const ID_RE = /^[a-z0-9][a-z0-9-]{0,62}$/;
 
@@ -16,62 +14,6 @@ function xmlEscape(value: string): string {
     .replaceAll("'", "&#x27;");
 }
 
-function readClaims(paperId: string): Array<Record<string, any>> {
-  const dir = path.join(paperDir(paperId), "claims");
-  if (!existsSync(dir)) return [];
-  const claims: Array<Record<string, any>> = [];
-  for (const file of readdirSync(dir).filter((name) => name.endsWith(".json")).sort()) {
-    try {
-      const claim = JSON.parse(readFileSync(path.join(dir, file), "utf8"));
-      if (claim?.verified === true) claims.push(claim);
-    } catch {
-      // ignore unreadable claims; the audit already reports them
-    }
-  }
-  return claims;
-}
-
-async function draftContext(paperId: string, draftRequested: boolean): Promise<Record<string, unknown>> {
-  const audit = await handlePaperAudit({ paper_id: paperId });
-  if (audit.status !== "ok") {
-    return {
-      status: "needs_evidence",
-      paper_id: audit.paper_id ?? paperId,
-      missing: audit.missing ?? [],
-    };
-  }
-  if (!draftRequested) {
-    return {
-      status: "needs_draft_request",
-      paper_id: paperId,
-      message: "Ask explicitly for a draft after reviewing the verified notes and claims.",
-    };
-  }
-  const notesDir = path.join(paperDir(paperId), "notes");
-  const claims: Array<Record<string, any>> = [];
-  for (const claim of readClaims(paperId)) {
-    try {
-      verifyClaimEvidence(claim, notesDir, paperId, paperDir(paperId));
-      claims.push(claim);
-    } catch {
-      // a stale claim is a missing claim for drafting
-    }
-  }
-  if (claims.length === 0) {
-    return {
-      status: "needs_evidence",
-      paper_id: paperId,
-      missing: [{ stage: "claims", required: "at least one verified claim", actual: 0 }],
-    };
-  }
-  return {
-    status: "ready",
-    paper_id: paperId,
-    title: readPaper(paperId).title ?? "",
-    claims,
-  };
-}
-
 export async function handleExportDocx(args: {
   paper_id?: string;
   draft?: string;
@@ -82,8 +24,10 @@ export async function handleExportDocx(args: {
   if (!paperId || !ID_RE.test(paperId)) {
     return { status: "error", error_code: "invalid_input", message: "paper_id is required." };
   }
-  const context = await draftContext(paperId, args.draft_requested === true);
-  if (context.status !== "ready") return context;
+  readPaper(paperId);
+  if (args.draft_requested !== true) {
+    return { status: "needs_draft_request", paper_id: paperId };
+  }
 
   const draft = args.draft;
   if (typeof draft !== "string" || !draft.trim()) {
@@ -126,6 +70,5 @@ export async function handleExportDocx(args: {
     status: "ok",
     paper_id: paperId,
     path: target,
-    claim_count: (context.claims as unknown[]).length,
   };
 }

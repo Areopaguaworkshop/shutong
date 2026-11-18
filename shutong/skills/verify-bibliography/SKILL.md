@@ -13,8 +13,6 @@ Record `pass`, `fail`, or `uncertain` with the evidence inspected, the defect, a
 
 - `shutong_verify` — document/node or whole-corpus Merkle verification (`mode`: `node`, `all`).
 - `shutong_verifier_report` — `record` (outcome), `override` (report_id, reason; append-only correction).
-- `shutong_claim` — `verify` (claim_id, evidence) after checking claim-to-note alignment.
-- `shutong_note` — `search`; `verify` only with inspected evidence.
 - `shutong_analysis` — `get`, `review` (outcome, evidence, reviewer) on stored run records.
 - `shutong_citation` — `resolve`, `tree`.
 - `shutong_paper_audit` — primary/secondary source requirements and missing lineage stages.

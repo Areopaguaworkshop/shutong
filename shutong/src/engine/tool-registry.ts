@@ -27,8 +27,6 @@ const PUBLIC_TOOLS = [
   ["shutong_workspace", "Manage project and work actions"],
   ["shutong_bibliography", "Manage bibliography approval actions"],
   ["shutong_source", "Manage source access and ingestion actions"],
-  ["shutong_note", "Manage paper notes"],
-  ["shutong_claim", "Manage paper claims"],
   ["shutong_corpus", "Inspect corpus state"],
   ["shutong_citation", "Resolve, render, or trace citations"],
   ["shutong_memory", "Manage local research memory"],

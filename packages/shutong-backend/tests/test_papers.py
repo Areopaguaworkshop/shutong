@@ -330,7 +330,7 @@ def test_duplicate_report_ids_are_rejected_and_holes_do_not_collide(tmp_path):
     assert result["report_id"] == "verifier-3"
 
 
-def test_stale_claim_after_note_change_blocks_audit_and_export(tmp_path):
+def test_stale_claim_blocks_legacy_audit_but_allows_explicit_export(tmp_path):
     corpus = _make_paper(tmp_path)
     _add_note(corpus)
     _verify_note(corpus)
@@ -345,7 +345,7 @@ def test_stale_claim_after_note_change_blocks_audit_and_export(tmp_path):
     with pytest.raises(ShutongError, match="changed after the claim"):
         _verify_claim(corpus, "claim-1")
     assert papers.draft_context({"paper_id": "nicea", "draft_requested": True}, corpus)["status"] == "needs_evidence"
-    assert papers.export_docx({"paper_id": "nicea", "draft_requested": True, "draft": "Text."}, corpus)["status"] == "needs_evidence"
+    assert papers.export_docx({"paper_id": "nicea", "draft_requested": True, "draft": "Text."}, corpus)["status"] == "ok"
 
 
 def test_mark_source_ingested_rejects_bad_registry_paths(tmp_path):

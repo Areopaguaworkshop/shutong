@@ -64,7 +64,6 @@ def render_global_config() -> dict:
 ROLE_SKILLS = (
     "explore-bibliography",
     "ingest-source",
-    "noter",
     "verify-bibliography",
     "workspace-planner",
     "paper-workspace",

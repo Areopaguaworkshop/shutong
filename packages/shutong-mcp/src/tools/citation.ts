@@ -25,7 +25,7 @@ function yearOf(csl: Record<string, any>): string {
   return year == null ? "n.d." : String(year);
 }
 
-function renderChicago(csl: Record<string, any>): { bibliography: string; inText: string } {
+export function renderChicago(csl: Record<string, any>, locator?: string): { bibliography: string; inText: string } {
   const authors = Array.isArray(csl.author) ? csl.author.map(authorName).filter(Boolean) : [];
   const authorText =
     authors.length === 0
@@ -55,7 +55,8 @@ function renderChicago(csl: Record<string, any>): { bibliography: string; inText
   const bibliography = result.trim();
 
   const family = firstAuthorFamily(csl) || title || "Anon.";
-  const inText = page ? `(${family} ${year}, ${page})` : `(${family} ${year})`;
+  const location = locator ?? page;
+  const inText = location ? `(${family} ${year}, ${location})` : `(${family} ${year})`;
   return { bibliography, inText };
 }
 

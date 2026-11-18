@@ -15,4 +15,4 @@ Run with `action: run`, `paper_id`, `source_ids`, `question`, `language: en|zh` 
 
 English uses Unicode word units; Han text uses individual characters. No stemming or Chinese word segmentation is performed. Runs stop above 50 sources, 5000 nodes, 2 million characters, or 200000 reuse windows; request a narrower source set. Report all truncation and node-boundary limitations. Never call a limited sample exhaustive.
 
-Create atomic findings with `shutong_note` action `add`, including analysis_id, source_id, locator, claim, evidence, confidence and tags. Keep cross-source findings as separate source notes joined through a claim. Verifier must review the analysis and then the notes before claim creation. A saved run is not itself a verified conclusion.
+Report the inspected result with its analysis ID, source ID, exact locator and cited passage.

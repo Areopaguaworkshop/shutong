@@ -33,14 +33,14 @@ requested artifact and follow its Role, Tools, Evidence gate, and Never sections
 | Discover or update a bibliography | \`explore-bibliography\` |
 | Check lawful access before intake | \`copyright-access\` |
 | Ingest an approved source | \`ingest-source\` |
-| Read, quote, translate, or note a passage | \`noter\` with \`text-analysis\`, \`evidence-synthesis\` |
-| Audit bibliography, integrity, notes, claims | \`verify-bibliography\` with \`verify-corpus\`, \`citation-check\` |
+| Find or quote a passage | \`shutong_search\` in passage mode |
+| Audit bibliography and source integrity | \`verify-bibliography\` with \`verify-corpus\`, \`citation-check\` |
 | Start, resume, or switch a project/work | \`workspace-planner\` with \`paper-workspace\` |
 
 ## Research Protocol
 
 The host agent is the conductor: it confirms the active work, loads the owning
-skill, enforces the evidence lineage, and drafts only from verified notes after
+skill, cites retrieved corpus passages, and drafts only after
 an explicit scholar request. Full-paper composition is not the default deliverable.
 
 Before answering any research question:

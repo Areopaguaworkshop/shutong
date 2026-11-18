@@ -713,9 +713,11 @@ def draft_context(args: dict[str, Any], corpus_root: str) -> dict[str, Any]:
 
 def export_docx(args: dict[str, Any], corpus_root: str) -> dict[str, Any]:
     """Export a scholar-approved Markdown draft to a small, local DOCX file."""
-    context = draft_context({"paper_id": args["paper_id"], "draft_requested": args.get("draft_requested", False)}, corpus_root)
-    if context["status"] != "ready":
-        return context
+    paper_id = args["paper_id"]
+    paper_path = _paper_path(corpus_root, paper_id)
+    _read(paper_path)
+    if args.get("draft_requested") is not True:
+        return {"status": "needs_draft_request", "paper_id": paper_id}
     draft = args.get("draft", "")
     if not isinstance(draft, str) or not draft.strip():
         raise ShutongError("empty_draft", "DOCX export requires non-empty draft Markdown.")
@@ -724,12 +726,13 @@ def export_docx(args: dict[str, Any], corpus_root: str) -> dict[str, Any]:
         raise ShutongError("invalid_draft_filename", "Draft filenames use lowercase letters, numbers, and hyphens.")
     paragraphs = "".join(f"<w:p><w:r><w:t xml:space=\"preserve\">{escape(line)}</w:t></w:r></w:p>" for line in draft.splitlines() if line.strip())
     document = f'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>{paragraphs}<w:sectPr/></w:body></w:document>'
-    path = _paper_path(corpus_root, args["paper_id"]).parent / "drafts" / f"{filename}.docx"
+    path = paper_path.parent / "drafts" / f"{filename}.docx"
+    path.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as archive:
         archive.writestr("[Content_Types].xml", '<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>')
         archive.writestr("_rels/.rels", '<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>')
         archive.writestr("word/document.xml", document)
-    return {"status": "ok", "paper_id": context["paper_id"], "path": str(path), "claim_count": len(context["claims"])}
+    return {"status": "ok", "paper_id": paper_id, "path": str(path)}
 
 
 def record_verifier_report(args: dict[str, Any], corpus_root: str) -> dict[str, Any]:

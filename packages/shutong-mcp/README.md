@@ -1,6 +1,6 @@
 # @ephremyuan/shutong
 
-TypeScript MCP server for Shutong: 26 tools for a local, citation-verified
+TypeScript MCP server for Shutong: 24 tools for a local, citation-verified
 scholarly corpus, backed by SQLite FTS5 and citeindex artifacts.
 
 `citeindex` remains the only Python dependency, and only for ingestion.
@@ -57,7 +57,7 @@ See [CUTOVER.md](CUTOVER.md) for the host sequence.
 | State | `shutong_state_wake_up`, `shutong_state_snapshot`, `shutong_state_record_session`, `shutong_memory` |
 | Paper | `shutong_paper_status`, `shutong_paper_audit`, `shutong_paper_use`, `shutong_paper_export_docx` |
 | Bibliography/source writes | `shutong_bibliography`, `shutong_source` |
-| Evidence | `shutong_note`, `shutong_claim`, `shutong_analysis` |
+| Text analysis | `shutong_analysis` |
 | Workspace | `shutong_workspace` |
 | Outreach | `shutong_outreach`, `shutong_verifier_report` |
 | Ingest | `shutong_ingest`, `shutong_ingest_status`, `shutong_delete_document` |
@@ -97,7 +97,7 @@ npm run quality
 |---|---|
 | Chinese hit@10 | 20/20 |
 | English p50 Jaccard@10 vs Python BM25 | 0.818 |
-| Tool registration | 26/26 |
+| Tool registration | 24/24 |
 | Merkle roots | 280/280 |
 | Jieba/Intl token overlap | 0.913 |
 
@@ -144,3 +144,52 @@ See [CHANGELOG.md](CHANGELOG.md).
 ## License
 
 MIT
+
+## Passage search
+
+Use `shutong_search` with one of these payloads.
+
+```json
+{"mode":"passages","intent":"topic","query":"How do early Christian writers describe hospitality?","top_k":10}
+```
+
+```json
+{"mode":"passages","intent":"quotation","query":"I was a stranger and you welcomed me"}
+```
+
+```json
+{"mode":"passages","intent":"parallel","seed":{"source_id":"edition-id","node_id":"passage-id"}}
+```
+
+Results contain original text, adjacent text, source and node IDs, available
+locators, CSL metadata, Chicago citations and match details. Parallel matches
+include spans on both sides. Search defaults to the active paper when present.
+Use `source_ids` to narrow the scope. Use `library_wide: true` to explicitly
+search the library when a paper is active. An explicit paper ID takes precedence.
+
+Topic search combines SQLite BM25 and local BGE-M3 by reciprocal rank.
+Quotation and parallel searches prioritize literal spans and use Passim to find
+related wording. Results identify the methods used and report unavailable
+methods in `warnings`. A Passim match identifies overlapping wording for review.
+
+- For Passim, install Java and [Passim](https://github.com/dasmiq/passim). Set
+  `SHUTONG_PASSIM_BIN` to its absolute path if needed. Each call aligns its
+  query against the scoped passages using local Spark.
+- For BGE-M3, install [FlagEmbedding](https://github.com/FlagOpen/FlagEmbedding)
+  in a local Python environment. Set `SHUTONG_RETRIEVAL_PYTHON` to that
+  interpreter, `SHUTONG_BGE_MODEL` to a local BGE-M3 model directory, and
+  `SHUTONG_BGE_REVISION` to the installed model revision. First use embeds
+  uncached passages in batches and persists vectors in `embedding-cache.sqlite`.
+- For the Python server, install the TypeScript package on the same machine.
+  Set `SHUTONG_MCP_BIN` if `shutong-mcp` is outside the Python server's PATH.
+
+Search results can be cited directly. To export a draft, supply its Markdown
+and `draft_requested: true` to `shutong_paper_export_docx`. Existing note and
+claim files can be read from their paper's `notes/` and `claims/` directories.
+
+To compare ranked passage search against BM25, set `SHUTONG_SEARCH_EVALUATION`
+to a JSON array of queries with `language`, optional `intent`, and
+`relevant` entries containing `source_id`, `node_id`, and optional
+expected `span`. Run `npm run bench` with `SHUTONG_CORPUS` set to the
+judged corpus. The report includes recall and nDCG at ten, latency,
+and exact span matches for each query.
