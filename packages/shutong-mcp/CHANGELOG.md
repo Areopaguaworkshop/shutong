@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.1 — 2026-11-21
+
+### Fixed
+
+- `shutong-mcp install pi` and `doctor` wrote and checked `~/.pi/mcp.json`.
+  Pi reads its global MCP config from `~/.pi/agent/mcp.json` (project config
+  stays `.pi/mcp.json`), so the entry never loaded. Both now target the file
+  Pi actually reads.
+
 ## 0.2.0
 
 - Added scoped passage search with quote spans, context, edition metadata and
