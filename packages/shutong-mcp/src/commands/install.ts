@@ -94,7 +94,7 @@ export function installHost(
     return { host, path: file, backup, existed };
   }
   if (host === "pi") {
-    const file = path.join(home, ".pi", "mcp.json");
+    const file = path.join(home, ".pi", "agent", "mcp.json");
     const existed = existsSync(file);
     const backup = shouldBackup ? backupFile(file, dryRun) : null;
     const config = readJson(file);

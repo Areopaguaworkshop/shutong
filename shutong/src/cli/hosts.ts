@@ -1,7 +1,7 @@
 import { existsSync } from "fs"
 import path from "path"
 
-export const HOSTS = ["opencode", "claude", "codex", "pi", "hermes"] as const
+export const HOSTS = ["opencode", "claude", "codex", "pi", "omp", "hermes"] as const
 export type Host = typeof HOSTS[number]
 
 const markers: Record<Host, string[]> = {
@@ -9,6 +9,7 @@ const markers: Record<Host, string[]> = {
   claude: [".claude", "CLAUDE.md", ".mcp.json"],
   codex: [".codex"],
   pi: [".pi"],
+  omp: [".omp"],
   hermes: [".hermes.md"],
 }
 

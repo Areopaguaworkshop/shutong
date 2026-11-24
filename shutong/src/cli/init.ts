@@ -95,7 +95,7 @@ export function initProject(root = process.cwd(), force = false, host?: Host): I
   const written: string[] = []
   const warnings: string[] = []
   const selected = host ? [host] : detectHosts(root)
-  if (selected.length === 0) return { written, warnings: ["No supported agent hosts detected. Supported: opencode, claude, codex, pi, hermes."] }
+  if (selected.length === 0) return { written, warnings: ["No supported agent hosts detected. Supported: opencode, claude, codex, pi, omp, hermes."] }
   const corpusRoot = path.join(root, "corpus")
   const libraryRoot = path.join(root, "library")
   const shutongRoot = path.join(root, ".shutong")

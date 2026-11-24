@@ -25,7 +25,7 @@ test("host installers write idempotent MCP entries", () => {
     assert.equal(codex.split("[mcp_servers.shutong]").length - 1, 1);
 
     installHost("pi", home);
-    const pi = JSON.parse(readFileSync(path.join(home, ".pi", "mcp.json"), "utf8"));
+    const pi = JSON.parse(readFileSync(path.join(home, ".pi", "agent", "mcp.json"), "utf8"));
     assert.ok(pi.mcpServers.shutong.command);
 
     assert.match(hermesInstructions(), /mcp_servers/);

@@ -21,6 +21,12 @@ function pythonEnv() {
   return { SHUTONG_CORPUS_ROOT: "./corpus", SHUTONG_LIBRARY_ROOT: "./library", SHUTONG_GLOSSARY_DIR: "./.shutong/glossary" }
 }
 
+const shutongNpmCommand = ["npx", "-y", "@ephremyuan/shutong@0.2.0"]
+
+function renderJsonMcp() {
+  return { command: shutongNpmCommand[0], args: shutongNpmCommand.slice(1) }
+}
+
 /** Preserve a leading JSONC comment block (and blank lines) when rewriting a config file. */
 function leadingCommentBlock(text: string): string {
   const match = /^\s*((?:\/\/[^\n]*\n|\/\*[\s\S]*?\*\/\s*\n|\s*\n)+)(?=\{)/.exec(text)
@@ -79,6 +85,7 @@ function canonicalSkills(): Array<[string, string]> {
 
 function hostSkillRoot(host: Host): string {
   if (host === "pi") return ".pi/skills"
+  if (host === "omp") return ".omp/skills"
   if (host === "codex") return ".codex/skills"
   if (host === "claude") return ".claude/skills"
   return ".agents/skills"
@@ -99,17 +106,18 @@ export function renderHostArtifacts(host: Host, root: string, pythonBin: string,
     const jsonc = path.join(root, "opencode.jsonc")
     mergeOpenCodeMcp(
       existsSync(jsonc) ? jsonc : path.join(root, "opencode.json"),
-      { type: "local", command: [pythonBin, "-m", "shutong_backend.mcp_server"], environment: pythonEnv() },
+      { type: "local", command: shutongNpmCommand },
       force,
       written,
     )
   }
   if (host === "claude") mergeJson(path.join(root, ".mcp.json"), "mcpServers", { shutong: { command: pythonBin, args: ["-m", "shutong_backend.mcp_server"], env: pythonEnv() } }, force, written)
-  if (host === "pi") mergeJson(path.join(root, ".pi", "mcp.json"), "mcpServers", { shutong: { command: pythonBin, args: ["-m", "shutong_backend.mcp_server"], env: pythonEnv() } }, force, written)
+  if (host === "pi") mergeJson(path.join(root, ".pi", "agent", "mcp.json"), "mcpServers", { shutong: renderJsonMcp() }, force, written)
+  if (host === "omp") mergeJson(path.join(root, ".omp", "agent", "mcp.json"), "mcpServers", { shutong: renderJsonMcp() }, force, written)
   if (host === "codex") {
     const file = path.join(root, ".codex", "config.toml")
     const current = existsSync(file) ? readFileSync(file, "utf8") : ""
-    if (!current.includes("[mcp_servers.shutong]")) { mkdirSync(path.dirname(file), { recursive: true }); writeFileSync(file, `${current.trimEnd()}${renderCodexMcp(pythonBin)}`, "utf8"); written.push(file) }
+    if (!current.includes("[mcp_servers.shutong]")) { mkdirSync(path.dirname(file), { recursive: true }); writeFileSync(file, `${current.trimEnd()}\n\n[mcp_servers.shutong]\ncommand = "npx"\nargs = ["-y", "@ephremyuan/shutong@0.2.0"]\n`, "utf8"); written.push(file) }
   }
   if (host === "hermes") writeIfMissing(path.join(root, ".hermes", "SHUTONG-MCP.md"), renderHermesInstructions(pythonBin), force, written)
   return written

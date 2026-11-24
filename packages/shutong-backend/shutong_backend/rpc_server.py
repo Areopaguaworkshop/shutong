@@ -271,7 +271,14 @@ async def _handle_cite_tree(params: dict[str, Any]) -> Any:
 
 
 async def _handle_tool_call_dispatch(params: dict[str, Any]) -> Any:
-    return await _tool_call(params["name"], params.get("arguments"))
+    name = params["name"]
+    arguments = params.get("arguments") or {}
+    if not isinstance(name, str) or not isinstance(arguments, dict):
+        return {"status": "error", "error_code": "invalid_tool_call", "message": "Tool name and arguments must be a string and object."}
+    permission = _get_permissions().check_with_context(name, arguments)
+    if permission["status"] != "allowed":
+        return permission
+    return await _tool_call(name, arguments)
 
 
 

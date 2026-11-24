@@ -500,7 +500,11 @@ class Handler(BaseHTTPRequestHandler):
         parsed = urlparse(self.path)
         if parsed.path == "/session":
             session = self.daemon.create_session(str(body.get("id") or "") or None)
-            self._json({"session": self.daemon._meta(session)})
+            # Return the current cursor so a new turn subscribes only to its
+            # own events, even when this session already has completed turns.
+            with session.condition:
+                last_event_id = session.next_event_id - 1
+            self._json({"session": self.daemon._meta(session), "last_event_id": last_event_id})
             return
         if parsed.path == "/provider/switch":
             provider = str(body.get("provider") or "ollama")

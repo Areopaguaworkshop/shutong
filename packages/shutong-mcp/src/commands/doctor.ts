@@ -86,7 +86,7 @@ export async function runDoctor(): Promise<{ ok: boolean; checks: Check[] }> {
     ["OpenCode config", path.join(home, ".config", "opencode", "opencode.json")],
     ["Claude config", path.join(home, ".claude.json")],
     ["Codex config", path.join(home, ".codex", "config.toml")],
-    ["Pi config", path.join(home, ".pi", "mcp.json")],
+    ["Pi config", path.join(home, ".pi", "agent", "mcp.json")],
   ] as const) {
     checks.push({ name, ok: true, detail: existsSync(file) ? file : "not configured" });
   }

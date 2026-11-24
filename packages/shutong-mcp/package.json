@@ -1,6 +1,6 @@
 {
   "name": "@ephremyuan/shutong",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "TypeScript MCP server for Shutong, with a local SQLite FTS5 search index",
   "type": "module",
   "private": false,
