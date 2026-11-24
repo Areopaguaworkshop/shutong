@@ -13,6 +13,7 @@ const packagedSkills = path.resolve(import.meta.dir, "../skills")
 
 function skillRootFor(host: string) {
   if (host === "pi") return ".pi/skills"
+  if (host === "omp") return ".omp/skills"
   if (host === "codex") return ".codex/skills"
   if (host === "claude") return ".claude/skills"
   return ".agents/skills"
@@ -98,21 +99,23 @@ test("initProject updates an existing OpenCode JSONC config and preserves commen
   rmSync(tmpDir, { recursive: true, force: true })
 })
 
-test("initProject uses the configured Python executable for MCP", () => {
+test("initProject uses the published npm launcher for MCP", () => {
   mkdirSync(path.join(tmpDir, ".opencode"), { recursive: true })
   mkdirSync(path.join(tmpDir, ".shutong"), { recursive: true })
   writeFileSync(path.join(tmpDir, ".shutong", "config.toml"), "[backend]\npython = \"/opt/shutong/bin/python\"\n")
   initProject(tmpDir, false, "opencode")
-  expect(JSON.parse(readFileSync(path.join(tmpDir, "opencode.json"), "utf8")).mcp.servers.shutong.command[0]).toBe("/opt/shutong/bin/python")
+  const shutong = JSON.parse(readFileSync(path.join(tmpDir, "opencode.json"), "utf8")).mcp.servers.shutong
+  expect(shutong.command).toEqual(["npx", "-y", "@ephremyuan/shutong@0.2.0"])
   rmSync(tmpDir, { recursive: true, force: true })
 })
 
-test("initProject creates all five host integrations", () => {
+test("initProject creates all six host integrations", () => {
   const hosts = [
     ["opencode", ".agents/skills/corpus-status/SKILL.md"],
     ["claude", ".claude/skills/corpus-status/SKILL.md"],
     ["codex", ".codex/config.toml"],
     ["pi", ".pi/skills/corpus-status/SKILL.md"],
+    ["omp", ".omp/skills/corpus-status/SKILL.md"],
     ["hermes", ".hermes/SHUTONG-MCP.md"],
   ] as const
   for (const [host, artifact] of hosts) {
@@ -127,11 +130,10 @@ test("initProject creates all five host integrations", () => {
     for (const agents of [".codex/agents", ".opencode/agents", ".claude/agents"]) expect(existsSync(path.join(root, agents))).toBe(false)
     if (host === "opencode") expect(JSON.parse(readFileSync(path.join(root, "opencode.json"), "utf8")).default_agent).toBeUndefined()
     if (host === "claude") expect(existsSync(path.join(root, "CLAUDE.md"))).toBe(true)
-    if (host === "pi") {
-      const piMcp = JSON.parse(readFileSync(path.join(root, ".pi", "mcp.json"), "utf8"))
-      expect(typeof piMcp.mcpServers.shutong.command).toBe("string")
-      expect(piMcp.mcpServers.shutong.command.length).toBeGreaterThan(0)
-      expect(piMcp.mcpServers.shutong.args).toEqual(["-m", "shutong_backend.mcp_server"])
+    if (host === "pi" || host === "omp") {
+      const hostMcp = JSON.parse(readFileSync(path.join(root, `.${host}`, "agent", "mcp.json"), "utf8"))
+      expect(hostMcp.mcpServers.shutong.command).toBe("npx")
+      expect(hostMcp.mcpServers.shutong.args).toEqual(["-y", "@ephremyuan/shutong@0.2.0"])
     }
   }
   rmSync(tmpDir, { recursive: true, force: true })
@@ -167,7 +169,7 @@ test("fresh init uses the setup interpreter persisted in user config", () => {
     const project = path.join(root, "project")
     initProject(project, false, "opencode")
     const config = JSON.parse(readFileSync(path.join(project, "opencode.json"), "utf8"))
-    expect(config.mcp.servers.shutong.command[0]).toBe(python)
+    expect(config.mcp.servers.shutong.command).toEqual(["npx", "-y", "@ephremyuan/shutong@0.2.0"])
     // A project scaffold must not persist the inferred default and shadow user config.
     expect(readFileSync(path.join(project, ".shutong", "config.toml"), "utf8")).not.toContain("[backend]")
   } finally {

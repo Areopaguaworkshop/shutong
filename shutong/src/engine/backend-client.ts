@@ -206,9 +206,9 @@ export class BackendClient {
 
   async *chatStream(sessionId: string, prompt: string): AsyncGenerator<BackendStreamEvent, any, void> {
     const url = await this.ensureDaemon()
-    await this.daemonJson("/session", { method: "POST", body: JSON.stringify({ id: sessionId }) })
+    const session = await this.daemonJson("/session", { method: "POST", body: JSON.stringify({ id: sessionId }) })
     const eventResponsePromise = fetch(`${url}/session/${encodeURIComponent(sessionId)}/event?once=1`, {
-      headers: { accept: "text/event-stream", "Last-Event-ID": "0", ...this.daemonAuthHeaders() },
+      headers: { accept: "text/event-stream", "Last-Event-ID": String(session.last_event_id ?? 0), ...this.daemonAuthHeaders() },
     })
     await this.daemonJson(`/session/${encodeURIComponent(sessionId)}/message`, {
       method: "POST",

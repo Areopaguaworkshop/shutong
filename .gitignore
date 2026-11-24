@@ -149,6 +149,8 @@ shutong/dist/
 shutong/python-backend/
 .opencode/
 .claude/
+.pi/
+.omp/
 .codex/
 .agents/*
 !.agents/skills/
@@ -176,6 +178,7 @@ mempalace.yaml
 
 # Generated audit/diagram artifacts
 docs/artifacts/
+/code-review-report.html
 
 # Legacy personal dev script (superseded by MCP tools)
 scripts/search_corpus.py
